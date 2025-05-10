@@ -3,9 +3,7 @@ package com.example.spybrain.presentation.settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.rememberScrollState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import android.widget.Toast
@@ -34,17 +31,10 @@ import android.app.Activity
 import android.content.res.Configuration
 import java.util.Locale
 import com.example.spybrain.voice.VoiceAssistantService
-import android.speech.tts.Voice
 import androidx.compose.ui.unit.Dp
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.Icons
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.padding
-import androidx.compose.foundation.lazy.arrangement
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 
 object LocaleManager {
     fun setLocale(activity: Activity, language: String) {
@@ -63,7 +53,6 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val state by viewModel.uiState.collectAsState()
-    val scrollState = rememberScrollState()
     val activity = context as? Activity
 
     LaunchedEffect(Unit) {
