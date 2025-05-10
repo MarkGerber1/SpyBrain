@@ -114,7 +114,7 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
 
     fun getExoPlayer(): ExoPlayer {
         if (exoPlayer == null) {
-            exoPlayer = ExoPlayer.Builder(this).build().also { player ->
+            exoPlayer = ExoPlayer.Builder(applicationContext).build().also { player ->
                 player.repeatMode = Player.REPEAT_MODE_OFF
             }
         }
