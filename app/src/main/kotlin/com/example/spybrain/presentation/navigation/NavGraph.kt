@@ -21,6 +21,11 @@ import com.example.spybrain.presentation.meditation.MeditationLibraryScreen
 import com.example.spybrain.presentation.profile.ProfileScreen
 import com.example.spybrain.presentation.biosync.BioSyncScreen
 import com.example.spybrain.presentation.breathing.patternbuilder.EditCustomBreathingPatternScreen
+import androidx.navigation.compose.NavHost            // FIXME билд-фикс 09.05.2025
+import androidx.navigation.compose.composable        // FIXME билд-фикс 09.05.2025
+import androidx.navigation.compose.navArgument       // FIXME билд-фикс 09.05.2025
+import androidx.navigation.compose.navType          // FIXME билд-фикс 09.05.2025
+import com.example.spybrain.presentation.stats.StatsScreen // FIXME билд-фикс 09.05.2025
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -37,18 +42,22 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Meditation.route) {
             MeditationScreen()
         }
-        composable(Screen.Breathing.route) {
-            BreathingScreen(navController)
-        }
+        composable(
+            route = Screen.Breathing.route,
+            content = { BreathingScreen(navController) }
+        )
         composable(Screen.PatternBuilder.route) {
             BreathingPatternBuilderScreen()
         }
         composable(
-            route = Screen.EditCustomPattern.route,
-            arguments = listOf(androidx.navigation.compose.navArgument("patternId") { type = androidx.navigation.NavType.StringType })
-        ) { backStackEntry ->
-            val patternId = backStackEntry.arguments?.getString("patternId") ?: return@composable
-            EditCustomBreathingPatternScreen(patternId, navController)
+            route = "${Screen.Pattern.route}/{patternId}",
+            arguments = listOf(
+                androidx.navigation.compose.navArgument("patternId") {
+                    type = androidx.navigation.NavType.StringType
+                }
+            )
+        ) {
+            PatternScreen(navController, it.arguments?.getString("patternId"))
         }
         composable(Screen.CustomPatterns.route) {
             BreathingPatternBuilderScreen()

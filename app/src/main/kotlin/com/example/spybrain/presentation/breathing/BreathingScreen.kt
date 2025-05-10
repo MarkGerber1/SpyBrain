@@ -39,7 +39,7 @@ import com.example.spybrain.presentation.components.Ticker
 import androidx.compose.animation.Crossfade
 import com.example.spybrain.util.UiError
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.runtime.Composable // FIXME билд-фикс 09.05.2025
+import androidx.compose.runtime.Composable  // FIXME билд-фикс 09.05.2025
 import com.example.spybrain.presentation.breathing.BreathingContract.State as UiState  // FIXME билд-фикс 09.05.2025
 
 @Composable
@@ -112,8 +112,10 @@ fun BreathingScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(stringResource(id = com.example.spybrain.R.string.breathing_create_pattern))
                     }
-                    // FIXME UI/UX финал 09.05.2025: Используем IconMenuGrid вместо LazyColumn для шаблонов дыхания
-                    BreathingPatternList(state) { idx: Int -> viewModel.setEvent(BreathingContract.Event.StartPattern(state.patterns[idx])) } // FIXME билд-фикс 09.05.2025
+                    // FIXME UI/UX финал 09.05.2025: Используем IconMenuGrid вместо LazyColumn
+                    BreathingPatternList(state) { idx: Int -> 
+                        viewModel.setEvent(BreathingContract.Event.StartPattern(state.patterns[idx])) 
+                    }  // FIXME билд-фикс 09.05.2025: явный тип lambda
                 }
             }
             else -> {

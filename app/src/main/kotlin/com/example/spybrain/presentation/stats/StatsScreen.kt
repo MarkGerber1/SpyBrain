@@ -32,7 +32,6 @@ fun StatsScreen(
 ) {
     val breathing by viewModel.breathingHistory.collectAsState()
     val meditations by viewModel.meditationHistory.collectAsState()
-
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
@@ -50,6 +49,11 @@ fun StatsScreen(
         }
     }
 
+    StatsScreenContent(state = state, breathing = breathing, meditations = meditations)
+}
+
+@Composable
+fun StatsScreenContent(state: StatsContract.State, breathing: List<BreathingSession>, meditations: List<Session>) {
     Box(modifier = Modifier.fillMaxSize()) {
         if (state.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
