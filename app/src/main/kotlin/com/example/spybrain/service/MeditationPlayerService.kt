@@ -19,8 +19,9 @@ import com.example.spybrain.domain.service.IPlayerService
 @AndroidEntryPoint
 class MeditationPlayerService : MediaSessionService(), IPlayerService {
 
-    @Inject
-    lateinit var exoPlayer: ExoPlayer
+    // @Inject
+    // lateinit var exoPlayer: ExoPlayer
+    private var exoPlayer: ExoPlayer? = null
 
     private lateinit var mediaSession: MediaSession
     private lateinit var notificationManager: PlayerNotificationManager
@@ -43,7 +44,7 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
                 .createNotificationChannel(channel)
         }
         // Инициализируем MediaSession
-        mediaSession = MediaSession.Builder(this, exoPlayer).build()
+        mediaSession = MediaSession.Builder(this, getExoPlayer()).build()
 
         // Настраиваем уведомление
         notificationManager = PlayerNotificationManager.Builder(
@@ -73,7 +74,7 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
                 stopSelf()
             }
         }).build().apply {
-            setPlayer(exoPlayer)
+            setPlayer(getExoPlayer())
         }
     }
 
@@ -83,7 +84,7 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
         super.onDestroy()
         notificationManager.setPlayer(null)
         mediaSession.release()
-        exoPlayer.release()
+        getExoPlayer().release()
     }
 
     override fun play(url: String) {
@@ -107,8 +108,17 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
         // TODO реализовано: освобождение ресурсов
     }
 
-    override fun getCurrentPosition(): Long = exoPlayer.currentPosition
-    override fun getDuration(): Long = exoPlayer.duration
-    override fun seekTo(positionMs: Long) { exoPlayer.seekTo(positionMs) }
+    override fun getCurrentPosition(): Long = getExoPlayer().currentPosition
+    override fun getDuration(): Long = getExoPlayer().duration
+    override fun seekTo(positionMs: Long) { getExoPlayer().seekTo(positionMs) }
+
+    fun getExoPlayer(): ExoPlayer {
+        if (exoPlayer == null) {
+            exoPlayer = ExoPlayer.Builder(this).build().also { player ->
+                player.repeatMode = Player.REPEAT_MODE_OFF
+            }
+        }
+        return exoPlayer!!
+    }
 }
 // NOTE реализовано по аудиту: IPlayerService адаптер 
