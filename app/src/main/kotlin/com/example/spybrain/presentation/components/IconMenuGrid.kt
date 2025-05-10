@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.foundation.layout.padding
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
