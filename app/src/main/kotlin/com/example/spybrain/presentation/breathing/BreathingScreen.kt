@@ -40,7 +40,6 @@ import androidx.compose.animation.Crossfade
 import com.example.spybrain.util.UiError
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.runtime.Composable  // FIXME билд-фикс 09.05.2025
-import com.example.spybrain.presentation.breathing.BreathingContract.State as UiState  // FIXME билд-фикс 09.05.2025
 
 @Composable
 fun BreathingScreen(
@@ -143,7 +142,7 @@ fun BreathingScreen(
 // FIXME билд-фикс 09.05.2025: Composable вне контекста
 @Composable
 private fun BreathingPatternList(
-    state: UiState,
+    state: BreathingContract.State,
     onPatternClick: (Int) -> Unit
 ) {
     val patternIcons = List(state.patterns.size) { Icons.Default.SelfImprovement } // TODO: заменить на реальные иконки паттернов
@@ -156,17 +155,9 @@ private fun BreathingPatternList(
 }
 
 @Composable
-private fun BreathingPatternListWrapper(state: UiState, viewModel: BreathingViewModel) {
-    BreathingPatternList(state) { idx: Int ->
-        viewModel.setEvent(BreathingContract.Event.StartPattern(state.patterns[idx]))
-    }
-}
-
-// FIXME билд-фикс 09.05.2025: Вынесено из when в отдельную composable-функцию
-@Composable
 private fun BreathingPracticeContent(
-    state: UiState,
-    settingsState: SettingsViewModel.UiState,
+    state: BreathingContract.State,
+    settingsState: Any,
     measuring: Boolean,
     onToggleMeasuring: () -> Unit,
     bpm: Int,
