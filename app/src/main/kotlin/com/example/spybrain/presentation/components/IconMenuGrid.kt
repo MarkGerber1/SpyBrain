@@ -32,6 +32,7 @@ fun IconMenuGrid(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(4),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
