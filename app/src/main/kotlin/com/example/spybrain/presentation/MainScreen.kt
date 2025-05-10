@@ -26,21 +26,21 @@ fun MainScreen(
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            // FIXME билд-фикс 09.05.2025: replace delegated var with mutableStateOf
+            // Всегда рисуем NavGraph, чтобы navController был связан с графом
+            NavGraph(navController = navController)
+            // А поверх него — welcome экран, пока showWelcome == true
             val showWelcome = remember { mutableStateOf(true) }
             if (showWelcome.value) {
                 SmartWelcomeScreen(
-                    isOffline = false, // TODO: заменить на реальную проверку сети
+                    isOffline = false,
                     onQuickAction = { action ->
                         showWelcome.value = false
                         when (action) {
-                            "breathing" -> navController.navigate("breathing")
-                            "meditation" -> navController.navigate("meditation")
+                            "breathing"   -> navController.navigate(Screen.Breathing.route)
+                            "meditation"  -> navController.navigate(Screen.Meditation.route)
                         }
                     }
                 )
-            } else {
-                NavGraph(navController = navController)
             }
         }
     }
