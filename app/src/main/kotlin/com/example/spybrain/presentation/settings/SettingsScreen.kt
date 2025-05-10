@@ -15,7 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.rememberScrollState
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import android.widget.Toast
 import com.example.spybrain.presentation.settings.SettingsContract
 import com.example.spybrain.presentation.settings.SettingsViewModel
@@ -39,6 +39,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.padding
+import androidx.compose.foundation.lazy.arrangement
 
 object LocaleManager {
     fun setLocale(activity: Activity, language: String) {
@@ -52,7 +56,7 @@ object LocaleManager {
 
 @Composable
 fun SettingsScreen(
-    navController: NavController,
+    navController: NavHostController,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -69,164 +73,155 @@ fun SettingsScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.Start,
+        contentPadding = PaddingValues(bottom = 16.dp)
     ) {
-        // Мини-превью текущей темы
-        Text(text = "Текущая тема", style = MaterialTheme.typography.titleLarge)
-        Box(
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            Crossfade(targetState = state.theme) { themePreview ->
-                val bgRes = when (themePreview) {
-                    "water" -> R.drawable.bg_water
-                    "space" -> R.drawable.bg_space
-                    "nature" -> R.drawable.bg_nature
-                    "air" -> R.drawable.bg_air
-                    else -> R.drawable.bg_nature
+        item {
+            Text(text = "Текущая тема", style = MaterialTheme.typography.titleLarge)
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
+                Crossfade(targetState = state.theme) { themePreview ->
+                    val bgRes = when (themePreview) {
+                        "water" -> R.drawable.bg_water
+                        "space" -> R.drawable.bg_space
+                        "nature" -> R.drawable.bg_nature
+                        "air" -> R.drawable.bg_air
+                        else -> R.drawable.bg_nature
+                    }
+                    Image(
+                        painter = painterResource(id = bgRes),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize()
+                    )
+                    ThemeIcon(
+                        theme = themePreview,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(48.dp),
+                        selected = true
+                    )
                 }
-                Image(
-                    painter = painterResource(id = bgRes),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.matchParentSize()
-                )
-                ThemeIcon(
-                    theme = themePreview,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(48.dp),
-                    selected = true
-                )
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        // Выбор темы
-        Text(text = "Тема", style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(8.dp))
-        val themes = listOf("water" to "Вода", "space" to "Космос", "nature" to "Природа", "air" to "Воздух")
-        // FIXME UI/UX финал 09.05.2025: Используем IconMenuGrid для выбора темы
-        val themeIcons = listOf(
-            painterResource(id = R.drawable.ic_water),
-            painterResource(id = R.drawable.ic_space),
-            painterResource(id = R.drawable.ic_nature),
-            painterResource(id = R.drawable.ic_air)
-        ) // TODO: заменить на ImageVector, если есть
-        val themeLabels = themes.map { it.second }
-        com.example.spybrain.presentation.components.IconMenuGrid(
-            icons = List(themes.size) { Icons.Default.Star }, // FIXME билд-фикс 09.05.2025
-            labels = themeLabels,
-            onClick = { idx -> viewModel.setEvent(Event.ThemeSelected(themes[idx].first)) }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        // Фоновая музыка
-        Text(text = "Фоновая музыка", style = MaterialTheme.typography.titleLarge)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Switch(
-                checked = state.ambientEnabled,
-                onCheckedChange = { viewModel.setEvent(Event.AmbientToggled(it)) }
+        item {
+            Text(text = "Тема", style = MaterialTheme.typography.titleLarge)
+            val themes = listOf("water" to "Вода", "space" to "Космос", "nature" to "Природа", "air" to "Воздух")
+            val themeLabels = themes.map { it.second }
+            com.example.spybrain.presentation.components.IconMenuGrid(
+                icons = List(themes.size) { Icons.Default.Star },
+                labels = themeLabels,
+                onClick = { idx -> viewModel.setEvent(Event.ThemeSelected(themes[idx].first)) }
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = if (state.ambientEnabled) "Включена" else "Выключена")
         }
-        if (state.ambientEnabled) {
-            Spacer(modifier = Modifier.height(8.dp))
-            var expanded by remember { mutableStateOf(false) }
-            val currentLabel = state.availableTracks.firstOrNull { it.first == state.ambientTrack }?.second ?: "Выберите трек"
-            Box {
-                Text(
-                    text = currentLabel,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { expanded = true }
-                        .padding(8.dp)
-                        .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.small)
-                        .padding(8.dp)
+        item {
+            Text(text = "Фоновая музыка", style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Switch(
+                    checked = state.ambientEnabled,
+                    onCheckedChange = { viewModel.setEvent(Event.AmbientToggled(it)) }
                 )
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    state.availableTracks.forEach { (id, title) ->
-                        DropdownMenuItem(
-                            text = { Text(title) },
-                            onClick = {
-                                viewModel.setEvent(Event.AmbientTrackSelected(id))
-                                expanded = false
-                            }
-                        )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = if (state.ambientEnabled) "Включена" else "Выключена")
+            }
+            if (state.ambientEnabled) {
+                Spacer(modifier = Modifier.height(8.dp))
+                var expanded by remember { mutableStateOf(false) }
+                val currentLabel = state.availableTracks.firstOrNull { it.first == state.ambientTrack }?.second ?: "Выберите трек"
+                Box {
+                    Text(
+                        text = currentLabel,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expanded = true }
+                            .padding(8.dp)
+                            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.small)
+                            .padding(8.dp)
+                    )
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        state.availableTracks.forEach { (id, title) ->
+                            DropdownMenuItem(
+                                text = { Text(title) },
+                                onClick = {
+                                    viewModel.setEvent(Event.AmbientTrackSelected(id))
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        // Бьющееся сердце
-        Text(text = "Бьющееся сердце", style = MaterialTheme.typography.titleLarge)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Switch(
-                checked = state.heartbeatEnabled,
-                onCheckedChange = { viewModel.setEvent(Event.HeartbeatToggled(it)) }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = if (state.heartbeatEnabled) "Включено" else "Выключено")
+        item {
+            Text(text = "Бьющееся сердце", style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Switch(
+                    checked = state.heartbeatEnabled,
+                    onCheckedChange = { viewModel.setEvent(Event.HeartbeatToggled(it)) }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = if (state.heartbeatEnabled) "Включено" else "Выключено")
+            }
         }
-        // Голосовые подсказки
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Голосовые подсказки (TTS)", style = MaterialTheme.typography.titleLarge)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Switch(
-                checked = state.voiceHintsEnabled,
-                onCheckedChange = { viewModel.setEvent(Event.VoiceHintsToggled(it)) }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = if (state.voiceHintsEnabled) "Включено" else "Выключено")
+        item {
+            Text(text = "Голосовые подсказки (TTS)", style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Switch(
+                    checked = state.voiceHintsEnabled,
+                    onCheckedChange = { viewModel.setEvent(Event.VoiceHintsToggled(it)) }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = if (state.voiceHintsEnabled) "Включено" else "Выключено")
+            }
         }
-        // Выбор TTS-голоса
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Голос TTS", style = MaterialTheme.typography.titleLarge)
-        val voiceService = remember { VoiceAssistantService(context) }
-        val voices = remember { voiceService.getAvailableVoices() }
-        Column {
-            voices.forEach { voice ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = state.voiceId == voice.name,
+        item {
+            Text(text = "Голос TTS", style = MaterialTheme.typography.titleLarge)
+            val voiceService = remember { VoiceAssistantService(context) }
+            val voices = remember { voiceService.getAvailableVoices() }
+            Column {
+                voices.forEach { voice ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(
+                            selected = state.voiceId == voice.name,
+                            onClick = {
+                                viewModel.setEvent(SettingsContract.Event.VoiceIdSelected(voice.name))
+                                voiceService.setVoiceById(voice.name)
+                            }
+                        )
+                        Text(voiceService.getVoiceDescription(voice))
+                    }
+                }
+            }
+        }
+        item {
+            Text(text = "Язык", style = MaterialTheme.typography.titleLarge)
+            val activity = context as? Activity
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                val languages = listOf("ru" to "Русский", "en" to "English")
+                languages.forEach { (lang, label) ->
+                    OutlinedButton(
                         onClick = {
-                            viewModel.setEvent(SettingsContract.Event.VoiceIdSelected(voice.name))
-                            voiceService.setVoiceById(voice.name)
-                        }
-                    )
-                    Text(voiceService.getVoiceDescription(voice))
+                            if (activity != null) {
+                                LocaleManager.setLocale(activity, lang)
+                                activity.recreate()
+                            }
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = if (Locale.getDefault().language == lang) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent
+                        )
+                    ) {
+                        Text(label)
+                    }
                 }
             }
         }
-        // Переключатель языка
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Язык", style = MaterialTheme.typography.titleLarge)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            val languages = listOf("ru" to "Русский", "en" to "English")
-            languages.forEach { (lang, label) ->
-                OutlinedButton(
-                    onClick = {
-                        if (activity != null) {
-                            LocaleManager.setLocale(activity, lang)
-                            activity.recreate()
-                        }
-                    },
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (Locale.getDefault().language == lang) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent
-                    )
-                ) {
-                    Text(label)
-                }
-            }
-        }
-        // Конец блока голосовых подсказок
     }
 }
 
