@@ -1,61 +1,28 @@
-package com.example.spybrain.presentation.breathing.patternbuilder
-
-import android.widget.Toast
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import com.example.spybrain.util.UiError
+import androidx.navigation.NavController
 
 @Composable
 fun EditCustomBreathingPatternScreen(
-    patternId: String,
-    navController: NavHostController,
-    viewModel: BreathingPatternBuilderViewModel = hiltViewModel()
+    navController: NavController,
+    patternId: String
 ) {
-    val context = LocalContext.current
-    LaunchedEffect(patternId) {
-        viewModel.setEvent(BreathingPatternBuilderContract.Event.LoadPattern(patternId))
-    }
+    val viewModel = hiltViewModel<BreathingPatternBuilderViewModel>()
+    val state by viewModel.state.collectAsState()
 
-    val state by viewModel.uiState.collectAsState()
-    // handle errors
-    LaunchedEffect(viewModel.effect) {
-        viewModel.effect.collect { effect ->
-            when (effect) {
-                is BreathingPatternBuilderContract.Effect.ShowError ->
-                    Toast.makeText(context, when(val err = effect.error) {
-                        is UiError.Custom -> err.message
-                        is UiError.NetworkError -> "Ошибка сети"
-                        is UiError.ValidationError -> "Ошибка валидации"
-                        is UiError.UnknownError -> "Неизвестная ошибка"
-                        else -> "Ошибка"
-                    }, Toast.LENGTH_SHORT).show()
-                is BreathingPatternBuilderContract.Effect.ShowSuccessMessage -> {
-                    // ...
-                }
-                else -> {}
+    viewModel.effect.collect { effect ->
+        when (effect) {
+            is BreathingPatternBuilderContract.Effect.ShowError ->
+                Toast.makeText(context, when(val err = effect.error) {
+                    is UiError.Custom -> err.message
+                    is UiError.NetworkError -> "Ошибка сети"
+                    is UiError.ValidationError -> "Ошибка валидации"
+                    is UiError.UnknownError -> "Неизвестная ошибка"
+                    else -> "Ошибка"
+                }, Toast.LENGTH_SHORT).show()
+            is BreathingPatternBuilderContract.Effect.ShowSuccessMessage -> {
+                // ...
             }
+            else -> {}
         }
     }
 

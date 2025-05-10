@@ -25,9 +25,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.spybrain.util.UiError
+import androidx.navigation.NavController
 
 @Composable
 fun BreathingPatternBuilderScreen(
+    navController: NavController,
     viewModel: BreathingPatternBuilderViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
