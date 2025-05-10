@@ -43,6 +43,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.padding
 import androidx.compose.foundation.lazy.arrangement
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 
 object LocaleManager {
     fun setLocale(activity: Activity, language: String) {
