@@ -40,7 +40,7 @@ import androidx.compose.animation.Crossfade
 import com.example.spybrain.util.UiError
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.runtime.Composable  // FIXME билд-фикс 09.05.2025
-import com.example.spybrain.presentation.settings.SettingsViewModel.UiState  // FIXME билд-фикс 09.05.2025
+import com.example.spybrain.presentation.settings.SettingsContract.State as SettingsState  // FIXME билд-фикс 09.05.2025
 
 @Composable
 fun BreathingScreen(
@@ -51,7 +51,7 @@ fun BreathingScreen(
     // TODO Composable-контекст: убедиться, что все вызовы @Composable только внутри @Composable-функций // FIXME билд-фикс 09.05.2025
     // Settings for voice enabled
     val settingsViewModel: SettingsViewModel = hiltViewModel()
-    val settingsState by settingsViewModel.uiState.collectAsState()
+    val settingsState by settingsViewModel.uiState.collectAsState() as State<SettingsState>
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     // Сервис для голосовых подсказок
@@ -82,7 +82,7 @@ fun BreathingScreen(
                 }
                 is BreathingContract.Effect.Speak -> {
                     // воспроизведение речи через сервис, если включено
-                    if (settingsState.voiceHintsEnabled) {
+                    if (settingsState.value.voiceHintsEnabled) {
                         voiceService.speak(effect.text)
                     }
                 }
@@ -158,13 +158,13 @@ private fun BreathingPatternList(
 @Composable
 private fun BreathingPracticeContent(
     state: BreathingContract.State,
-    settingsState: UiState,
+    settingsState: SettingsState,
     measuring: Boolean,
     onToggleMeasuring: () -> Unit,
     bpm: Int,
     viewModel: BreathingViewModel
 ) {
-    Crossfade(targetState = settingsState.theme) { theme ->
+    Crossfade(targetState = settingsState.value.theme) { theme ->
         val bgRes = when (theme) {
             "water" -> com.example.spybrain.R.drawable.bg_water
             "space" -> com.example.spybrain.R.drawable.bg_space
