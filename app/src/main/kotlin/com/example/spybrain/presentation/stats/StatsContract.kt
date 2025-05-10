@@ -1,0 +1,27 @@
+package com.example.spybrain.presentation.stats
+
+import com.example.spybrain.domain.model.Session
+import com.example.spybrain.domain.model.Stats
+import com.example.spybrain.domain.model.BreathingSession
+import com.example.spybrain.presentation.base.UiEffect
+import com.example.spybrain.presentation.base.UiEvent
+import com.example.spybrain.presentation.base.UiState
+import com.example.spybrain.util.UiError
+
+object StatsContract {
+    data class State(
+        val isLoading: Boolean = false,
+        val stats: Stats? = null,
+        val sessionHistory: List<Session> = emptyList(),
+        val breathingHistory: List<BreathingSession> = emptyList(),
+        val error: UiError? = null
+    ) : UiState
+
+    sealed class Event : UiEvent {
+        object LoadStatsAndHistory : Event()
+    }
+
+    sealed class Effect : UiEffect {
+        data class ShowError(val error: UiError) : Effect()
+    }
+} 

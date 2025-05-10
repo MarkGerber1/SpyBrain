@@ -1,0 +1,4 @@
+cd C:\Users\1\AndroidStudioProjects\SpyBrain
+.\gradlew.bat :app:testDebugUnitTest --info 
+echo "Тестовая команда" 
+echo "Hello from Cursor!" 

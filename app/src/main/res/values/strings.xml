@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TODO: Провести полную ревизию строк UI, ошибок и сообщений. Вынести все хардкодные строки в strings.xml. Добавить поддержку локализации ошибок и сообщений. Проверить наличие строк для всех экранов и функций. Синхронизировать ключи между локалями. -->
+<resources>
+    <string name="app_name">SpyBrain</string>
+    
+    <!-- Navigation -->
+    <string name="home">Home</string>
+    <string name="meditation">Медитация</string>
+    <string name="categories">Категории</string>
+    <string name="achievements">Достижения</string>
+    <string name="settings">Настройки</string>
+    
+    <!-- Meditation Categories -->
+    <string name="category_mindfulness">Внимательность</string>
+    <string name="category_sleep">Сон</string>
+    <string name="category_anxiety">Тревожность</string>
+    <string name="category_focus">Фокус</string>
+    
+    <!-- Common -->
+    <string name="start">Старт</string>
+    <string name="pause">Пауза</string>
+    <string name="resume">Продолжить</string>
+    <string name="stop">Стоп</string>
+    <string name="back">Назад</string>
+    
+    <!-- Errors -->
+    <string name="error_loading">Ошибка загрузки</string>
+    <string name="error_retry">Повторить</string>
+    
+    <!-- New resources -->
+    <string name="play">Воспроизвести</string>
+    <string name="duration_format">Длительность: %d мин</string>
+    <string name="notification_channel_name">Воспроизведение медитаций</string>
+    <string name="notification_channel_description">Уведомления о воспроизведении медитаций</string>
+    <string name="statistics">Статистика</string>
+    <string name="breathing">Дыхание</string>
+
+    <!-- Bottom Nav -->
+    <string name="bottom_nav_meditation">Медитация</string>
+    <string name="bottom_nav_breathing">Дыхание</string>
+    <string name="bottom_nav_stats">Статистика</string>
+    <string name="bottom_nav_settings">Настройки</string>
+
+    <!-- Meditation Screen -->
+    <string name="meditation_error_loading">Ошибка загрузки медитаций</string>
+    <string name="meditation_unknown_state">Неизвестное состояние</string>
+    <string name="meditation_play">Воспр.</string>
+    <string name="meditation_pause">Пауза</string>
+    <string name="meditation_stop">Стоп</string>
+
+    <!-- New strings from MeditationScreen.kt -->
+    <string name="meditation_background_image_description">Фоновое изображение</string>
+    <string name="meditation_theme_icon_description">Иконка темы</string>
+    <string name="meditation_start_announcement">Начинаем медитацию...</string>
+    <string name="meditation_end_announcement">Молодец!</string>
+
+    <!-- Breathing Screen -->
+    <string name="breathing_inhale">Вдох</string>
+    <string name="breathing_exhale">Выдох</string>
+    <string name="breathing_hold">Задержка</string>
+    <string name="breathing_create_pattern">Создать шаблон</string>
+    <string name="breathing_stop_measuring">Остановить замеры</string>
+    <string name="breathing_measure_pulse">📷 Измерить пульс</string>
+    <string name="breathing_advice_low_bpm">Слишком низкий пульс – сделайте зарядку</string>
+    <string name="breathing_advice_normal_bpm">Пульс нормальный — продолжайте дышать спокойно</string>
+    <string name="breathing_advice_high_bpm">Пульс немного повышен — попробуйте удлинить выдох</string>
+    <string name="breathing_advice_critical_bpm">Пульс высокий — замедлите дыхание или сделайте паузу</string>
+    <string name="breathing_phase_rest">Отдых...</string>
+    <string name="breathing_voice_button">Голос</string>
+
+    <!-- Errors (adding specific ones found) -->
+    <string name="error_network">Ошибка сети</string>
+    <string name="error_validation">Ошибка валидации</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
+    <string name="error_general">Ошибка</string>
+
+    <!-- New strings from StatsScreen.kt -->
+    <string name="stats_title">Общая статистика</string>
+    <string name="stats_total_meditation_minutes">Медитация (мин)</string>
+    <string name="stats_total_breathing_minutes">Дыхание (мин)</string>
+    <string name="stats_completed_meditation_sessions">Сессий медитации</string>
+    <string name="stats_completed_breathing_sessions">Сессий дыхания</string>
+    <string name="stats_current_streak_days">Текущая серия (дн.)</string>
+    <string name="stats_longest_streak_days">Макс. серия (дн.)</string>
+    <string name="stats_breathing_history_title">История дыхательных сессий</string>
+    <string name="stats_meditation_history_title">История медитаций</string>
+    <string name="duration_seconds_format">%d сек</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_theme">Тема приложения</string>
+    <string name="settings_theme_system">Системная</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Темная</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_language_system">Системный</string>
+    <string name="settings_language_ru">Русский</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_meditation_options">Медитация</string>
+    <string name="settings_background_music">Фоновая музыка</string>
+    <string name="settings_voice_guidance">Голосовые подсказки</string>
+    <string name="settings_breathing_options">Дыхание</string>
+    <string name="settings_vibration">Вибрация</string>
+
+    <!-- Profile Screen -->
+    <string name="total_meditation_time">Общее время медитации</string>
+    <string name="completed_sessions">Завершенные сессии</string>
+    <string name="streak">Текущая серия</string>
+    <string name="join_date">Дата регистрации</string>
+    <string name="edit_profile">Редактировать профиль</string>
+
+    <!-- Screen names -->
+    <string name="screen_splash">Splash</string>
+    <string name="screen_main">Main</string>
+    <string name="screen_meditation">Meditation</string>
+    <string name="screen_breathing">Breathing</string>
+    <string name="screen_stats">Stats</string>
+    <string name="screen_settings">Settings</string>
+</resources> 

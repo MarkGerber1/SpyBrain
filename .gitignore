@@ -1,0 +1,46 @@
+# Android/IntelliJ
+.idea/
+*.iml
+.gradle/
+build/
+/local.properties
+.DS_Store
+*.apk
+*.ap_*
+*.dex
+*.class
+*.log
+*.keystore
+captures/
+output.json
+.cxx/
+*.hprof
+# OS
+Thumbs.db
+Desktop.ini
+# Kotlin/Java
+*.jar
+*.war
+*.ear
+# Android Studio
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+/.idea/gradle.xml
+/.idea/sonarlint
+# Others
+*.swp
+*.swo
+*.tmp
+*.orig
+*.bak
+*.rej
+*.sublime-workspace
+*.sublime-project
+# NDK
+obj/
+# VS Code
+.vscode/ 

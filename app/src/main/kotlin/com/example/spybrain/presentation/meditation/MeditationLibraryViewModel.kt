@@ -1,0 +1,60 @@
+package com.example.spybrain.presentation.meditation
+
+import androidx.lifecycle.viewModelScope
+import com.example.spybrain.domain.model.MeditationProgram
+import com.example.spybrain.domain.usecase.meditation.GetMeditationProgramsUseCase
+import com.example.spybrain.presentation.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import com.example.spybrain.voice.AiMentorService
+import javax.inject.Inject
+import com.example.spybrain.domain.error.ErrorHandler // FIXME билд-фикс 09.05.2025
+import com.example.spybrain.domain.service.IPlayerService
+import com.example.spybrain.domain.service.IAiMentor
+import com.example.spybrain.util.UiError
+
+@HiltViewModel
+class MeditationLibraryViewModel @Inject constructor(
+    private val getProgramsUseCase: GetMeditationProgramsUseCase,
+    private val playerService: IPlayerService, // TODO реализовано: внедрение через абстракцию
+    private val aiMentor: IAiMentor // TODO реализовано: внедрение через абстракцию
+) : BaseViewModel<MeditationLibraryContract.Event, MeditationLibraryContract.State, MeditationLibraryContract.Effect>() { // TODO: Добавить все необходимые юнит-тесты для ViewModel
+
+    init {
+        setEvent(MeditationLibraryContract.Event.LoadPrograms)
+    }
+
+    override fun createInitialState(): MeditationLibraryContract.State = MeditationLibraryContract.State()
+
+    override fun handleEvent(event: MeditationLibraryContract.Event) {
+        when (event) {
+            MeditationLibraryContract.Event.LoadPrograms -> loadPrograms()
+        }
+    }
+
+    private fun loadPrograms() {
+        viewModelScope.launch {
+            getProgramsUseCase()
+                .onStart { setState { copy(error = null) } }
+                .catch { e -> setEffect { MeditationLibraryContract.Effect.ShowError(ErrorHandler.mapToUiError(ErrorHandler.handle(e))) } }
+                .collect { programs ->
+                    setState { copy(programs = programs) }
+                }
+        }
+    }
+
+    fun playProgram(program: MeditationProgram) {
+        playerService.stop()
+        playerService.play(program.audioUrl)
+        aiMentor.giveMeditationAdvice()
+    }
+
+    override fun onCleared() {
+        playerService.release()
+        super.onCleared()
+    }
+} 

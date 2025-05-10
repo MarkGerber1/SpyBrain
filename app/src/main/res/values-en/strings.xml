@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SpyBrain</string>
+
+    <!-- Bottom Nav -->
+    <string name="bottom_nav_meditation">Meditation</string>
+    <string name="bottom_nav_breathing">Breathing</string>
+    <string name="bottom_nav_stats">Statistics</string>
+    <string name="bottom_nav_settings">Settings</string>
+
+    <!-- Meditation Screen -->
+    <string name="meditation_error_loading">Error loading meditations</string>
+    <string name="meditation_unknown_state">Unknown state</string>
+    <string name="meditation_play">Play</string>
+    <string name="meditation_pause">Pause</string>
+    <string name="meditation_stop">Stop</string>
+    <string name="duration_format">Duration: %d min</string>
+
+    <!-- New strings from MeditationScreen.kt -->
+    <string name="meditation_background_image_description">Background image</string>
+    <string name="meditation_theme_icon_description">Theme icon</string>
+    <string name="meditation_start_announcement">Starting meditation...</string>
+    <string name="meditation_end_announcement">Well done!</string>
+
+    <!-- Breathing Screen -->
+    <string name="breathing_inhale">Inhale</string>
+    <string name="breathing_exhale">Exhale</string>
+    <string name="breathing_hold">Hold</string>
+    <string name="breathing_create_pattern">Create pattern</string>
+    <string name="breathing_stop_measuring">Stop measuring</string>
+    <string name="breathing_measure_pulse">📷 Measure pulse</string>
+    <string name="breathing_advice_low_bpm">Heart rate too low – do some exercise</string>
+    <string name="breathing_advice_normal_bpm">Heart rate is normal — continue breathing calmly</string>
+    <string name="breathing_advice_high_bpm">Heart rate is slightly elevated — try lengthening your exhale</string>
+    <string name="breathing_advice_critical_bpm">Heart rate is high — slow down your breathing or take a break</string>
+    <string name="breathing_phase_rest">Rest...</string>
+    <string name="breathing_voice_button">Voice</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme">App theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">System</string>
+    <string name="settings_language_ru">Русский</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_meditation_options">Meditation</string>
+    <string name="settings_background_music">Background music</string>
+    <string name="settings_voice_guidance">Voice guidance</string>
+    <string name="settings_breathing_options">Breathing</string>
+    <string name="settings_vibration">Vibration</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Meditation playback</string>
+    <string name="notification_channel_description">Notifications for meditation playback</string>
+
+    <!-- Старые строки (возможно, где-то используются) -->
+    <string name="home">Home</string>
+    <string name="meditation">Meditation</string> <!-- Дублирует bottom_nav? -->
+    <string name="categories">Categories</string>
+    <string name="achievements">Achievements</string>
+    <string name="settings">Settings</string> <!-- Дублирует bottom_nav? -->
+    <string name="statistics">Statistics</string> <!-- Дублирует bottom_nav? -->
+    <string name="breathing">Breathing</string> <!-- Дублирует bottom_nav? -->
+    <string name="category_mindfulness">Mindfulness</string>
+    <string name="category_sleep">Sleep</string>
+    <string name="category_anxiety">Anxiety Relief</string>
+    <string name="category_focus">Focus</string>
+    <string name="start">Start</string>
+    <string name="pause">Pause</string> <!-- Дублирует meditation_pause? -->
+    <string name="resume">Resume</string>
+    <string name="stop">Stop</string> <!-- Дублирует meditation_stop? -->
+    <string name="back">Back</string>
+    <string name="error_loading">Error loading content</string> <!-- Дублирует meditation_error_loading? -->
+    <string name="error_retry">Retry</string>
+    <string name="play">Play</string> <!-- Дублирует meditation_play? -->
+
+    <!-- TODO: Провести ревизию строк, удалить дубликаты и устаревшие строки. Синхронизировать ключи между локалями. -->
+    <!-- Added missing translations -->
+    <string name="total_meditation_time">Total meditation time</string>
+    <string name="completed_sessions">Completed sessions</string>
+    <string name="streak">Current streak</string>
+    <string name="join_date">Join date</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="screen_splash">Splash</string>
+    <string name="screen_main">Main</string>
+    <string name="screen_meditation">Meditation</string>
+    <string name="screen_breathing">Breathing</string>
+    <string name="screen_stats">Stats</string>
+    <string name="screen_settings">Settings</string>
+
+    <!-- Errors (adding specific ones found) -->
+    <string name="error_network">Network error</string>
+    <string name="error_validation">Validation error</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_general">Error</string>
+
+    <!-- New strings from StatsScreen.kt -->
+    <string name="stats_title">Overall Statistics</string>
+    <string name="stats_total_meditation_minutes">Meditation (min)</string>
+    <string name="stats_total_breathing_minutes">Breathing (min)</string>
+    <string name="stats_completed_meditation_sessions">Completed meditation sessions</string>
+    <string name="stats_completed_breathing_sessions">Completed breathing sessions</string>
+    <string name="stats_current_streak_days">Current streak (days)</string>
+    <string name="stats_longest_streak_days">Longest streak (days)</string>
+    <string name="stats_breathing_history_title">Breathing Session History</string>
+    <string name="stats_meditation_history_title">Meditation History</string>
+    <string name="duration_seconds_format">%d sec</string>
+
+</resources> 
