@@ -109,7 +109,8 @@ fun SettingsScreen(
             com.example.spybrain.presentation.components.IconMenuGrid(
                 icons = List(themes.size) { Icons.Default.Star },
                 labels = themeLabels,
-                onClick = { idx -> viewModel.setEvent(Event.ThemeSelected(themes[idx].first)) }
+                onClick = { idx -> viewModel.setEvent(Event.ThemeSelected(themes[idx].first)) },
+                modifier = Modifier.fillMaxWidth().height(200.dp)
             )
         }
         item {

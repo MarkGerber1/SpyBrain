@@ -29,11 +29,12 @@ fun IconMenuGrid(
     labels: List<String>,
     subMenus: List<List<Pair<ImageVector, String>>>? = null,
     onClick: (Int) -> Unit = {},
-    onSubClick: (Int, Int) -> Unit = { _, _ -> }
+    onSubClick: (Int, Int) -> Unit = { _, _ -> },
+    modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(4),
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
