@@ -45,9 +45,7 @@ fun NavGraph(navController: NavHostController) {
         composable(
             route = "${Screen.EditCustomPattern.route}",
             arguments = listOf(
-                androidx.navigation.compose.navArgument("patternId") {
-                    type = androidx.navigation.NavType.StringType
-                }
+                navArgument("patternId") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val patternId = backStackEntry.arguments?.getString("patternId") ?: return@composable
