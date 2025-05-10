@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.spybrain.presentation.navigation.BottomNavigationBar
 import com.example.spybrain.presentation.navigation.NavGraph
+import com.example.spybrain.presentation.navigation.Screen
 import com.example.spybrain.presentation.components.SmartWelcomeScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
