@@ -49,18 +49,20 @@ fun StatsScreen(
         }
     }
 
-    StatsScreenContent(state = state, breathing = breathing, meditations = meditations)
-}
-
-@Composable
-fun StatsScreenContent(state: StatsContract.State, breathing: List<BreathingSession>, meditations: List<Session>) {
     Box(modifier = Modifier.fillMaxSize()) {
         if (state.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
                 CircularProgressIndicator()
             }
         } else {
-            StatsContent(state = state, breathing = breathing, meditations = meditations)
+            StatsContent(
+                state = state,
+                breathing = breathing,
+                meditations = meditations
+            )
         }
     }
 }

@@ -9,23 +9,16 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.navArgument
 import com.example.spybrain.presentation.settings.SettingsScreen
 import com.example.spybrain.presentation.meditation.MeditationScreen
-import com.example.spybrain.presentation.meditation.MeditationViewModel
 import com.example.spybrain.presentation.breathing.BreathingScreen
 import com.example.spybrain.presentation.breathing.patternbuilder.BreathingPatternBuilderScreen
 import com.example.spybrain.presentation.stats.StatsScreen
-import com.example.spybrain.presentation.stats.StatsViewModel
 import com.example.spybrain.presentation.splash.SplashScreen
-import com.example.spybrain.presentation.settings.SettingsViewModel
-import com.example.spybrain.presentation.profile.ProfileViewModel
 import com.example.spybrain.presentation.meditation.MeditationLibraryScreen
 import com.example.spybrain.presentation.profile.ProfileScreen
 import com.example.spybrain.presentation.biosync.BioSyncScreen
 import com.example.spybrain.presentation.breathing.patternbuilder.EditCustomBreathingPatternScreen
-import androidx.navigation.compose.NavHost            // FIXME билд-фикс 09.05.2025
-import androidx.navigation.compose.composable        // FIXME билд-фикс 09.05.2025
-import androidx.navigation.compose.navArgument       // FIXME билд-фикс 09.05.2025
-import androidx.navigation.NavType                   // FIXME билд-фикс 09.05.2025
-import com.example.spybrain.presentation.stats.StatsScreen // FIXME билд-фикс 09.05.2025
+import com.example.spybrain.presentation.settings.SettingsViewModel
+import com.example.spybrain.presentation.profile.ProfileViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -50,11 +43,13 @@ fun NavGraph(navController: NavHostController) {
             BreathingPatternBuilderScreen()
         }
         composable(
-            route = com.example.spybrain.presentation.navigation.Screen.EditCustomPattern.route,
-            arguments = listOf(navArgument("patternId") { type = NavType.StringType })
+            route = "${Screen.EditCustomPattern.route}",
+            arguments = listOf(
+                navArgument("patternId") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val patternId = backStackEntry.arguments?.getString("patternId") ?: return@composable
-            com.example.spybrain.presentation.breathing.patternbuilder.EditCustomBreathingPatternScreen(patternId, navController)
+            EditCustomBreathingPatternScreen(patternId, navController)
         }
         composable(Screen.CustomPatterns.route) {
             BreathingPatternBuilderScreen()

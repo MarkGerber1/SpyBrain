@@ -101,21 +101,28 @@ fun BreathingScreen(
             }
             state.currentPattern == null -> {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Button(
                         onClick = { navController.navigate(Screen.PatternBuilder.route) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = stringResource(id = com.example.spybrain.R.string.breathing_create_pattern)) // TODO: Заменить на реальный ассет иконки
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(id = com.example.spybrain.R.string.breathing_create_pattern)
+                        )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(stringResource(id = com.example.spybrain.R.string.breathing_create_pattern))
                     }
-                    // FIXME UI/UX финал 09.05.2025: Используем IconMenuGrid вместо LazyColumn
-                    BreathingPatternList(state) { idx: Int -> 
-                        viewModel.setEvent(BreathingContract.Event.StartPattern(state.patterns[idx])) 
-                    }  // FIXME билд-фикс 09.05.2025: явный тип lambda
+                    // FIXME билд-фикс 09.05.2025: явный тип лямбды, внутри @Composable
+                    BreathingPatternList(state) { idx: Int ->
+                        viewModel.setEvent(
+                            BreathingContract.Event.StartPattern(state.patterns[idx])
+                        )
+                    }
                 }
             }
             else -> {
@@ -146,6 +153,13 @@ private fun BreathingPatternList(
         labels = patternLabels,
         onClick = onPatternClick
     )
+}
+
+@Composable
+private fun BreathingPatternListWrapper(state: UiState, viewModel: BreathingViewModel) {
+    BreathingPatternList(state) { idx: Int ->
+        viewModel.setEvent(BreathingContract.Event.StartPattern(state.patterns[idx]))
+    }
 }
 
 // FIXME билд-фикс 09.05.2025: Вынесено из when в отдельную composable-функцию
