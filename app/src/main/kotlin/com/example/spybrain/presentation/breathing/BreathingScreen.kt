@@ -40,6 +40,7 @@ import androidx.compose.animation.Crossfade
 import com.example.spybrain.util.UiError
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.runtime.Composable  // FIXME билд-фикс 09.05.2025
+import com.example.spybrain.presentation.settings.SettingsViewModel.UiState  // FIXME билд-фикс 09.05.2025
 
 @Composable
 fun BreathingScreen(
@@ -157,7 +158,7 @@ private fun BreathingPatternList(
 @Composable
 private fun BreathingPracticeContent(
     state: BreathingContract.State,
-    settingsState: Any,
+    settingsState: UiState,
     measuring: Boolean,
     onToggleMeasuring: () -> Unit,
     bpm: Int,
