@@ -1,3 +1,5 @@
+package com.example.spybrain.presentation.breathing.patternbuilder
+
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
