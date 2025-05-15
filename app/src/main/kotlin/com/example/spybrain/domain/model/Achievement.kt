@@ -13,7 +13,7 @@ data class Achievement(
     val type: AchievementType = AchievementType.GENERAL,
     val points: Int = 0,
     val isUnlocked: Boolean = false,
-    val progress: Int = 0,
+    val progress: Float = 0f,
     val requiredValue: Int = 100,
     val unlockedAt: Long? = null
 ) : Serializable 

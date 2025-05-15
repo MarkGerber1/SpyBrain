@@ -14,4 +14,8 @@ data class Schedule(
     val notificationEnabled: Boolean = true,
     val itemId: String? = null,
     val reminders: List<Reminder> = emptyList()
-) 
+) {
+    companion object {
+        const val WEEKDAYS = 0b1111111 // Все дни недели (пн-вс)
+    }
+} 

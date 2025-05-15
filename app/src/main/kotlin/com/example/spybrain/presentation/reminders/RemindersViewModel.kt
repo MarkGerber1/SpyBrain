@@ -6,6 +6,7 @@ import com.example.spybrain.domain.model.Reminder
 import com.example.spybrain.domain.model.Schedule
 import com.example.spybrain.domain.model.ScheduleType
 import com.example.spybrain.domain.repository.ReminderRepository
+import com.example.spybrain.util.WEEKDAYS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -27,10 +28,6 @@ class RemindersViewModel @Inject constructor(
     
     val schedules = reminderRepository.getAllSchedules()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-    
-    companion object {
-        val WEEKDAYS = listOf("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
-    }
     
     /**
      * Добавляет новое напоминание
@@ -74,7 +71,7 @@ class RemindersViewModel @Inject constructor(
                 startTime = LocalTime.of(8, 0),
                 endTime = LocalTime.of(9, 0),
                 type = ScheduleType.CUSTOM,
-                daysOfWeek = Schedule.WEEKDAYS
+                daysOfWeek = WEEKDAYS.indices.fold(0) { acc, i -> acc or (1 shl i) }
             )
             reminderRepository.addSchedule(schedule)
         }
