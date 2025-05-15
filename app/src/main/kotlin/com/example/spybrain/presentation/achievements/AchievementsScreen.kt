@@ -31,7 +31,7 @@ import com.example.spybrain.domain.model.AchievementType
 import com.example.spybrain.presentation.theme.DynamicBackground
 import java.time.format.DateTimeFormatter
 import android.widget.Toast
-import com.example.spybrain.domain.model.UiError
+import com.example.spybrain.util.UiError
 
 @Composable
 fun AchievementsScreen(
