@@ -31,6 +31,7 @@ import com.example.spybrain.domain.model.AchievementType
 import com.example.spybrain.presentation.theme.DynamicBackground
 import java.time.format.DateTimeFormatter
 import android.widget.Toast
+import com.example.spybrain.domain.model.UiError
 
 @Composable
 fun AchievementsScreen(
@@ -51,7 +52,13 @@ fun AchievementsScreen(
                     Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                 }
                 is AchievementsContract.Effect.ShowError -> {
-                    Toast.makeText(context, effect.error.message, Toast.LENGTH_SHORT).show()
+                    val errorMessage = when (val err = effect.error) {
+                        is UiError.Custom -> err.message
+                        is UiError.NetworkError -> "Ошибка сети"
+                        is UiError.ValidationError -> "Ошибка валидации"
+                        is UiError.UnknownError -> "Неизвестная ошибка"
+                    }
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -539,7 +546,7 @@ fun AchievementDetailsDialog(
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     Text(
-                        text = "Получено: ${achievement.unlockedAt.format(dateFormatter)}",
+                        text = "Получено: ${achievement.unlockedAt}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
