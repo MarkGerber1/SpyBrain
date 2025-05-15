@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.SelfImprovement // TODO реализовано: Импорт новой иконки для медитации
 import androidx.compose.material.icons.filled.Air // TODO реализовано: Импорт новой иконки для дыхания
 import androidx.compose.material.icons.filled.BarChart // TODO: Можно рассмотреть для статистики, но Timeline тоже подходит
+import androidx.compose.material.icons.filled.Notifications
 
 // TODO реализовано: Создание централизованной структуры ScreenMetadata
 data class ScreenMetadata(
@@ -35,6 +36,7 @@ val bottomNavItems = listOf(
     ScreenMetadata(Screen.Meditation.route, Icons.Default.SelfImprovement, R.string.bottom_nav_meditation), // TODO реализовано: Заменена иконка медитации
     ScreenMetadata(Screen.Breathing.route, Icons.Default.Air, R.string.bottom_nav_breathing), // TODO реализовано: Заменена иконка дыхания
     ScreenMetadata(Screen.Stats.route, Icons.Default.Timeline, R.string.bottom_nav_stats), // NOTE реализовано по аудиту: Оставлена подходящая иконка статистики
+    ScreenMetadata(Screen.Reminders.route, Icons.Default.Notifications, R.string.bottom_nav_reminders), // Добавлен экран напоминаний
     ScreenMetadata(Screen.Settings.route, Icons.Default.Settings, R.string.bottom_nav_settings) // NOTE реализовано по аудиту: Оставлена подходящая иконка настроек
 )
 
@@ -56,4 +58,5 @@ sealed class Screen(
     object MeditationLibrary : Screen("meditation_library")
     object Achievements : Screen("achievements")
     object BioSync : Screen("biosync")
+    object Reminders : Screen("reminders")
 } 

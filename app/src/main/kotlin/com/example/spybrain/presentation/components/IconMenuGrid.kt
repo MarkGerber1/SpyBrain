@@ -80,6 +80,7 @@ fun AnimatedMenuIcon(icon: ImageVector, label: String, onClick: () -> Unit) {
 }
 
 // FIXME UI/UX финал 09.05.2025
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpandableMenu(
     title: String,

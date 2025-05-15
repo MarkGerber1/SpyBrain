@@ -40,6 +40,7 @@
     <string name="bottom_nav_breathing">Дыхание</string>
     <string name="bottom_nav_stats">Статистика</string>
     <string name="bottom_nav_settings">Настройки</string>
+    <string name="bottom_nav_reminders">Напоминания</string>
 
     <!-- Meditation Screen -->
     <string name="meditation_error_loading">Ошибка загрузки медитаций</string>

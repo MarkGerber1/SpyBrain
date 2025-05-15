@@ -14,6 +14,7 @@ import com.example.spybrain.presentation.biosync.BioSyncScreen
 import com.example.spybrain.presentation.meditation.MeditationLibraryScreen
 import com.example.spybrain.presentation.meditation.MeditationScreen
 import com.example.spybrain.presentation.profile.ProfileScreen
+import com.example.spybrain.presentation.reminders.RemindersScreen
 import com.example.spybrain.presentation.settings.SettingsScreen
 import com.example.spybrain.presentation.stats.StatsScreen
 import com.example.spybrain.presentation.splash.SplashScreen
@@ -60,6 +61,10 @@ fun NavGraph(navController: NavHostController) {
 
         composable(Screen.BioSync.route) {
             BioSyncScreen()
+        }
+        
+        composable(Screen.Reminders.route) {
+            RemindersScreen()
         }
 
         composable(Screen.Settings.route) {

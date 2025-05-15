@@ -29,13 +29,16 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-// FIXME билд-фикс 09.05.2025: временно убраны TooltipArea и Tooltip для совместимости
-// import androidx.compose.material3.TooltipArea
-// import androidx.compose.material3.Tooltip
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
+import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.platform.LocalConfiguration
 
 // FIXME: Дублирование маршрутов и иконок с Screen.kt. Использовать централизованную структуру ScreenMetadata для навигации.
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     val items = bottomNavItems
@@ -53,32 +56,42 @@ fun BottomNavigationBar(navController: NavHostController) {
             modifier = if (isLandscape) Modifier.padding(horizontal = 48.dp) else Modifier
         ) {
             items.forEach { screenMetadata ->
-                // TODO вернуть Tooltip после обновления Compose
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            screenMetadata.icon,
-                            contentDescription = stringResource(id = screenMetadata.labelResId),
-                            modifier = Modifier.size(28.dp)
-                        )
+                val tooltipState = rememberTooltipState()
+                TooltipBox(
+                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                    tooltip = {
+                        PlainTooltip {
+                            Text(stringResource(id = screenMetadata.labelResId))
+                        }
                     },
-                    label = {
-                        Text(
-                            text = stringResource(id = screenMetadata.labelResId),
-                            maxLines = 1,
-                            modifier = Modifier.weight(1f).padding(top = 2.dp)
-                        )
-                    },
-                    selected = currentRoute == screenMetadata.route,
-                    onClick = {
-                        if (currentRoute != screenMetadata.route) {
-                            navController.navigate(screenMetadata.route) {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
+                    state = tooltipState
+                ) {
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                screenMetadata.icon,
+                                contentDescription = stringResource(id = screenMetadata.labelResId),
+                                modifier = Modifier.size(28.dp)
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(id = screenMetadata.labelResId),
+                                maxLines = 1,
+                                modifier = Modifier.weight(1f).padding(top = 2.dp)
+                            )
+                        },
+                        selected = currentRoute == screenMetadata.route,
+                        onClick = {
+                            if (currentRoute != screenMetadata.route) {
+                                navController.navigate(screenMetadata.route) {
+                                    popUpTo(navController.graph.startDestinationId)
+                                    launchSingleTop = true
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
