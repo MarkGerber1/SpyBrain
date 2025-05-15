@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
@@ -19,9 +20,14 @@ import com.example.spybrain.domain.service.IPlayerService
 @AndroidEntryPoint
 class MeditationPlayerService : MediaSessionService(), IPlayerService {
 
-    // @Inject
-    // lateinit var exoPlayer: ExoPlayer
-    private var exoPlayer: ExoPlayer? = null
+    // Инициализируем ExoPlayer с использованием lazy делегата, 
+    // чтобы инициализировать его при первом обращении и избежать проблем с null
+    private val exoPlayer: ExoPlayer by lazy { 
+        ExoPlayer.Builder(applicationContext).build().also { player ->
+            player.repeatMode = Player.REPEAT_MODE_OFF
+            player.prepare()
+        }
+    }
 
     private lateinit var mediaSession: MediaSession
     private lateinit var notificationManager: PlayerNotificationManager
@@ -44,7 +50,7 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
                 .createNotificationChannel(channel)
         }
         // Инициализируем MediaSession
-        mediaSession = MediaSession.Builder(this, getExoPlayer()).build()
+        mediaSession = MediaSession.Builder(this, exoPlayer).build()
 
         // Настраиваем уведомление
         notificationManager = PlayerNotificationManager.Builder(
@@ -74,7 +80,7 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
                 stopSelf()
             }
         }).build().apply {
-            setPlayer(getExoPlayer())
+            setPlayer(exoPlayer)
         }
     }
 
@@ -84,41 +90,34 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
         super.onDestroy()
         notificationManager.setPlayer(null)
         mediaSession.release()
-        getExoPlayer().release()
+        exoPlayer.release()
     }
 
     override fun play(url: String) {
-        // TODO реализовано: воспроизведение медиа по url
+        val mediaItem = MediaItem.fromUri(url)
+        exoPlayer.setMediaItem(mediaItem)
+        exoPlayer.prepare()
+        exoPlayer.play()
     }
 
     override fun pause() {
-        // TODO реализовано: пауза
+        exoPlayer.pause()
     }
 
     override fun stop() {
-        // TODO реализовано: стоп
+        exoPlayer.stop()
     }
 
     override fun isPlaying(): Boolean {
-        // TODO реализовано: статус воспроизведения
-        return false
+        return exoPlayer.isPlaying
     }
 
     override fun release() {
-        // TODO реализовано: освобождение ресурсов
+        exoPlayer.release()
     }
 
-    override fun getCurrentPosition(): Long = getExoPlayer().currentPosition
-    override fun getDuration(): Long = getExoPlayer().duration
-    override fun seekTo(positionMs: Long) { getExoPlayer().seekTo(positionMs) }
-
-    fun getExoPlayer(): ExoPlayer {
-        if (exoPlayer == null) {
-            exoPlayer = ExoPlayer.Builder(applicationContext).build().also { player ->
-                player.repeatMode = Player.REPEAT_MODE_OFF
-            }
-        }
-        return exoPlayer!!
-    }
+    override fun getCurrentPosition(): Long = exoPlayer.currentPosition
+    override fun getDuration(): Long = exoPlayer.duration
+    override fun seekTo(positionMs: Long) { exoPlayer.seekTo(positionMs) }
 }
 // NOTE реализовано по аудиту: IPlayerService адаптер 

@@ -71,21 +71,31 @@ class MeditationViewModel @Inject constructor(
     }
 
     private fun playMeditation(meditation: Meditation) {
-        playerService.stop()
-        playerService.play(meditation.audioUrl)
-        setState { copy(currentPlaying = meditation) }
-        // AI наставник: вступительный совет
-        aiMentor.giveMeditationAdvice()
-        // периодические советы каждые 60 секунд
-        viewModelScope.launch {
-            while (playerService.isPlaying()) {
-                delay(60000L)
-                aiMentor.giveMeditationAdvice()
-            }
+        // Проверяем, не нулевой ли плеер
+        if (playerService == null) {
+            setEffect { MeditationContract.Effect.ShowError(UiError.Custom("Сервис плеера недоступен")) }
+            return
         }
-        // TODO: переносить трекинг на событие окончания или остановки плеера
-        // TODO реализовано: Голосовой анонс начала медитации через ViewModel
-        setEffect { MeditationContract.Effect.Speak(meditation.title) } // Пример анонса названия // TODO: Вынести шаблон анонса в strings.xml, используя форматирование, если нужно
+        
+        try {
+            playerService.stop()
+            playerService.play(meditation.audioUrl)
+            setState { copy(currentPlaying = meditation) }
+            // AI наставник: вступительный совет
+            aiMentor.giveMeditationAdvice()
+            // периодические советы каждые 60 секунд
+            viewModelScope.launch {
+                while (playerService.isPlaying()) {
+                    delay(60000L)
+                    aiMentor.giveMeditationAdvice()
+                }
+            }
+            // Голосовой анонс начала медитации
+            setEffect { MeditationContract.Effect.Speak(meditation.title) }
+        } catch (e: Exception) {
+            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+            setEffect { MeditationContract.Effect.ShowError(uiError) }
+        }
     }
 
     private fun pauseMeditation() {
