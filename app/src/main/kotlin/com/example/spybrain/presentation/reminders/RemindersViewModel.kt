@@ -28,6 +28,10 @@ class RemindersViewModel @Inject constructor(
     val schedules = reminderRepository.getAllSchedules()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
     
+    companion object {
+        val WEEKDAYS = listOf("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
+    }
+    
     /**
      * Добавляет новое напоминание
      */
