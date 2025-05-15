@@ -14,5 +14,6 @@ data class Achievement(
     val points: Int = 0,
     val isUnlocked: Boolean = false,
     val progress: Int = 0,
-    val requiredValue: Int = 100
+    val requiredValue: Int = 100,
+    val unlockedAt: Long? = null
 ) : Serializable 
