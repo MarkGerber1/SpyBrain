@@ -50,6 +50,9 @@ fun AchievementsScreen(
                 is AchievementsContract.Effect.ShowToast -> {
                     Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                 }
+                is AchievementsContract.Effect.ShowError -> {
+                    Toast.makeText(context, effect.error.message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -184,6 +187,7 @@ fun AchievementsScreen(
                                     AchievementType.MEDITATION -> "Медитация"
                                     AchievementType.BREATHING -> "Дыхание"
                                     AchievementType.STREAK -> "Серии"
+                                    AchievementType.SESSIONS -> "Сессии"
                                 }
                             )
                         },
@@ -194,6 +198,7 @@ fun AchievementsScreen(
                                     AchievementType.MEDITATION -> Icons.Default.SelfImprovement
                                     AchievementType.BREATHING -> Icons.Default.Air
                                     AchievementType.STREAK -> Icons.Default.Timeline
+                                    AchievementType.SESSIONS -> Icons.Default.Tag
                                 },
                                 contentDescription = null
                             )
@@ -297,6 +302,7 @@ fun AchievementCard(
                     AchievementType.MEDITATION -> Icons.Default.SelfImprovement
                     AchievementType.BREATHING -> Icons.Default.Air
                     AchievementType.STREAK -> Icons.Default.Timeline
+                    AchievementType.SESSIONS -> Icons.Default.Tag
                 },
                 contentDescription = null,
                 modifier = Modifier
@@ -416,6 +422,7 @@ fun AchievementDetailsDialog(
                             AchievementType.MEDITATION -> Icons.Default.SelfImprovement
                             AchievementType.BREATHING -> Icons.Default.Air
                             AchievementType.STREAK -> Icons.Default.Timeline
+                            AchievementType.SESSIONS -> Icons.Default.Tag
                         },
                         contentDescription = null,
                         modifier = Modifier
