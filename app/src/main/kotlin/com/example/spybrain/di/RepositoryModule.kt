@@ -5,6 +5,10 @@ import com.example.spybrain.data.repository.MeditationRepositoryImpl
 import com.example.spybrain.data.repository.ProfileRepositoryImpl
 import com.example.spybrain.data.repository.SettingsRepositoryImpl
 import com.example.spybrain.data.repository.StatsRepositoryImpl
+import com.example.spybrain.data.repository.CustomBreathingPatternRepositoryImpl
+import com.example.spybrain.data.repository.MeditationProgramRepositoryImpl
+import com.example.spybrain.data.repository.AchievementsRepositoryImpl
+import com.example.spybrain.data.repository.ReminderRepositoryImpl
 import com.example.spybrain.domain.repository.BreathingRepository
 import com.example.spybrain.domain.repository.MeditationRepository
 import com.example.spybrain.domain.repository.ProfileRepository
@@ -12,6 +16,7 @@ import com.example.spybrain.domain.repository.SettingsRepository
 import com.example.spybrain.domain.repository.StatsRepository
 import com.example.spybrain.domain.repository.CustomBreathingPatternRepository
 import com.example.spybrain.domain.repository.AchievementsRepository
+import com.example.spybrain.domain.repository.ReminderRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -46,18 +51,24 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCustomBreathingPatternRepository(
-        impl: com.example.spybrain.data.repository.CustomBreathingPatternRepositoryImpl
-    ): com.example.spybrain.domain.repository.CustomBreathingPatternRepository
+        impl: CustomBreathingPatternRepositoryImpl
+    ): CustomBreathingPatternRepository
 
     @Binds
     @Singleton
     abstract fun bindMeditationProgramRepository(
-        impl: com.example.spybrain.data.repository.MeditationProgramRepositoryImpl
+        impl: MeditationProgramRepositoryImpl
     ): com.example.spybrain.domain.repository.MeditationProgramRepository
 
     @Binds
     @Singleton
     abstract fun bindAchievementsRepository(
-        impl: com.example.spybrain.data.repository.AchievementsRepositoryImpl
-    ): com.example.spybrain.domain.repository.AchievementsRepository
+        impl: AchievementsRepositoryImpl
+    ): AchievementsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReminderRepository(
+        impl: ReminderRepositoryImpl
+    ): ReminderRepository
 } 

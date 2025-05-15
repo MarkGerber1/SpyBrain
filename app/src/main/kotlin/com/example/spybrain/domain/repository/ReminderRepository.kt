@@ -16,35 +16,28 @@ interface ReminderRepository {
     fun getAllReminders(): Flow<List<Reminder>>
     
     /**
-     * Получает напоминание по ID
-     * @param id ID напоминания
+     * Получает список всех расписаний
      */
-    suspend fun getReminderById(id: String): Reminder?
-    
-    /**
-     * Получает напоминания, активные в указанную дату
-     * @param date Дата для проверки напоминаний
-     */
-    suspend fun getRemindersForDate(date: LocalDate): List<Reminder>
+    fun getAllSchedules(): Flow<List<Schedule>>
     
     /**
      * Добавляет новое напоминание
      * @param reminder Напоминание для добавления
-     * @return ID созданного напоминания
      */
-    suspend fun addReminder(reminder: Reminder): String
+    suspend fun addReminder(reminder: Reminder)
     
     /**
-     * Обновляет существующее напоминание
-     * @param reminder Напоминание с обновленными данными
-     */
-    suspend fun updateReminder(reminder: Reminder)
-    
-    /**
-     * Удаляет напоминание
-     * @param id ID напоминания для удаления
+     * Удаляет напоминание по ID
+     * @param id ID напоминания
      */
     suspend fun deleteReminder(id: String)
+    
+    /**
+     * Получает напоминание по ID
+     * @param id ID напоминания
+     * @return Напоминание или null, если не найдено
+     */
+    suspend fun getReminderById(id: String): Reminder?
     
     /**
      * Включает или отключает напоминание
@@ -54,34 +47,23 @@ interface ReminderRepository {
     suspend fun setReminderEnabled(id: String, enabled: Boolean)
     
     /**
-     * Получает список всех расписаний
+     * Добавляет новое расписание
+     * @param schedule Расписание для добавления
      */
-    fun getAllSchedules(): Flow<List<Schedule>>
+    suspend fun addSchedule(schedule: Schedule)
+    
+    /**
+     * Удаляет расписание по ID
+     * @param id ID расписания
+     */
+    suspend fun deleteSchedule(id: String)
     
     /**
      * Получает расписание по ID
      * @param id ID расписания
+     * @return Расписание или null, если не найдено
      */
     suspend fun getScheduleById(id: String): Schedule?
-    
-    /**
-     * Добавляет новое расписание
-     * @param schedule Расписание для добавления
-     * @return ID созданного расписания
-     */
-    suspend fun addSchedule(schedule: Schedule): String
-    
-    /**
-     * Обновляет существующее расписание
-     * @param schedule Расписание с обновленными данными
-     */
-    suspend fun updateSchedule(schedule: Schedule)
-    
-    /**
-     * Удаляет расписание
-     * @param id ID расписания для удаления
-     */
-    suspend fun deleteSchedule(id: String)
     
     /**
      * Включает или отключает расписание
