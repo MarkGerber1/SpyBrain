@@ -14,12 +14,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.spybrain.R
 import java.util.Calendar
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.delay
 
 @Composable
 fun SmartWelcomeScreen(
     isOffline: Boolean = false,
     onQuickAction: (String) -> Unit = {}
 ) {
+    // Проверяем подключение к интернету
+    val context = LocalContext.current
+    var isNetworkAvailable by remember { mutableStateOf(!isOffline) }
+    
+    // Периодически проверяем состояние сети
+    LaunchedEffect(Unit) {
+        while (true) {
+            isNetworkAvailable = isNetworkConnected(context)
+            delay(5000) // Проверка каждые 5 секунд
+        }
+    }
+    
     // Определяем время суток
     val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
     val (greeting, bgRes) = when (hour) {
@@ -44,7 +61,7 @@ fun SmartWelcomeScreen(
         ) {
             Text(greeting, style = MaterialTheme.typography.headlineLarge, color = Color.White)
             Spacer(modifier = Modifier.height(24.dp))
-            if (isOffline) {
+            if (!isNetworkAvailable) {
                 Text("Нет соединения с сетью", color = Color.Red)
             } else {
                 // Быстрые действия
@@ -53,11 +70,38 @@ fun SmartWelcomeScreen(
                     Button(onClick = { onQuickAction("meditation") }) { Text("Быстрая медитация") }
                 }
             }
-            // Удаляем круговой индикатор, о котором упоминается в чеклисте
-            // Spacer(modifier = Modifier.height(32.dp))
+            
+            Spacer(modifier = Modifier.height(32.dp))
             // Анимированный круговой индикатор (например, TTS)
-            // var progress by remember { mutableStateOf(0.7f) } // TODO: заменить на реальный прогресс
-            // CircularProgressIndicator(progress = progress, modifier = Modifier.size(120.dp), color = Color.White)
+            var progress by remember { mutableStateOf(0f) }
+            
+            // Анимируем прогресс
+            LaunchedEffect(Unit) {
+                while(true) {
+                    for (i in 0..100) {
+                        progress = i / 100f
+                        delay(50)
+                    }
+                    delay(1000) // Задержка перед перезапуском анимации
+                }
+            }
+            
+            CircularProgressIndicator(
+                progress = { progress },
+                modifier = Modifier.size(120.dp),
+                color = Color.White,
+                trackColor = Color.White.copy(alpha = 0.3f)
+            )
         }
     }
+}
+
+// Функция проверки подключения к интернету
+fun isNetworkConnected(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+    
+    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+           capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
 } 

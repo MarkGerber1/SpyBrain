@@ -30,7 +30,7 @@ fun MainScreen(
             // Всегда рисуем NavGraph, чтобы navController был связан с графом
             NavGraph(navController = navController)
             // А поверх него — welcome экран, пока showWelcome == true
-            val showWelcome = remember { mutableStateOf(false) }
+            val showWelcome = remember { mutableStateOf(true) }
             if (showWelcome.value) {
                 SmartWelcomeScreen(
                     isOffline = false,
