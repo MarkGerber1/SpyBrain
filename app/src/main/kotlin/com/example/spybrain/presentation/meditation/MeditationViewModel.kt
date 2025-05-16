@@ -87,10 +87,20 @@ class MeditationViewModel @Inject constructor(
             // Нормализуем URL для медитаций - если URL не содержит протокол, 
             // или если это пример URL, заменяем на локальный ассет
             val audioUrl = when {
-                meditation.audioUrl.contains("example.com") || 
-                meditation.audioUrl.contains("http://") || 
-                meditation.audioUrl.contains("https://") -> meditation.audioUrl
-                else -> "asset:///audio/${meditation.audioUrl}" // Предполагаем, что в audioUrl просто имя файла
+                meditation.audioUrl.contains("example.com") -> "file:///android_asset/audio/mixkit-valley-sunset-127.mp3"
+                meditation.audioUrl.startsWith("http://") || 
+                meditation.audioUrl.startsWith("https://") -> meditation.audioUrl
+                else -> {
+                    // Предполагаем, что это либо имя файла, либо относительный путь к ассету
+                    val assetPath = if (meditation.audioUrl.startsWith("audio/")) {
+                        meditation.audioUrl
+                    } else {
+                        "audio/${meditation.audioUrl}"
+                    }
+                    
+                    // Используем формат, который точно работает с ExoPlayer
+                    "file:///android_asset/$assetPath"
+                }
             }
             
             // Сначала обновляем UI, чтобы показать воспроизведение

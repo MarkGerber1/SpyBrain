@@ -102,17 +102,46 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
             }
             
             // Заменяем example.com на локальный ресурс для тестирования
-            val finalUrl = if (url.contains("example.com")) {
-                // Используем существующий файл из assets/audio вместо несуществующего URL
-                "asset:///audio/mixkit-valley-sunset-127.mp3"
+            val finalUrl = if (url.contains("example.com") || url.startsWith("asset:///")) {
+                // Извлекаем имя файла из URL если оно начинается с asset:///
+                val assetFileName = if (url.startsWith("asset:///")) {
+                    url.removePrefix("asset:///")
+                } else {
+                    "audio/mixkit-valley-sunset-127.mp3" // Запасной вариант
+                }
+                
+                // Используем правильный формат URL для ассетов в ExoPlayer
+                "asset:///$assetFileName"
             } else {
                 url
             }
             
-            val mediaItem = MediaItem.fromUri(finalUrl)
-            exoPlayer.setMediaItem(mediaItem)
-            exoPlayer.prepare()
-            exoPlayer.play()
+            try {
+                val mediaItem = MediaItem.fromUri(finalUrl)
+                exoPlayer.setMediaItem(mediaItem)
+                exoPlayer.prepare()
+                exoPlayer.play()
+            } catch (innerEx: Exception) {
+                // Если не сработал обычный URL, попробуем через AssetDataSource
+                try {
+                    val assetFileName = if (finalUrl.startsWith("asset:///")) {
+                        finalUrl.removePrefix("asset:///")
+                    } else {
+                        "audio/mixkit-valley-sunset-127.mp3"
+                    }
+                    
+                    // Используем прямой доступ через контекст к ассетам
+                    val assetFd = applicationContext.assets.openFd(assetFileName)
+                    val mediaItem = MediaItem.fromUri("file:///android_asset/$assetFileName")
+                    exoPlayer.setMediaItem(mediaItem)
+                    exoPlayer.prepare()
+                    exoPlayer.play()
+                } catch (assetEx: Exception) {
+                    android.util.Log.e("MeditationPlayerService", 
+                        "Ошибка доступа к ассету: ${assetEx.message}", assetEx)
+                    throw assetEx
+                }
+            }
         } catch (e: Exception) {
             // Логируем ошибку, но не крашим приложение
             android.util.Log.e("MeditationPlayerService", "Ошибка воспроизведения: ${e.message}", e)
