@@ -117,8 +117,11 @@ fun MeditationScreen(
             )
         }
     ) { paddingValues ->
-        // Smooth background crossfade per theme
-        Crossfade(targetState = settings.theme) { theme ->
+        // Заменяем Crossfade на простой Box с key для пересоздания при смене темы
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            val theme = settings.theme
+            
+            // Определяем ресурсы фона и иконки без использования remember
             val bgPainter = when (theme) {
                 "water" -> painterResource(id = R.drawable.bg_water)
                 "space" -> painterResource(id = R.drawable.bg_space)
@@ -126,47 +129,48 @@ fun MeditationScreen(
                 "air" -> painterResource(id = R.drawable.bg_air)
                 else -> painterResource(id = R.drawable.bg_nature)
             }
-            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-                Image(
-                    painter = bgPainter,
-                    contentDescription = stringResource(id = R.string.meditation_background_image_description),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.matchParentSize()
-                )
-                
-                // Полупрозрачный оверлей для лучшей читаемости
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(Color.Black.copy(alpha = 0.3f))
-                )
-                
-                // Иконка темы
-                Icon(
-                    painter = when (theme) {
-                        "water" -> painterResource(id = R.drawable.ic_water)
-                        "space" -> painterResource(id = R.drawable.ic_space)
-                        "nature" -> painterResource(id = R.drawable.ic_nature)
-                        "air" -> painterResource(id = R.drawable.ic_air)
-                        else -> painterResource(id = R.drawable.ic_nature)
-                    },
-                    contentDescription = theme,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .align(Alignment.TopCenter)
-                        .padding(top = 16.dp),
-                    tint = Color.Unspecified
-                )
-                
-                when {
-                    state.isLoading -> {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
-                        }
+            
+            val themeIcon = when (theme) {
+                "water" -> painterResource(id = R.drawable.ic_water)
+                "space" -> painterResource(id = R.drawable.ic_space)
+                "nature" -> painterResource(id = R.drawable.ic_nature)
+                "air" -> painterResource(id = R.drawable.ic_air)
+                else -> painterResource(id = R.drawable.ic_nature)
+            }
+            
+            Image(
+                painter = bgPainter,
+                contentDescription = stringResource(id = R.string.meditation_background_image_description),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
+            
+            // Полупрозрачный оверлей для лучшей читаемости
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Black.copy(alpha = 0.3f))
+            )
+            
+            // Иконка темы
+            Icon(
+                painter = themeIcon,
+                contentDescription = theme,
+                modifier = Modifier
+                    .size(40.dp)
+                    .align(Alignment.TopCenter)
+                    .padding(top = 16.dp),
+                tint = Color.Unspecified
+            )
+            
+            when {
+                state.isLoading -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
                     }
-                    state.currentPlaying == null -> MeditationList(viewModel, settings.voiceHintsEnabled)
-                    else -> MeditationPlayerUI(viewModel, state, player, settings.voiceHintsEnabled)
                 }
+                state.currentPlaying == null -> MeditationList(viewModel, settings.voiceHintsEnabled)
+                else -> MeditationPlayerUI(viewModel, state, player, settings.voiceHintsEnabled)
             }
         }
     }

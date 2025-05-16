@@ -78,18 +78,51 @@ class MeditationViewModel @Inject constructor(
         }
         
         try {
-            playerService.stop()
-            playerService.play(meditation.audioUrl)
+            // Проверяем URL на валидность
+            if (meditation.audioUrl.isBlank()) {
+                setEffect { MeditationContract.Effect.ShowError(UiError.Custom("URL аудио отсутствует")) }
+                return
+            }
+            
+            // Нормализуем URL для медитаций - если URL не содержит протокол, 
+            // или если это пример URL, заменяем на локальный ассет
+            val audioUrl = when {
+                meditation.audioUrl.contains("example.com") || 
+                meditation.audioUrl.contains("http://") || 
+                meditation.audioUrl.contains("https://") -> meditation.audioUrl
+                else -> "asset:///audio/${meditation.audioUrl}" // Предполагаем, что в audioUrl просто имя файла
+            }
+            
+            // Сначала обновляем UI, чтобы показать воспроизведение
             setState { copy(currentPlaying = meditation) }
-            // AI наставник: вступительный совет
-            aiMentor.giveMeditationAdvice()
-            // периодические советы каждые 60 секунд
+            
+            // Используем безопасное воспроизведение
             viewModelScope.launch {
-                while (playerService.isPlaying()) {
-                    delay(60000L)
+                try {
+                    playerService.stop()
+                    playerService.play(audioUrl)
+                    
+                    // AI наставник: вступительный совет
                     aiMentor.giveMeditationAdvice()
+                    
+                    // Проверяем, начало ли воспроизведение, иначе показываем ошибку
+                    delay(500) // Небольшая задержка для инициализации
+                    if (!playerService.isPlaying()) {
+                        // Если воспроизведение не началось, возможно, была ошибка
+                        setEffect { MeditationContract.Effect.ShowError(UiError.Custom("Не удалось начать воспроизведение")) }
+                    } else {
+                        // Периодические советы каждые 60 секунд
+                        while (playerService.isPlaying()) {
+                            delay(60000L)
+                            aiMentor.giveMeditationAdvice()
+                        }
+                    }
+                } catch (e: Exception) {
+                    val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+                    setEffect { MeditationContract.Effect.ShowError(uiError) }
                 }
             }
+            
             // Голосовой анонс начала медитации
             setEffect { MeditationContract.Effect.Speak(meditation.title) }
         } catch (e: Exception) {
