@@ -21,7 +21,7 @@ import com.example.spybrain.presentation.splash.SplashScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = Screen.Splash.route) {
+    NavHost(navController, startDestination = Screen.Meditation.route) {
 
         composable(Screen.Splash.route) { SplashScreen(navController) }
 
