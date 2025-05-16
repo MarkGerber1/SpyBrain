@@ -35,6 +35,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 
 object LocaleManager {
     fun setLocale(activity: Activity, language: String) {
@@ -102,17 +105,36 @@ fun SettingsScreen(
                 }
             }
         }
+        
         item {
-            Text(text = "Тема", style = MaterialTheme.typography.titleLarge)
-            val themes = listOf("water" to "Вода", "space" to "Космос", "nature" to "Природа", "air" to "Воздух")
-            val themeLabels = themes.map { it.second }
-            com.example.spybrain.presentation.components.IconMenuGrid(
-                icons = List(themes.size) { Icons.Default.Star },
-                labels = themeLabels,
-                onClick = { idx -> viewModel.setEvent(Event.ThemeSelected(themes[idx].first)) },
-                modifier = Modifier.fillMaxWidth().height(200.dp)
+            Text(text = "Выбрать тему", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            val themes = listOf(
+                Triple("water", "Вода", R.drawable.bg_water),
+                Triple("space", "Космос", R.drawable.bg_space),
+                Triple("nature", "Природа", R.drawable.bg_nature),
+                Triple("air", "Воздух", R.drawable.bg_air)
             )
+            
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.height(240.dp)
+            ) {
+                items(themes) { (themeId, themeName, bgRes) ->
+                    ThemePreviewCard(
+                        themeId = themeId,
+                        themeName = themeName,
+                        bgRes = bgRes,
+                        isSelected = state.theme == themeId,
+                        onClick = { viewModel.setEvent(Event.ThemeSelected(themeId)) }
+                    )
+                }
+            }
         }
+        
         item {
             Text(text = "Фоновая музыка", style = MaterialTheme.typography.titleLarge)
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -195,23 +217,113 @@ fun SettingsScreen(
         item {
             Text(text = "Язык", style = MaterialTheme.typography.titleLarge)
             val activity = context as? Activity
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 val languages = listOf("ru" to "Русский", "en" to "English")
-                languages.forEach { (lang, label) ->
-                    OutlinedButton(
-                        onClick = {
-                            if (activity != null) {
-                                LocaleManager.setLocale(activity, lang)
-                                activity.recreate()
-                            }
-                        },
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = if (Locale.getDefault().language == lang) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent
-                        )
-                    ) {
-                        Text(label)
+                val currentLanguage = Locale.getDefault().language
+                
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    languages.forEach { (lang, label) ->
+                        Button(
+                            onClick = {
+                                if (activity != null) {
+                                    Toast.makeText(
+                                        context,
+                                        "Язык изменен на $label. Перезапустите приложение для применения всех изменений.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    LocaleManager.setLocale(activity, lang)
+                                    navController.navigate("meditation") {
+                                        popUpTo("meditation") {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (currentLanguage == lang) 
+                                    MaterialTheme.colorScheme.primary 
+                                else 
+                                    MaterialTheme.colorScheme.surface,
+                                contentColor = if (currentLanguage == lang)
+                                    MaterialTheme.colorScheme.onPrimary
+                                else
+                                    MaterialTheme.colorScheme.primary
+                            ),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(label)
+                        }
                     }
                 }
+                
+                Text(
+                    text = "* Некоторые изменения языка требуют перезапуска",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ThemePreviewCard(
+    themeId: String,
+    themeName: String,
+    bgRes: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .clickable { onClick() }
+            .border(
+                width = if (isSelected) 3.dp else 1.dp,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                shape = RoundedCornerShape(16.dp)
+            ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 8.dp else 2.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = painterResource(id = bgRes),
+                contentDescription = themeName,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f))
+            )
+            
+            Text(
+                text = themeName,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(8.dp)
+            )
+            
+            if (isSelected) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_check),
+                    contentDescription = "Выбрано",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .size(24.dp)
+                )
             }
         }
     }

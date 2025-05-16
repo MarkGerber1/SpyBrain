@@ -53,10 +53,11 @@ fun SmartWelcomeScreen(
                     Button(onClick = { onQuickAction("meditation") }) { Text("Быстрая медитация") }
                 }
             }
-            Spacer(modifier = Modifier.height(32.dp))
+            // Удаляем круговой индикатор, о котором упоминается в чеклисте
+            // Spacer(modifier = Modifier.height(32.dp))
             // Анимированный круговой индикатор (например, TTS)
-            var progress by remember { mutableStateOf(0.7f) } // TODO: заменить на реальный прогресс
-            CircularProgressIndicator(progress = progress, modifier = Modifier.size(120.dp), color = Color.White)
+            // var progress by remember { mutableStateOf(0.7f) } // TODO: заменить на реальный прогресс
+            // CircularProgressIndicator(progress = progress, modifier = Modifier.size(120.dp), color = Color.White)
         }
     }
 } 

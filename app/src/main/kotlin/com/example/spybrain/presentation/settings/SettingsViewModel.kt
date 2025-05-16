@@ -1,10 +1,14 @@
 package com.example.spybrain.presentation.settings
 
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.data.datastore.SettingsDataStore
 import com.example.spybrain.domain.usecase.meditation.GetMeditationsUseCase
 import com.example.spybrain.presentation.base.BaseViewModel
+import com.example.spybrain.service.BackgroundMusicService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.map
@@ -14,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsDataStore: SettingsDataStore, // TODO: Рассмотреть доступ к SettingsDataStore через репозиторий и UseCase для соответствия Clean Architecture
-    private val getMeditationsUseCase: GetMeditationsUseCase
+    private val getMeditationsUseCase: GetMeditationsUseCase,
+    @ApplicationContext private val context: Context
 ) : BaseViewModel<SettingsContract.Event, SettingsContract.State, SettingsContract.Effect>() { // TODO: Добавить все необходимые юнит-тесты для ViewModel
 
     override fun createInitialState(): SettingsContract.State = SettingsContract.State()
@@ -26,11 +31,19 @@ class SettingsViewModel @Inject constructor(
             .launchIn(viewModelScope)
         // Подписываемся на включение фоновой музыки
         settingsDataStore.ambientEnabledFlow
-            .onEach { setState { copy(ambientEnabled = it) } }
+            .onEach { 
+                setState { copy(ambientEnabled = it) }
+                handleAmbientMusicChange(it, uiState.value.ambientTrack)
+            }
             .launchIn(viewModelScope)
         // Подписываемся на выбор трека
         settingsDataStore.ambientTrackFlow
-            .onEach { setState { copy(ambientTrack = it) } }
+            .onEach { 
+                setState { copy(ambientTrack = it) }
+                if (uiState.value.ambientEnabled) {
+                    handleAmbientMusicChange(true, it)
+                }
+            }
             .launchIn(viewModelScope)
         // Подписываемся на визуализацию сердца
         settingsDataStore.heartbeatEnabledFlow
@@ -59,9 +72,17 @@ class SettingsViewModel @Inject constructor(
             is SettingsContract.Event.ThemeSelected ->
                 viewModelScope.launch { settingsDataStore.setTheme(event.theme) }
             is SettingsContract.Event.AmbientToggled ->
-                viewModelScope.launch { settingsDataStore.setAmbientEnabled(event.enabled) }
+                viewModelScope.launch { 
+                    settingsDataStore.setAmbientEnabled(event.enabled) 
+                    handleAmbientMusicChange(event.enabled, uiState.value.ambientTrack)
+                }
             is SettingsContract.Event.AmbientTrackSelected ->
-                viewModelScope.launch { settingsDataStore.setAmbientTrack(event.trackId) }
+                viewModelScope.launch { 
+                    settingsDataStore.setAmbientTrack(event.trackId)
+                    if (uiState.value.ambientEnabled) {
+                        handleAmbientMusicChange(true, event.trackId)
+                    }
+                }
             is SettingsContract.Event.HeartbeatToggled ->
                 viewModelScope.launch { settingsDataStore.setHeartbeatEnabled(event.enabled) }
             is SettingsContract.Event.VoiceToggled ->
@@ -71,5 +92,33 @@ class SettingsViewModel @Inject constructor(
             is SettingsContract.Event.VoiceIdSelected ->
                 viewModelScope.launch { settingsDataStore.setVoiceId(event.voiceId) }
         }
+    }
+    
+    // Обработка изменений настроек фоновой музыки
+    private fun handleAmbientMusicChange(enabled: Boolean, trackId: String) {
+        if (enabled && trackId.isNotEmpty()) {
+            playAmbientMusic(trackId)
+        } else {
+            stopAmbientMusic()
+        }
+    }
+    
+    // Запуск сервиса проигрывания фоновой музыки
+    private fun playAmbientMusic(trackId: String) {
+        val audioUrl = "https://example.com/audio/$trackId.mp3" // Заменить на реальный URL из медитации
+        val intent = Intent(context, BackgroundMusicService::class.java).apply {
+            action = BackgroundMusicService.ACTION_PLAY
+            putExtra(BackgroundMusicService.EXTRA_URL, audioUrl)
+        }
+        context.startService(intent)
+        setEffect { SettingsContract.Effect.ShowToast("Фоновая музыка включена") }
+    }
+    
+    // Остановка проигрывания фоновой музыки
+    private fun stopAmbientMusic() {
+        val intent = Intent(context, BackgroundMusicService::class.java).apply {
+            action = BackgroundMusicService.ACTION_STOP
+        }
+        context.startService(intent)
     }
 } 
