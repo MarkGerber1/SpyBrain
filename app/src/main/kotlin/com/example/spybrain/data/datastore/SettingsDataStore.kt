@@ -1,82 +1,130 @@
 package com.example.spybrain.data.datastore
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// Расширение для доступа к DataStore
-private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+private val Context.dataStore by preferencesDataStore(name = "settings")
 
 @Singleton
 class SettingsDataStore @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
-    companion object {
-        val THEME_KEY = stringPreferencesKey("theme")
-        val AMBIENT_ENABLED_KEY = booleanPreferencesKey("ambient_enabled")
-        val AMBIENT_TRACK_KEY = stringPreferencesKey("ambient_track")
-        val HEARTBEAT_ENABLED_KEY = booleanPreferencesKey("heartbeat_enabled")
-        val VOICE_ENABLED_KEY = booleanPreferencesKey("voice_enabled")
-        val VOICE_HINTS_ENABLED_KEY = booleanPreferencesKey("voice_hints_enabled")
-        val VOICE_ID_KEY = stringPreferencesKey("voice_id")
+    private val dataStore = context.dataStore
+
+    private object PreferencesKey {
+        val THEME = stringPreferencesKey("theme")
+        val AMBIENT_ENABLED = booleanPreferencesKey("ambient_enabled")
+        val AMBIENT_TRACK = stringPreferencesKey("ambient_track")
+        val HEARTBEAT_ENABLED = booleanPreferencesKey("heartbeat_enabled")
+        val VOICE_ENABLED = booleanPreferencesKey("voice_enabled")
+        val VOICE_HINTS_ENABLED = booleanPreferencesKey("voice_hints_enabled")
+        val VOICE_ID = stringPreferencesKey("voice_id")
     }
 
-    private val dataStore = context.settingsDataStore
+    // Theme flow
+    val themeFlow: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.THEME] ?: "nature"
+    }
 
-    val themeFlow: Flow<String> = dataStore.data
-        .map { prefs -> prefs[THEME_KEY] ?: "water" }
+    // Ambient music enabled flow
+    val ambientEnabledFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.AMBIENT_ENABLED] ?: false
+    }
 
-    val ambientEnabledFlow: Flow<Boolean> = dataStore.data
-        .map { prefs -> prefs[AMBIENT_ENABLED_KEY] ?: false }
+    // Ambient track flow
+    val ambientTrackFlow: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.AMBIENT_TRACK] ?: ""
+    }
 
-    val ambientTrackFlow: Flow<String> = dataStore.data
-        .map { prefs -> prefs[AMBIENT_TRACK_KEY] ?: "" }
+    // Heartbeat enabled flow
+    val heartbeatEnabledFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.HEARTBEAT_ENABLED] ?: true
+    }
 
-    val heartbeatEnabledFlow: Flow<Boolean> = dataStore.data
-        .map { prefs -> prefs[HEARTBEAT_ENABLED_KEY] ?: false }
-
-    val voiceEnabledFlow: Flow<Boolean> = dataStore.data
-        .map { prefs -> prefs[VOICE_ENABLED_KEY] ?: false }
-
-    val voiceHintsEnabledFlow: Flow<Boolean> = dataStore.data
-        .map { prefs -> prefs[VOICE_HINTS_ENABLED_KEY] ?: false }
-
-    val voiceIdFlow: Flow<String> = dataStore.data
-        .map { prefs -> prefs[VOICE_ID_KEY] ?: "" }
+    // Voice enabled flow
+    val voiceEnabledFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.VOICE_ENABLED] ?: true
+    }
+    
+    // Voice hints enabled flow (for meditation guidance)
+    val voiceHintsEnabledFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.VOICE_HINTS_ENABLED] ?: true
+    }
+    
+    // Voice ID flow
+    val voiceIdFlow: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.VOICE_ID] ?: ""
+    }
 
     suspend fun setTheme(theme: String) {
-        dataStore.edit { prefs -> prefs[THEME_KEY] = theme }
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.THEME] = theme
+        }
     }
 
     suspend fun setAmbientEnabled(enabled: Boolean) {
-        dataStore.edit { prefs -> prefs[AMBIENT_ENABLED_KEY] = enabled }
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.AMBIENT_ENABLED] = enabled
+        }
     }
 
-    suspend fun setAmbientTrack(track: String) {
-        dataStore.edit { prefs -> prefs[AMBIENT_TRACK_KEY] = track }
+    suspend fun setAmbientTrack(trackId: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.AMBIENT_TRACK] = trackId
+        }
     }
 
     suspend fun setHeartbeatEnabled(enabled: Boolean) {
-        dataStore.edit { prefs -> prefs[HEARTBEAT_ENABLED_KEY] = enabled }
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.HEARTBEAT_ENABLED] = enabled
+        }
     }
 
     suspend fun setVoiceEnabled(enabled: Boolean) {
-        dataStore.edit { prefs -> prefs[VOICE_ENABLED_KEY] = enabled }
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.VOICE_ENABLED] = enabled
+        }
     }
-
+    
     suspend fun setVoiceHintsEnabled(enabled: Boolean) {
-        dataStore.edit { prefs -> prefs[VOICE_HINTS_ENABLED_KEY] = enabled }
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.VOICE_HINTS_ENABLED] = enabled
+        }
     }
-
+    
     suspend fun setVoiceId(voiceId: String) {
-        dataStore.edit { prefs -> prefs[VOICE_ID_KEY] = voiceId }
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.VOICE_ID] = voiceId
+        }
+    }
+    
+    // Синхронные методы для получения настроек
+    fun getAmbientTrack(): String = runBlocking {
+        var trackValue = ""
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKey.AMBIENT_TRACK] ?: ""
+        }.collect { 
+            trackValue = it
+        }
+        return@runBlocking trackValue
+    }
+    
+    fun getAmbientEnabled(): Boolean = runBlocking {
+        var enabledValue = false
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKey.AMBIENT_ENABLED] ?: false
+        }.collect { 
+            enabledValue = it
+        }
+        return@runBlocking enabledValue
     }
 } 

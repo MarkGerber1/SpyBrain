@@ -81,28 +81,27 @@ fun SettingsScreen(
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surface)
             ) {
-                Crossfade(targetState = state.theme) { themePreview ->
-                    val bgRes = when (themePreview) {
-                        "water" -> R.drawable.bg_water
-                        "space" -> R.drawable.bg_space
-                        "nature" -> R.drawable.bg_nature
-                        "air" -> R.drawable.bg_air
-                        else -> R.drawable.bg_nature
-                    }
-                    Image(
-                        painter = painterResource(id = bgRes),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.matchParentSize()
-                    )
-                    ThemeIcon(
-                        theme = themePreview,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .size(48.dp),
-                        selected = true
-                    )
+                val themePreview = state.theme
+                val bgRes = when (themePreview) {
+                    "water" -> R.drawable.bg_water
+                    "space" -> R.drawable.bg_space
+                    "nature" -> R.drawable.bg_nature
+                    "air" -> R.drawable.bg_air
+                    else -> R.drawable.bg_nature
                 }
+                Image(
+                    painter = painterResource(id = bgRes),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize()
+                )
+                ThemeIcon(
+                    theme = themePreview,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(48.dp),
+                    selected = true
+                )
             }
         }
         

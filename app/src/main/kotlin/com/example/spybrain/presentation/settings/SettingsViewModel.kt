@@ -31,18 +31,26 @@ class SettingsViewModel @Inject constructor(
             .launchIn(viewModelScope)
         // Подписываемся на включение фоновой музыки
         settingsDataStore.ambientEnabledFlow
-            .onEach { 
-                setState { copy(ambientEnabled = it) }
-                handleAmbientMusicChange(it, uiState.value.ambientTrack)
+            .onEach { enabled -> 
+                setState { copy(ambientEnabled = enabled) }
+                
+                // Используем актуальное значение после setState
+                settingsDataStore.ambientTrackFlow.map { track ->
+                    handleAmbientMusicChange(enabled, track)
+                }.launchIn(viewModelScope)
             }
             .launchIn(viewModelScope)
         // Подписываемся на выбор трека
         settingsDataStore.ambientTrackFlow
-            .onEach { 
-                setState { copy(ambientTrack = it) }
-                if (uiState.value.ambientEnabled) {
-                    handleAmbientMusicChange(true, it)
-                }
+            .onEach { track -> 
+                setState { copy(ambientTrack = track) }
+                
+                // Используем актуальное значение после setState
+                settingsDataStore.ambientEnabledFlow.map { enabled ->
+                    if (enabled) {
+                        handleAmbientMusicChange(true, track)
+                    }
+                }.launchIn(viewModelScope)
             }
             .launchIn(viewModelScope)
         // Подписываемся на визуализацию сердца
@@ -73,13 +81,15 @@ class SettingsViewModel @Inject constructor(
                 viewModelScope.launch { settingsDataStore.setTheme(event.theme) }
             is SettingsContract.Event.AmbientToggled ->
                 viewModelScope.launch { 
+                    val track = settingsDataStore.getAmbientTrack() // Получаем синхронно текущий трек
                     settingsDataStore.setAmbientEnabled(event.enabled) 
-                    handleAmbientMusicChange(event.enabled, uiState.value.ambientTrack)
+                    handleAmbientMusicChange(event.enabled, track)
                 }
             is SettingsContract.Event.AmbientTrackSelected ->
                 viewModelScope.launch { 
+                    val enabled = settingsDataStore.getAmbientEnabled() // Получаем синхронно текущее состояние
                     settingsDataStore.setAmbientTrack(event.trackId)
-                    if (uiState.value.ambientEnabled) {
+                    if (enabled) {
                         handleAmbientMusicChange(true, event.trackId)
                     }
                 }
