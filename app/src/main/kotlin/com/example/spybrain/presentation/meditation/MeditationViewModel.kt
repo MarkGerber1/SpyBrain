@@ -141,4 +141,19 @@ class MeditationViewModel @Inject constructor(
         // TODO: Реализовать обработку голосовых команд для медитации
         setEffect { MeditationContract.Effect.Speak("Голосовая команда: $command") } // FIXME билд-фикс 09.05.2025
     }
+    
+    // Метод для очистки ресурсов при размонтировании экрана
+    fun cleanupResources() {
+        try {
+            // Используем uiState.value для доступа к текущему состоянию
+            uiState.value.currentPlaying?.let {
+                playerService.pause()
+            }
+            // Освобождаем только если выходим со страницы, но не полностью (для продолжения в фоне)
+            // Полная очистка происходит в onDestroy сервиса
+        } catch (e: Exception) {
+            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+            setEffect { MeditationContract.Effect.ShowError(uiError) }
+        }
+    }
 } 

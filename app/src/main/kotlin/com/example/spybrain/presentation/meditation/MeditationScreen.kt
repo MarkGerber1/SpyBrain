@@ -45,6 +45,7 @@ import com.example.spybrain.service.BackgroundMusicService
 import com.example.spybrain.voice.VoiceAssistantService
 import kotlinx.coroutines.delay
 import android.widget.Toast
+import androidx.compose.runtime.DisposableEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +58,13 @@ fun MeditationScreen(
     val context = LocalContext.current
     val voiceService = remember { VoiceAssistantService(context) }
     val player = viewModel.player
+
+    // DisposableEffect для очистки ресурсов при размонтировании композабла
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.cleanupResources()
+        }
+    }
 
     // Ambient background audio
     LaunchedEffect(settings.ambientEnabled, settings.ambientTrack) {

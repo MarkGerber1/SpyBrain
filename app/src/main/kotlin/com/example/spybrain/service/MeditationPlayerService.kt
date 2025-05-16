@@ -25,6 +25,7 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
     private val exoPlayer: ExoPlayer by lazy { 
         ExoPlayer.Builder(applicationContext).build().also { player ->
             player.repeatMode = Player.REPEAT_MODE_OFF
+            player.playWhenReady = false
             player.prepare()
         }
     }

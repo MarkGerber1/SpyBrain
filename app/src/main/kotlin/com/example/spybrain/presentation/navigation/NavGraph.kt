@@ -25,10 +25,6 @@ fun NavGraph(navController: NavHostController) {
 
         composable(Screen.Splash.route) { SplashScreen(navController) }
 
-        composable(Screen.MeditationLibrary.route) {
-            MeditationLibraryScreen()
-        }
-
         composable(Screen.Meditation.route) {
             MeditationScreen()
         }
@@ -37,6 +33,22 @@ fun NavGraph(navController: NavHostController) {
             BreathingScreen(navController)
         }
 
+        composable(Screen.Stats.route) {
+            StatsScreen()
+        }
+        
+        composable(Screen.Reminders.route) {
+            RemindersScreen()
+        }
+
+        composable(Screen.Settings.route) {
+            SettingsScreen(navController)
+        }
+
+        composable(Screen.MeditationLibrary.route) {
+            MeditationLibraryScreen()
+        }
+        
         composable(Screen.PatternBuilder.route) {
             BreathingPatternBuilderScreen(navController)
         }
@@ -51,24 +63,12 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
-        composable(Screen.Stats.route) {
-            StatsScreen()
-        }
-
         composable(Screen.Profile.route) {
             ProfileScreen()
         }
 
         composable(Screen.BioSync.route) {
             BioSyncScreen()
-        }
-        
-        composable(Screen.Reminders.route) {
-            RemindersScreen()
-        }
-
-        composable(Screen.Settings.route) {
-            SettingsScreen(navController)
         }
     }
 } 
