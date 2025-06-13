@@ -63,7 +63,7 @@ class StatsViewModel @Inject constructor(
                         setEffect { StatsContract.Effect.ShowError(uiError) }
                     }
                     .collect { stats ->
-                        setState { copy(isLoading = false, overallStats = stats) }
+                        setState { copy(isLoading = false, stats = stats) }
                     }
             } catch (e: Exception) {
                 Timber.e(e, "Критическая ошибка при загрузке статистики")
