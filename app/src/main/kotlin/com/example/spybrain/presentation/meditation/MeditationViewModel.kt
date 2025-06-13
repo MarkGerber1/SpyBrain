@@ -11,6 +11,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.isActive
 import java.util.Date
 import javax.inject.Inject
 import androidx.media3.common.MediaItem
@@ -23,16 +28,26 @@ import com.example.spybrain.domain.service.IAiMentor
 import com.example.spybrain.util.UiError
 import com.example.spybrain.domain.service.IVoiceAssistant
 import com.example.spybrain.voice.VoiceCommand
-import com.example.spybrain.presentation.meditation.MeditationContract.Effect.Speak // FIXME билд-фикс 09.05.2025
+import com.example.spybrain.presentation.meditation.MeditationContract.Effect.Speak
+import timber.log.Timber
 
 @HiltViewModel
 class MeditationViewModel @Inject constructor(
     private val getMeditationsUseCase: GetMeditationsUseCase,
     private val trackMeditationSessionUseCase: TrackMeditationSessionUseCase,
-    private val playerService: IPlayerService, // TODO реализовано: внедрение через абстракцию
-    private val aiMentor: IAiMentor, // TODO реализовано: внедрение через абстракцию
-    private val voiceAssistant: IVoiceAssistant // TODO реализовано: внедрение через абстракцию
-) : BaseViewModel<MeditationContract.Event, MeditationContract.State, MeditationContract.Effect>() { // TODO: Добавить все необходимые юнит-тесты для ViewModel
+    private val playerService: IPlayerService,
+    private val aiMentor: IAiMentor,
+    private val voiceAssistant: IVoiceAssistant
+) : BaseViewModel<MeditationContract.Event, MeditationContract.State, MeditationContract.Effect>() {
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        Timber.e(exception, "Необработанная ошибка в корутине")
+        val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(exception))
+        setEffect { MeditationContract.Effect.ShowError(uiError) }
+    }
+
+    private var meditationJob: Job? = null
+    private var adviceJob: Job? = null
 
     val player: IPlayerService
         get() = playerService
@@ -56,26 +71,34 @@ class MeditationViewModel @Inject constructor(
     }
 
     private fun loadMeditations() {
-        viewModelScope.launch {
-            getMeditationsUseCase()
-                .onStart { setState { copy(isLoading = true, error = null) } }
-                .catch { error ->
-                    val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(error))
-                    setState { copy(isLoading = false, error = uiError) }
-                    setEffect { MeditationContract.Effect.ShowError(uiError) }
-                }
-                .collect { meditations ->
-                    setState { copy(isLoading = false, meditations = meditations) }
-                }
+        viewModelScope.launch(coroutineExceptionHandler) {
+            try {
+                getMeditationsUseCase()
+                    .onStart { 
+                        setState { copy(isLoading = true, error = null) } 
+                    }
+                    .catch { error ->
+                        Timber.e(error, "Ошибка загрузки медитаций")
+                        val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(error))
+                        setState { copy(isLoading = false, error = uiError) }
+                        setEffect { MeditationContract.Effect.ShowError(uiError) }
+                    }
+                    .collect { meditations ->
+                        setState { copy(isLoading = false, meditations = meditations) }
+                    }
+            } catch (e: Exception) {
+                Timber.e(e, "Критическая ошибка при загрузке медитаций")
+                val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+                setState { copy(isLoading = false, error = uiError) }
+                setEffect { MeditationContract.Effect.ShowError(uiError) }
+            }
         }
     }
 
     private fun playMeditation(meditation: Meditation) {
-        // Проверяем, не нулевой ли плеер
-        if (playerService == null) {
-            setEffect { MeditationContract.Effect.ShowError(UiError.Custom("Сервис плеера недоступен")) }
-            return
-        }
+        // Отменяем предыдущие задачи
+        meditationJob?.cancel()
+        adviceJob?.cancel()
         
         try {
             // Проверяем URL на валидность
@@ -84,79 +107,113 @@ class MeditationViewModel @Inject constructor(
                 return
             }
             
-            // Нормализуем URL для медитаций - если URL не содержит протокол, 
-            // или если это пример URL, заменяем на локальный ассет
+            // Нормализуем URL для медитаций
             val audioUrl = when {
-                meditation.audioUrl.contains("example.com") -> "file:///android_asset/audio/mixkit-valley-sunset-127.mp3"
+                meditation.audioUrl.contains("example.com") -> "asset:///audio/mixkit-valley-sunset-127.mp3"
                 meditation.audioUrl.startsWith("http://") || 
                 meditation.audioUrl.startsWith("https://") -> meditation.audioUrl
+                meditation.audioUrl.startsWith("asset:///") -> meditation.audioUrl
                 else -> {
-                    // Предполагаем, что это либо имя файла, либо относительный путь к ассету
                     val assetPath = if (meditation.audioUrl.startsWith("audio/")) {
                         meditation.audioUrl
                     } else {
                         "audio/${meditation.audioUrl}"
                     }
-                    
-                    // Используем формат, который точно работает с ExoPlayer
-                    "file:///android_asset/$assetPath"
+                    "asset:///$assetPath"
                 }
             }
             
-            // Сначала обновляем UI, чтобы показать воспроизведение
+            // Обновляем UI
             setState { copy(currentPlaying = meditation) }
             
-            // Используем безопасное воспроизведение
-            viewModelScope.launch {
+            // Запускаем воспроизведение в отдельной корутине
+            meditationJob = viewModelScope.launch(coroutineExceptionHandler + SupervisorJob()) {
                 try {
                     playerService.stop()
                     playerService.play(audioUrl)
                     
                     // AI наставник: вступительный совет
-                    aiMentor.giveMeditationAdvice()
+                    try {
+                        aiMentor.giveMeditationAdvice()
+                    } catch (e: Exception) {
+                        Timber.w(e, "Ошибка при получении совета от AI наставника")
+                        // Не прерываем воспроизведение из-за ошибки AI
+                    }
                     
-                    // Проверяем, начало ли воспроизведение, иначе показываем ошибку
-                    delay(500) // Небольшая задержка для инициализации
+                    // Проверяем воспроизведение
+                    delay(500)
                     if (!playerService.isPlaying()) {
-                        // Если воспроизведение не началось, возможно, была ошибка
                         setEffect { MeditationContract.Effect.ShowError(UiError.Custom("Не удалось начать воспроизведение")) }
-                    } else {
-                        // Периодические советы каждые 60 секунд
-                        while (playerService.isPlaying()) {
-                            delay(60000L)
-                            aiMentor.giveMeditationAdvice()
+                        return@launch
+                    }
+                    
+                    // Запускаем периодические советы в отдельной корутине
+                    adviceJob = launch(coroutineExceptionHandler + SupervisorJob()) {
+                        try {
+                            while (isActive && playerService.isPlaying()) {
+                                delay(60000L)
+                                if (isActive) {
+                                    try {
+                                        aiMentor.giveMeditationAdvice()
+                                    } catch (e: Exception) {
+                                        Timber.w(e, "Ошибка при получении периодического совета")
+                                        // Продолжаем цикл
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Timber.e(e, "Ошибка в цикле советов")
                         }
                     }
+                    
                 } catch (e: Exception) {
+                    Timber.e(e, "Ошибка при воспроизведении медитации")
                     val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
                     setEffect { MeditationContract.Effect.ShowError(uiError) }
+                    setState { copy(currentPlaying = null) }
                 }
             }
             
-            // Голосовой анонс начала медитации
+            // Голосовой анонс
             setEffect { MeditationContract.Effect.Speak(meditation.title) }
+            
         } catch (e: Exception) {
+            Timber.e(e, "Критическая ошибка при запуске медитации")
             val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
             setEffect { MeditationContract.Effect.ShowError(uiError) }
         }
     }
 
     private fun pauseMeditation() {
-        playerService.pause()
+        try {
+            playerService.pause()
+            adviceJob?.cancel()
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при паузе медитации")
+            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+            setEffect { MeditationContract.Effect.ShowError(uiError) }
+        }
     }
 
     private fun stopMeditation() {
-        playerService.stop()
-        setState { copy(currentPlaying = null) }
-        // TODO реализовано: Голосовой анонс окончания через ViewModel
-        setEffect { MeditationContract.Effect.Speak("Медитация завершена") } // Пример анонса // TODO: Вынести строку в strings.xml
+        try {
+            meditationJob?.cancel()
+            adviceJob?.cancel()
+            playerService.stop()
+            setState { copy(currentPlaying = null) }
+            setEffect { MeditationContract.Effect.Speak("Медитация завершена") }
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при остановке медитации")
+            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+            setEffect { MeditationContract.Effect.ShowError(uiError) }
+        }
     }
 
     private fun trackSessionEnd(meditationId: String, durationSeconds: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineExceptionHandler) {
             try {
                 val session = Session(
-                    id = "session_${System.currentTimeMillis()}", // Generate unique ID
+                    id = "session_${System.currentTimeMillis()}",
                     type = SessionType.MEDITATION,
                     startTime = Date(System.currentTimeMillis() - durationSeconds * 1000),
                     endTime = Date(),
@@ -165,36 +222,47 @@ class MeditationViewModel @Inject constructor(
                 )
                 trackMeditationSessionUseCase(session)
             } catch (e: Exception) {
+                Timber.e(e, "Ошибка при отслеживании сессии")
                 val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
                 setEffect { MeditationContract.Effect.ShowError(uiError) }
             }
         }
     }
 
-    // Метод для запуска прослушивания голосовой команды
     fun startListeningVoice() {
-        // TODO: Реализовать запуск прослушивания через VoiceAssistant и передачу результата в handleEvent
-        // voiceAssistant.startListening { command -> handleEvent(MeditationContract.Event.VoiceCommand(command)) }
-        val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(Exception("Голосовой ввод пока не реализован"))) // TODO: Вынести строку в strings.xml, возможно маппинг через ErrorHandler потребуется доработать для UI ошибок заглушек
-        setEffect { MeditationContract.Effect.ShowError(uiError) } // TODO: Вынести строку в strings.xml
+        viewModelScope.launch(coroutineExceptionHandler) {
+            try {
+                // TODO: Реализовать запуск прослушивания
+                val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(Exception("Голосовой ввод пока не реализован")))
+                setEffect { MeditationContract.Effect.ShowError(uiError) }
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при запуске голосового ввода")
+                val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+                setEffect { MeditationContract.Effect.ShowError(uiError) }
+            }
+        }
     }
 
-    // FIXME тип-фикс 09.05.2025: исправлены возвращаемые значения на MeditationContract.Effect
     private fun handleVoiceCommand(command: String) {
-        // TODO: Реализовать обработку голосовых команд для медитации
-        setEffect { MeditationContract.Effect.Speak("Голосовая команда: $command") } // FIXME билд-фикс 09.05.2025
+        try {
+            setEffect { MeditationContract.Effect.Speak("Голосовая команда: $command") }
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при обработке голосовой команды")
+            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+            setEffect { MeditationContract.Effect.ShowError(uiError) }
+        }
     }
     
-    // Метод для очистки ресурсов при размонтировании экрана
     fun cleanupResources() {
         try {
-            // Используем uiState.value для доступа к текущему состоянию
+            meditationJob?.cancel()
+            adviceJob?.cancel()
+            
             uiState.value.currentPlaying?.let {
                 playerService.pause()
             }
-            // Освобождаем только если выходим со страницы, но не полностью (для продолжения в фоне)
-            // Полная очистка происходит в onDestroy сервиса
         } catch (e: Exception) {
+            Timber.e(e, "Ошибка при очистке ресурсов")
             val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
             setEffect { MeditationContract.Effect.ShowError(uiError) }
         }

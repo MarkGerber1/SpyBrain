@@ -8,6 +8,7 @@ import com.example.spybrain.domain.usecase.breathing.GetCustomBreathingPatternsU
 import com.example.spybrain.presentation.breathing.patternbuilder.BreathingPatternBuilderContract as Contract
 import com.example.spybrain.presentation.breathing.patternbuilder.BreathingPatternBuilderViewModel
 import com.example.spybrain.test.utils.MainDispatcherRule
+import com.example.spybrain.util.UiError
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.coVerify
@@ -56,7 +57,8 @@ class BreathingPatternBuilderViewModelTest {
         viewModel.effect.test {
             viewModel.setEvent(Contract.Event.SavePattern)
             val effect = awaitItem() as Contract.Effect.ShowError
-            assertEquals("Введите название шаблона", effect.message)
+            val customError = effect.error as UiError.Custom
+            assertEquals("Введите название шаблона", customError.message)
             cancelAndIgnoreRemainingEvents()
         }
     }

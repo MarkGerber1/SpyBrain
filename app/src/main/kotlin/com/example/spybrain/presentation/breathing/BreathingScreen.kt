@@ -191,6 +191,9 @@ fun PatternPreview(pattern: BreathingPattern) {
     val totalDuration = pattern.inhaleSeconds + pattern.holdAfterInhaleSeconds + 
                          pattern.exhaleSeconds + pattern.holdAfterExhaleSeconds
     
+    // Проверяем, что общая длительность больше 0, иначе используем fallback
+    val safeTotalDuration = if (totalDuration > 0) totalDuration else 1
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -199,25 +202,33 @@ fun PatternPreview(pattern: BreathingPattern) {
     ) {
         Box(
             modifier = Modifier
-                .weight(pattern.inhaleSeconds.toFloat() / totalDuration)
+                .weight(
+                    if (pattern.inhaleSeconds > 0) pattern.inhaleSeconds.toFloat() / safeTotalDuration else 0.25f
+                )
                 .fillMaxHeight()
                 .background(Color(0xFF81D4FA))
         )
         Box(
             modifier = Modifier
-                .weight(pattern.holdAfterInhaleSeconds.toFloat() / totalDuration)
+                .weight(
+                    if (pattern.holdAfterInhaleSeconds > 0) pattern.holdAfterInhaleSeconds.toFloat() / safeTotalDuration else 0.25f
+                )
                 .fillMaxHeight()
                 .background(Color(0xFF64B5F6))
         )
         Box(
             modifier = Modifier
-                .weight(pattern.exhaleSeconds.toFloat() / totalDuration)
+                .weight(
+                    if (pattern.exhaleSeconds > 0) pattern.exhaleSeconds.toFloat() / safeTotalDuration else 0.25f
+                )
                 .fillMaxHeight()
                 .background(Color(0xFF42A5F5))
         )
         Box(
             modifier = Modifier
-                .weight(pattern.holdAfterExhaleSeconds.toFloat() / totalDuration)
+                .weight(
+                    if (pattern.holdAfterExhaleSeconds > 0) pattern.holdAfterExhaleSeconds.toFloat() / safeTotalDuration else 0.25f
+                )
                 .fillMaxHeight()
                 .background(Color(0xFF2196F3))
         )

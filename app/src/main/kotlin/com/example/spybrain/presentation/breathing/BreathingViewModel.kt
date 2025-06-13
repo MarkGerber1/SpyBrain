@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import java.util.Date
 import javax.inject.Inject
 import com.example.spybrain.presentation.breathing.BreathingContract.Effect.Speak
@@ -23,7 +26,8 @@ import com.example.spybrain.domain.service.IAiMentor
 import com.example.spybrain.util.UiError
 import com.example.spybrain.domain.service.IHealthAdvisor
 import com.example.spybrain.domain.service.IVoiceAssistant
-import com.example.spybrain.domain.error.ErrorHandler // FIXME билд-фикс 09.05.2025
+import com.example.spybrain.domain.error.ErrorHandler
+import timber.log.Timber
 
 @HiltViewModel
 class BreathingViewModel @Inject constructor(
@@ -33,7 +37,13 @@ class BreathingViewModel @Inject constructor(
     private val aiMentor: IAiMentor,
     private val healthAdvisor: IHealthAdvisor,
     private val voiceAssistant: IVoiceAssistant
-) : BaseViewModel<BreathingContract.Event, BreathingContract.State, BreathingContract.Effect>() { // TODO: Добавить все необходимые юнит-тесты для ViewModel
+) : BaseViewModel<BreathingContract.Event, BreathingContract.State, BreathingContract.Effect>() {
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        Timber.e(exception, "Необработанная ошибка в корутине дыхания")
+        val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(exception))
+        setEffect { BreathingContract.Effect.ShowError(uiError) }
+    }
 
     private var breathingJob: Job? = null
     private var sessionStartTime: Long = 0
@@ -52,124 +62,192 @@ class BreathingViewModel @Inject constructor(
             is BreathingContract.Event.StartPattern -> startPattern(event.pattern)
             is BreathingContract.Event.StopPattern -> stopPattern()
             is BreathingContract.Event.VoiceCommand -> {
-                val command = event.text.lowercase(Locale.getDefault())
-                when {
-                    command.contains("стоп") || command.contains("stop") -> stopPattern()
-                    command.contains("начать") || command.contains("start") || command.contains("вдох") -> {
-                        uiState.value.patterns.firstOrNull()?.let { startPattern(it) }
-                            ?: setEffect { BreathingContract.Effect.ShowError(UiError.Custom("Нет доступных шаблонов")) }
+                try {
+                    val command = event.text.lowercase(Locale.getDefault())
+                    when {
+                        command.contains("стоп") || command.contains("stop") -> stopPattern()
+                        command.contains("начать") || command.contains("start") || command.contains("вдох") -> {
+                            uiState.value.patterns.firstOrNull()?.let { startPattern(it) }
+                                ?: setEffect { BreathingContract.Effect.ShowError(UiError.Custom("Нет доступных шаблонов")) }
+                        }
+                        else -> setEffect { BreathingContract.Effect.Speak("Команда не распознана") }
                     }
-                    else -> setEffect { BreathingContract.Effect.Speak("Команда не распознана") }
+                } catch (e: Exception) {
+                    Timber.e(e, "Ошибка при обработке голосовой команды")
+                    val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+                    setEffect { BreathingContract.Effect.ShowError(uiError) }
                 }
             }
         }
     }
 
     private fun loadPatterns() {
-        viewModelScope.launch {
-            getBreathingPatternsUseCase()
-                .onStart { setState { copy(isLoading = true, error = null) } }
-                .catch { error ->
-                    val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(error))
-                    setState { copy(isLoading = false, error = uiError) }
-                    setEffect { BreathingContract.Effect.ShowError(uiError) }
-                }
-                .collect { patterns ->
-                    setState { copy(isLoading = false, patterns = patterns) }
-                }
+        viewModelScope.launch(coroutineExceptionHandler) {
+            try {
+                getBreathingPatternsUseCase()
+                    .onStart { setState { copy(isLoading = true, error = null) } }
+                    .catch { error ->
+                        Timber.e(error, "Ошибка загрузки паттернов дыхания")
+                        val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(error))
+                        setState { copy(isLoading = false, error = uiError) }
+                        setEffect { BreathingContract.Effect.ShowError(uiError) }
+                    }
+                    .collect { patterns ->
+                        setState { copy(isLoading = false, patterns = patterns) }
+                    }
+            } catch (e: Exception) {
+                Timber.e(e, "Критическая ошибка при загрузке паттернов")
+                val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+                setState { copy(isLoading = false, error = uiError) }
+                setEffect { BreathingContract.Effect.ShowError(uiError) }
+            }
         }
     }
 
     private fun startPattern(pattern: BreathingPattern) {
-        stopPattern() // Stop any existing pattern
-        sessionStartTime = System.currentTimeMillis()
-        setState {
-            copy(
-                currentPattern = pattern,
-                remainingCycles = pattern.totalCycles,
-                currentPhase = BreathingContract.BreathingPhase.Idle // Start with idle before first inhale
-            )
-        }
-        // Голосовое сопровождение старта
-        setEffect { Speak("Начинаем. Вдох...") }
-        breathingJob = viewModelScope.launch {
-            runBreathingCycle(pattern)
+        try {
+            stopPattern() // Stop any existing pattern
+            sessionStartTime = System.currentTimeMillis()
+            setState {
+                copy(
+                    currentPattern = pattern,
+                    remainingCycles = pattern.totalCycles,
+                    currentPhase = BreathingContract.BreathingPhase.Idle
+                )
+            }
+            // Голосовое сопровождение старта
+            setEffect { Speak("Начинаем. Вдох...") }
+            breathingJob = viewModelScope.launch(coroutineExceptionHandler + SupervisorJob()) {
+                runBreathingCycle(pattern)
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при запуске паттерна дыхания")
+            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+            setEffect { BreathingContract.Effect.ShowError(uiError) }
         }
     }
 
     private suspend fun runBreathingCycle(pattern: BreathingPattern) {
-        val currentJob = breathingJob ?: return // Ensure job exists
-        while (currentJob.isActive && uiState.value.remainingCycles > 0) {
-            // Inhale
-            setEffect { Speak("Вдох") }
-            aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.Inhale)
-            if (!runPhase(BreathingContract.BreathingPhase.Inhale, pattern.inhaleSeconds, currentJob)) break
-            // Hold After Inhale
-            if (pattern.holdAfterInhaleSeconds > 0) {
-                setEffect { Speak("Задержка") }
-                aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.HoldAfterInhale)
-                if (!runPhase(BreathingContract.BreathingPhase.HoldAfterInhale, pattern.holdAfterInhaleSeconds, currentJob)) break
-            }
-            // Exhale
-            setEffect { Speak("Выдох") }
-            aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.Exhale)
-            if (!runPhase(BreathingContract.BreathingPhase.Exhale, pattern.exhaleSeconds, currentJob)) break
-            // Hold After Exhale
-            if (pattern.holdAfterExhaleSeconds > 0) {
-                setEffect { Speak("Отдых") }
-                aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.HoldAfterExhale)
-                if (!runPhase(BreathingContract.BreathingPhase.HoldAfterExhale, pattern.holdAfterExhaleSeconds, currentJob)) break
-            }
+        val currentJob = breathingJob ?: return
+        try {
+            while (currentJob.isActive && uiState.value.remainingCycles > 0) {
+                // Inhale
+                setEffect { Speak("Вдох") }
+                try {
+                    aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.Inhale)
+                } catch (e: Exception) {
+                    Timber.w(e, "Ошибка при получении совета для вдоха")
+                }
+                if (!runPhase(BreathingContract.BreathingPhase.Inhale, pattern.inhaleSeconds, currentJob)) break
+                
+                // Hold After Inhale
+                if (pattern.holdAfterInhaleSeconds > 0) {
+                    setEffect { Speak("Задержка") }
+                    try {
+                        aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.HoldAfterInhale)
+                    } catch (e: Exception) {
+                        Timber.w(e, "Ошибка при получении совета для задержки после вдоха")
+                    }
+                    if (!runPhase(BreathingContract.BreathingPhase.HoldAfterInhale, pattern.holdAfterInhaleSeconds, currentJob)) break
+                }
+                
+                // Exhale
+                setEffect { Speak("Выдох") }
+                try {
+                    aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.Exhale)
+                } catch (e: Exception) {
+                    Timber.w(e, "Ошибка при получении совета для выдоха")
+                }
+                if (!runPhase(BreathingContract.BreathingPhase.Exhale, pattern.exhaleSeconds, currentJob)) break
+                
+                // Hold After Exhale
+                if (pattern.holdAfterExhaleSeconds > 0) {
+                    setEffect { Speak("Отдых") }
+                    try {
+                        aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.HoldAfterExhale)
+                    } catch (e: Exception) {
+                        Timber.w(e, "Ошибка при получении совета для задержки после выдоха")
+                    }
+                    if (!runPhase(BreathingContract.BreathingPhase.HoldAfterExhale, pattern.holdAfterExhaleSeconds, currentJob)) break
+                }
 
-            setState { copy(remainingCycles = remainingCycles - 1) }
-        }
-        // Cycle finished or stopped
-        if (currentJob.isActive) {
-            // Отслеживание и голос завершения
-            trackSessionEnd(pattern.id, System.currentTimeMillis() - sessionStartTime)
-            setEffect { Speak("Отлично! Вы завершили дыхательную практику.") }
+                setState { copy(remainingCycles = remainingCycles - 1) }
+            }
+            
+            // Cycle finished or stopped
+            if (currentJob.isActive) {
+                trackSessionEnd(pattern.id, System.currentTimeMillis() - sessionStartTime)
+                setEffect { Speak("Отлично! Вы завершили дыхательную практику.") }
+                stopPatternInternal()
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка в цикле дыхания")
+            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+            setEffect { BreathingContract.Effect.ShowError(uiError) }
             stopPatternInternal()
         }
     }
 
     private suspend fun runPhase(phase: BreathingContract.BreathingPhase, durationSeconds: Int, job: Job): Boolean {
         if (durationSeconds <= 0) return true
-        setState { copy(currentPhase = phase, cycleProgress = 0f) }
-        setEffect { BreathingContract.Effect.Vibrate } // Vibrate at phase start
-        val stepMillis = 100L // Update progress every 100ms
-        val totalSteps = (durationSeconds * 1000 / stepMillis).toInt()
+        
+        try {
+            setState { copy(currentPhase = phase, cycleProgress = 0f) }
+            setEffect { BreathingContract.Effect.Vibrate }
+            val stepMillis = 100L
+            val totalSteps = (durationSeconds * 1000 / stepMillis).toInt()
 
-        for (step in 1..totalSteps) {
-            if (!job.isActive) return false // Check specific job
-            delay(stepMillis)
-            setState { copy(cycleProgress = step.toFloat() / totalSteps) }
+            for (step in 1..totalSteps) {
+                if (!job.isActive) return false
+                delay(stepMillis)
+                setState { copy(cycleProgress = step.toFloat() / totalSteps) }
+            }
+            setState { copy(cycleProgress = 1f) }
+            return job.isActive
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка в фазе дыхания: $phase")
+            return false
         }
-         setState { copy(cycleProgress = 1f) } // Ensure progress reaches 1
-        return job.isActive // Return true if job is still active after delay
     }
 
-
     private fun stopPattern() {
-        val pattern = uiState.value.currentPattern
-        val startTime = sessionStartTime
-        stopPatternInternal()
-        pattern?.let {
-            val durationMillis = System.currentTimeMillis() - startTime
-            if (durationMillis > 1000) { // Only track if session was longer than 1 second
-                 trackSessionEnd(it.id, durationMillis)
+        try {
+            val pattern = uiState.value.currentPattern
+            val startTime = sessionStartTime
+            stopPatternInternal()
+            pattern?.let {
+                val durationMillis = System.currentTimeMillis() - startTime
+                if (durationMillis > 1000) {
+                    trackSessionEnd(it.id, durationMillis)
+                }
             }
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при остановке паттерна")
+            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+            setEffect { BreathingContract.Effect.ShowError(uiError) }
         }
     }
 
     private fun stopPatternInternal() {
-        breathingJob?.cancel()
-        breathingJob = null
-        setState { copy(currentPattern = null, currentPhase = BreathingContract.BreathingPhase.Idle, remainingCycles = 0, cycleProgress = 0f) }
-        sessionStartTime = 0
+        try {
+            breathingJob?.cancel()
+            breathingJob = null
+            setState { 
+                copy(
+                    currentPattern = null, 
+                    currentPhase = BreathingContract.BreathingPhase.Idle, 
+                    remainingCycles = 0, 
+                    cycleProgress = 0f
+                ) 
+            }
+            sessionStartTime = 0
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при внутренней остановке паттерна")
+        }
     }
 
     private fun trackSessionEnd(patternId: String, durationMillis: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineExceptionHandler) {
             try {
                 val session = Session(
                     id = "session_${System.currentTimeMillis()}",
@@ -179,32 +257,36 @@ class BreathingViewModel @Inject constructor(
                     durationSeconds = durationMillis / 1000,
                     relatedItemId = patternId
                 )
-                // Save session in stats repository
                 saveSessionUseCase(session)
-                // Track breathing session in repository
                 trackBreathingSessionUseCase(session)
             } catch (e: Exception) {
-                 val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+                Timber.e(e, "Ошибка при отслеживании сессии дыхания")
+                val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
                 setEffect { BreathingContract.Effect.ShowError(uiError) }
             }
         }
     }
 
     override fun onCleared() {
-        stopPatternInternal()
-        super.onCleared()
+        try {
+            stopPatternInternal()
+            super.onCleared()
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при очистке ViewModel")
+        }
     }
 
     // Метод для анализа уровня пульса
     fun analyzeBpm(bpm: Int): BpmLevel = when {
         bpm < 55 -> BpmLevel.LOW
-        bpm <= 90 -> BpmLevel.NORMAL
-        bpm <= 110 -> BpmLevel.HIGH
-        else -> BpmLevel.CRITICAL
+        bpm < 70 -> BpmLevel.NORMAL
+        bpm < 85 -> BpmLevel.ELEVATED
+        else -> BpmLevel.HIGH
     }
-    
-    // Уровни пульса
-    enum class BpmLevel { LOW, NORMAL, HIGH, CRITICAL }
+
+    enum class BpmLevel {
+        LOW, NORMAL, ELEVATED, HIGH
+    }
 
     // Метод для получения динамических советов от HealthAdvisor
     fun getDynamicAdvices(phase: BreathingContract.BreathingPhase, bpm: Int): String {
