@@ -38,6 +38,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.ui.res.stringResource
+import android.speech.tts.Voice
 
 object LocaleManager {
     fun setLocale(activity: Activity, language: String) {
@@ -45,7 +47,7 @@ object LocaleManager {
         Locale.setDefault(locale)
         val config = Configuration(activity.resources.configuration)
         config.setLocale(locale)
-        activity.resources.updateConfiguration(config, activity.resources.displayMetrics)
+        activity.createConfigurationContext(config)
     }
 }
 
@@ -56,7 +58,6 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val state by viewModel.uiState.collectAsState()
-    val activity = context as? Activity
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -74,7 +75,7 @@ fun SettingsScreen(
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         item {
-            Text(text = "Текущая тема", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.settings_current_theme), style = MaterialTheme.typography.titleLarge)
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -106,14 +107,14 @@ fun SettingsScreen(
         }
         
         item {
-            Text(text = "Выбрать тему", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.settings_select_theme), style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(8.dp))
             
             val themes = listOf(
-                Triple("water", "Вода", R.drawable.bg_water),
-                Triple("space", "Космос", R.drawable.bg_space),
-                Triple("nature", "Природа", R.drawable.bg_nature),
-                Triple("air", "Воздух", R.drawable.bg_air)
+                Triple("water", R.string.settings_water, R.drawable.bg_water),
+                Triple("space", R.string.settings_space, R.drawable.bg_space),
+                Triple("nature", R.string.settings_nature, R.drawable.bg_nature),
+                Triple("air", R.string.settings_air, R.drawable.bg_air)
             )
             
             LazyVerticalGrid(
@@ -122,10 +123,10 @@ fun SettingsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.height(240.dp)
             ) {
-                items(themes) { (themeId, themeName, bgRes) ->
+                items(themes) { (themeId, themeNameRes, bgRes) ->
                     ThemePreviewCard(
                         themeId = themeId,
-                        themeName = themeName,
+                        themeName = stringResource(themeNameRes),
                         bgRes = bgRes,
                         isSelected = state.theme == themeId,
                         onClick = { viewModel.setEvent(Event.ThemeSelected(themeId)) }
@@ -135,19 +136,19 @@ fun SettingsScreen(
         }
         
         item {
-            Text(text = "Фоновая музыка", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.settings_ambient_music), style = MaterialTheme.typography.titleLarge)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Switch(
                     checked = state.ambientEnabled,
                     onCheckedChange = { viewModel.setEvent(Event.AmbientToggled(it)) }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = if (state.ambientEnabled) "Включена" else "Выключена")
+                Text(text = if (state.ambientEnabled) stringResource(R.string.settings_ambient_enabled) else stringResource(R.string.settings_ambient_disabled))
             }
             if (state.ambientEnabled) {
                 Spacer(modifier = Modifier.height(8.dp))
                 var expanded by remember { mutableStateOf(false) }
-                val currentLabel = state.availableTracks.firstOrNull { it.first == state.ambientTrack }?.second ?: "Выберите трек"
+                val currentLabel = state.availableTracks.firstOrNull { it.first == state.ambientTrack }?.second ?: stringResource(R.string.settings_select_track)
                 Box {
                     Text(
                         text = currentLabel,
@@ -173,50 +174,36 @@ fun SettingsScreen(
             }
         }
         item {
-            Text(text = "Бьющееся сердце", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.settings_heartbeat), style = MaterialTheme.typography.titleLarge)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Switch(
                     checked = state.heartbeatEnabled,
                     onCheckedChange = { viewModel.setEvent(Event.HeartbeatToggled(it)) }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = if (state.heartbeatEnabled) "Включено" else "Выключено")
+                Text(text = if (state.heartbeatEnabled) stringResource(R.string.settings_heartbeat_enabled) else stringResource(R.string.settings_heartbeat_disabled))
             }
         }
         item {
-            Text(text = "Голосовые подсказки (TTS)", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.settings_voice_hints), style = MaterialTheme.typography.titleLarge)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Switch(
                     checked = state.voiceHintsEnabled,
                     onCheckedChange = { viewModel.setEvent(Event.VoiceHintsToggled(it)) }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = if (state.voiceHintsEnabled) "Включено" else "Выключено")
+                Text(text = if (state.voiceHintsEnabled) stringResource(R.string.settings_voice_hints_enabled) else stringResource(R.string.settings_voice_hints_disabled))
             }
         }
         item {
-            Text(text = "Голос TTS", style = MaterialTheme.typography.titleLarge)
-            val voiceService = remember { VoiceAssistantService(context) }
-            val voices = remember { voiceService.getAvailableVoices() }
-            Column {
-                voices.forEach { voice ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(
-                            selected = state.voiceId == voice.name,
-                            onClick = {
-                                viewModel.setEvent(SettingsContract.Event.VoiceIdSelected(voice.name))
-                                voiceService.setVoiceById(voice.name)
-                            }
-                        )
-                        Text(voiceService.getVoiceDescription(voice))
-                    }
-                }
-            }
+            Text(text = stringResource(R.string.settings_voice_tts), style = MaterialTheme.typography.titleLarge)
+            VoiceSelection(state, viewModel)
         }
         item {
-            Text(text = "Язык", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.settings_language), style = MaterialTheme.typography.titleLarge)
             val activity = context as? Activity
             
+            val languageChangedText = { label: String -> context.getString(R.string.settings_language_changed, label) }
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -231,7 +218,7 @@ fun SettingsScreen(
                                 if (activity != null) {
                                     Toast.makeText(
                                         context,
-                                        "Язык изменен на $label. Перезапустите приложение для применения всех изменений.",
+                                        languageChangedText(label),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     LocaleManager.setLocale(activity, lang)
@@ -260,7 +247,7 @@ fun SettingsScreen(
                 }
                 
                 Text(
-                    text = "* Некоторые изменения языка требуют перезапуска",
+                    text = stringResource(R.string.settings_language_restart_notice),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -293,7 +280,7 @@ fun ThemePreviewCard(
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
                 painter = painterResource(id = bgRes),
-                contentDescription = themeName,
+                contentDescription = "$themeName ($themeId)",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
@@ -368,5 +355,32 @@ fun ThemeIcon(
             modifier = Modifier.size(size * 0.6f),
             tint = Color.Unspecified
         )
+    }
+}
+
+@Composable
+fun VoiceSelection(
+    state: SettingsContract.State,
+    viewModel: SettingsViewModel
+) {
+    val context = LocalContext.current
+    val voiceService = remember { VoiceAssistantService(context) }
+    var voices by remember { mutableStateOf<List<Voice>>(emptyList()) }
+    LaunchedEffect(Unit) {
+        voices = voiceService.getAvailableVoices()
+    }
+    Column {
+        voices.forEach { voice ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = state.voiceId == voice.name,
+                    onClick = {
+                        viewModel.setEvent(SettingsContract.Event.VoiceIdSelected(voice.name))
+                        voiceService.setVoiceById(voice.name)
+                    }
+                )
+                Text(voiceService.getVoiceDescription(voice))
+            }
+        }
     }
 } 

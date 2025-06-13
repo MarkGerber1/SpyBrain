@@ -141,7 +141,7 @@ fun AchievementsScreen(
                     
                     Column {
                         LinearProgressIndicator(
-                            progress = animatedProgress,
+                            progress = { animatedProgress },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp)
@@ -358,7 +358,7 @@ fun AchievementCard(
                 
                 // Индикатор прогресса
                 LinearProgressIndicator(
-                    progress = achievement.progress,
+                    progress = { achievement.progress },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(4.dp)
@@ -405,8 +405,6 @@ fun AchievementDetailsDialog(
     achievement: Achievement,
     onDismiss: () -> Unit
 ) {
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
-    
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -513,7 +511,7 @@ fun AchievementDetailsDialog(
                 
                 // Прогресс
                 LinearProgressIndicator(
-                    progress = achievement.progress,
+                    progress = { achievement.progress },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(8.dp)

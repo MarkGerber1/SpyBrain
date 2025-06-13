@@ -39,6 +39,7 @@
         </receiver>
 
         <service android:name="com.example.spybrain.service.BackgroundMusicService" android:exported="false"/>
+        <service android:name="com.example.spybrain.service.AmbientMusicService" android:exported="false"/>
 
         <service android:name="com.example.spybrain.voice.VoiceAssistantService" android:exported="false"/>
         <service android:name="com.example.spybrain.voice.AiMentorService" android:exported="false"/>

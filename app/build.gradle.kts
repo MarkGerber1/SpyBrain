@@ -115,6 +115,16 @@ dependencies {
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
     implementation(libs.media3.session)
+    implementation("androidx.media3:media3-common:1.2.0")
+    implementation("androidx.media3:media3-datasource:1.2.0")
+    implementation("androidx.media3:media3-exoplayer-dash:1.2.0")
+    implementation("androidx.media3:media3-exoplayer-hls:1.2.0")
+    
+    // TTS
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")
+    
+    // Audio Effects
+    implementation("androidx.media:media:1.7.0")
     
     // DataStore
     implementation(libs.datastore.preferences)
