@@ -124,6 +124,9 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
     
+    // Logging
+    implementation("com.jakewharton.timber:timber:5.0.1")
+    
     // Testing
     testImplementation(libs.junit)
     testImplementation("io.mockk:mockk:1.13.5")
