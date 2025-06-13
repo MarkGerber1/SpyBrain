@@ -10,9 +10,12 @@ import com.example.spybrain.util.WEEKDAYS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
 import java.time.LocalTime
 import java.util.UUID
 import javax.inject.Inject
+import timber.log.Timber
 
 /**
  * ViewModel для экрана напоминаний
@@ -21,6 +24,10 @@ import javax.inject.Inject
 class RemindersViewModel @Inject constructor(
     private val reminderRepository: ReminderRepository
 ) : ViewModel() {
+    
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        Timber.e(exception, "Ошибка в RemindersViewModel корутине")
+    }
     
     // Потоки данных
     val reminders = reminderRepository.getAllReminders()
@@ -33,8 +40,12 @@ class RemindersViewModel @Inject constructor(
      * Добавляет новое напоминание
      */
     fun addReminder(reminder: Reminder) {
-        viewModelScope.launch {
-            reminderRepository.addReminder(reminder)
+        viewModelScope.launch(coroutineExceptionHandler) {
+            try {
+                reminderRepository.addReminder(reminder)
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при добавлении напоминания")
+            }
         }
     }
     
@@ -42,8 +53,12 @@ class RemindersViewModel @Inject constructor(
      * Удаляет напоминание
      */
     fun deleteReminder(id: String) {
-        viewModelScope.launch {
-            reminderRepository.deleteReminder(id)
+        viewModelScope.launch(coroutineExceptionHandler) {
+            try {
+                reminderRepository.deleteReminder(id)
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при удалении напоминания")
+            }
         }
     }
     
@@ -51,10 +66,14 @@ class RemindersViewModel @Inject constructor(
      * Включает или отключает напоминание
      */
     fun toggleReminderEnabled(id: String) {
-        viewModelScope.launch {
-            val reminder = reminderRepository.getReminderById(id)
-            reminder?.let {
-                reminderRepository.setReminderEnabled(id, !it.isEnabled)
+        viewModelScope.launch(coroutineExceptionHandler) {
+            try {
+                val reminder = reminderRepository.getReminderById(id)
+                reminder?.let {
+                    reminderRepository.setReminderEnabled(id, !it.isEnabled)
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при переключении состояния напоминания")
             }
         }
     }
@@ -62,18 +81,13 @@ class RemindersViewModel @Inject constructor(
     /**
      * Добавляет новое расписание
      */
-    fun addSchedule(title: String, description: String) {
-        viewModelScope.launch {
-            val schedule = Schedule(
-                id = UUID.randomUUID().toString(),
-                title = title,
-                description = description,
-                startTime = LocalTime.of(8, 0),
-                endTime = LocalTime.of(9, 0),
-                type = ScheduleType.CUSTOM,
-                daysOfWeek = WEEKDAYS.indices.fold(0) { acc, i -> acc or (1 shl i) }
-            )
-            reminderRepository.addSchedule(schedule)
+    fun addSchedule(schedule: Schedule) {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            try {
+                reminderRepository.addSchedule(schedule)
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при добавлении расписания")
+            }
         }
     }
     
@@ -81,8 +95,12 @@ class RemindersViewModel @Inject constructor(
      * Удаляет расписание
      */
     fun deleteSchedule(id: String) {
-        viewModelScope.launch {
-            reminderRepository.deleteSchedule(id)
+        viewModelScope.launch(coroutineExceptionHandler) {
+            try {
+                reminderRepository.deleteSchedule(id)
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при удалении расписания")
+            }
         }
     }
     
@@ -95,6 +113,15 @@ class RemindersViewModel @Inject constructor(
             schedule?.let {
                 reminderRepository.setScheduleEnabled(id, !it.isEnabled)
             }
+        }
+    }
+    
+    override fun onCleared() {
+        try {
+            // Дополнительная очистка ресурсов при необходимости
+            super.onCleared()
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при очистке RemindersViewModel")
         }
     }
 } 
