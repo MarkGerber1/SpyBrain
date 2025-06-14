@@ -142,6 +142,8 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.5")
     testImplementation("app.cash.turbine:turbine:0.12.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation("androidx.test:core:1.4.0")
     androidTestImplementation(libs.espresso.core)

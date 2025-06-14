@@ -2,6 +2,8 @@ package com.example.spybrain.presentation.settings
 
 import android.content.Context
 import android.content.Intent
+import android.os.Vibrator
+import android.os.VibrationEffect
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.data.datastore.SettingsDataStore
 import com.example.spybrain.domain.usecase.meditation.GetMeditationsUseCase
@@ -17,10 +19,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsDataStore: SettingsDataStore, // TODO: Рассмотреть доступ к SettingsDataStore через репозиторий и UseCase для соответствия Clean Architecture
+    private val settingsDataStore: SettingsDataStore,
     private val getMeditationsUseCase: GetMeditationsUseCase,
     @ApplicationContext private val context: Context
-) : BaseViewModel<SettingsContract.Event, SettingsContract.State, SettingsContract.Effect>() { // TODO: Добавить все необходимые юнит-тесты для ViewModel
+) : BaseViewModel<SettingsContract.Event, SettingsContract.State, SettingsContract.Effect>() {
+
+    private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
 
     override fun createInitialState(): SettingsContract.State = SettingsContract.State()
 
@@ -29,6 +33,7 @@ class SettingsViewModel @Inject constructor(
         settingsDataStore.themeFlow
             .onEach { setState { copy(theme = it) } }
             .launchIn(viewModelScope)
+            
         // Подписываемся на включение фоновой музыки
         settingsDataStore.ambientEnabledFlow
             .onEach { enabled -> 
@@ -40,6 +45,7 @@ class SettingsViewModel @Inject constructor(
                 }.launchIn(viewModelScope)
             }
             .launchIn(viewModelScope)
+            
         // Подписываемся на выбор трека
         settingsDataStore.ambientTrackFlow
             .onEach { track -> 
@@ -53,23 +59,33 @@ class SettingsViewModel @Inject constructor(
                 }.launchIn(viewModelScope)
             }
             .launchIn(viewModelScope)
+            
         // Подписываемся на визуализацию сердца
         settingsDataStore.heartbeatEnabledFlow
             .onEach { setState { copy(heartbeatEnabled = it) } }
             .launchIn(viewModelScope)
+            
         // Подписываемся на голосовые подсказки
         settingsDataStore.voiceEnabledFlow
             .onEach { setState { copy(voiceEnabled = it) } }
             .launchIn(viewModelScope)
+            
         // Подписываемся на голосовые подсказки (новое поле)
         settingsDataStore.voiceHintsEnabledFlow
             .onEach { setState { copy(voiceHintsEnabled = it) } }
             .launchIn(viewModelScope)
+            
+        // Подписываемся на вибрацию
+        settingsDataStore.vibrationEnabledFlow
+            .onEach { setState { copy(vibrationEnabled = it) } }
+            .launchIn(viewModelScope)
+            
         // Подписываемся на доступные треки медитации
         getMeditationsUseCase()
             .map { meditations -> meditations.map { it.id to it.title } }
             .onEach { setState { copy(availableTracks = it) } }
             .launchIn(viewModelScope)
+            
         settingsDataStore.voiceIdFlow
             .onEach { setState { copy(voiceId = it) } }
             .launchIn(viewModelScope)
@@ -77,30 +93,69 @@ class SettingsViewModel @Inject constructor(
 
     override fun handleEvent(event: SettingsContract.Event) {
         when (event) {
-            is SettingsContract.Event.ThemeSelected ->
-                viewModelScope.launch { settingsDataStore.setTheme(event.theme) }
-            is SettingsContract.Event.AmbientToggled ->
+            is SettingsContract.Event.ThemeSelected -> {
                 viewModelScope.launch { 
-                    val track = settingsDataStore.getAmbientTrack() // Получаем синхронно текущий трек
+                    settingsDataStore.setTheme(event.theme)
+                    setEffect { SettingsContract.Effect.ShowToast("Тема изменена") }
+                }
+            }
+            is SettingsContract.Event.AmbientToggled -> {
+                viewModelScope.launch { 
+                    val track = settingsDataStore.getAmbientTrack()
                     settingsDataStore.setAmbientEnabled(event.enabled) 
                     handleAmbientMusicChange(event.enabled, track)
                 }
-            is SettingsContract.Event.AmbientTrackSelected ->
+            }
+            is SettingsContract.Event.AmbientTrackSelected -> {
                 viewModelScope.launch { 
-                    val enabled = settingsDataStore.getAmbientEnabled() // Получаем синхронно текущее состояние
+                    val enabled = settingsDataStore.getAmbientEnabled()
                     settingsDataStore.setAmbientTrack(event.trackId)
                     if (enabled) {
                         handleAmbientMusicChange(true, event.trackId)
                     }
                 }
-            is SettingsContract.Event.HeartbeatToggled ->
-                viewModelScope.launch { settingsDataStore.setHeartbeatEnabled(event.enabled) }
-            is SettingsContract.Event.VoiceToggled ->
-                viewModelScope.launch { settingsDataStore.setVoiceEnabled(event.enabled) }
-            is SettingsContract.Event.VoiceHintsToggled ->
-                viewModelScope.launch { settingsDataStore.setVoiceHintsEnabled(event.enabled) }
-            is SettingsContract.Event.VoiceIdSelected ->
-                viewModelScope.launch { settingsDataStore.setVoiceId(event.voiceId) }
+            }
+            is SettingsContract.Event.HeartbeatToggled -> {
+                viewModelScope.launch { 
+                    settingsDataStore.setHeartbeatEnabled(event.enabled)
+                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) "Визуализация сердца включена" else "Визуализация сердца выключена") }
+                }
+            }
+            is SettingsContract.Event.VoiceToggled -> {
+                viewModelScope.launch { 
+                    settingsDataStore.setVoiceEnabled(event.enabled)
+                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) "Голос включен" else "Голос выключен") }
+                }
+            }
+            is SettingsContract.Event.VoiceHintsToggled -> {
+                viewModelScope.launch { 
+                    settingsDataStore.setVoiceHintsEnabled(event.enabled)
+                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) "Голосовые подсказки включены" else "Голосовые подсказки выключены") }
+                }
+            }
+            is SettingsContract.Event.VoiceIdSelected -> {
+                viewModelScope.launch { 
+                    settingsDataStore.setVoiceId(event.voiceId)
+                    setEffect { SettingsContract.Effect.ShowToast("Голос изменен") }
+                }
+            }
+            is SettingsContract.Event.VibrationToggled -> {
+                viewModelScope.launch { 
+                    settingsDataStore.setVibrationEnabled(event.enabled)
+                    if (event.enabled) {
+                        // Тестируем вибрацию
+                        testVibration()
+                    }
+                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) "Вибрация включена" else "Вибрация выключена") }
+                }
+            }
+            is SettingsContract.Event.LanguageChanged -> {
+                viewModelScope.launch {
+                    setState { copy(currentLanguage = event.language) }
+                    setEffect { SettingsContract.Effect.RefreshUI(event.language) }
+                    setEffect { SettingsContract.Effect.ShowToast("Язык изменен на ${if (event.language == "ru") "Русский" else "English"}") }
+                }
+            }
         }
     }
     
@@ -130,5 +185,17 @@ class SettingsViewModel @Inject constructor(
             action = BackgroundMusicService.ACTION_STOP
         }
         context.startService(intent)
+    }
+    
+    // Тестирование вибрации
+    private fun testVibration() {
+        vibrator?.let { v ->
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                v.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                v.vibrate(200)
+            }
+        }
     }
 } 

@@ -36,7 +36,7 @@ val bottomNavItems = listOf(
     ScreenMetadata(Screen.Meditation.route, Icons.Default.SelfImprovement, R.string.bottom_nav_meditation), // TODO реализовано: Заменена иконка медитации
     ScreenMetadata(Screen.Breathing.route, Icons.Default.Air, R.string.bottom_nav_breathing), // TODO реализовано: Заменена иконка дыхания
     ScreenMetadata(Screen.Stats.route, Icons.Default.Timeline, R.string.bottom_nav_stats), // NOTE реализовано по аудиту: Оставлена подходящая иконка статистики
-    ScreenMetadata(Screen.Reminders.route, Icons.Default.Notifications, R.string.bottom_nav_reminders), // Добавлен экран напоминаний
+    ScreenMetadata(Screen.HeartRate.route, Icons.Default.Favorite, R.string.bottom_nav_heart_rate),
     ScreenMetadata(Screen.Settings.route, Icons.Default.Settings, R.string.bottom_nav_settings) // NOTE реализовано по аудиту: Оставлена подходящая иконка настроек
 )
 
@@ -58,5 +58,5 @@ sealed class Screen(
     object MeditationLibrary : Screen("meditation_library")
     object Achievements : Screen("achievements")
     object BioSync : Screen("biosync")
-    object Reminders : Screen("reminders")
+    object HeartRate : Screen("heart_rate")
 } 

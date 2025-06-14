@@ -3,6 +3,7 @@ package com.example.spybrain.data.datastore
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,6 +29,8 @@ class SettingsDataStore @Inject constructor(
         val VOICE_ENABLED = booleanPreferencesKey("voice_enabled")
         val VOICE_HINTS_ENABLED = booleanPreferencesKey("voice_hints_enabled")
         val VOICE_ID = stringPreferencesKey("voice_id")
+        val MOTIVATIONAL_POINTS = intPreferencesKey("motivational_points")
+        val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
     }
 
     // Theme flow
@@ -63,6 +66,16 @@ class SettingsDataStore @Inject constructor(
     // Voice ID flow
     val voiceIdFlow: Flow<String> = dataStore.data.map { preferences ->
         preferences[PreferencesKey.VOICE_ID] ?: ""
+    }
+    
+    // Motivational points flow
+    val motivationalPointsFlow: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.MOTIVATIONAL_POINTS] ?: 0
+    }
+    
+    // Vibration enabled flow
+    val vibrationEnabledFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.VIBRATION_ENABLED] ?: true
     }
 
     suspend fun setTheme(theme: String) {
@@ -107,6 +120,18 @@ class SettingsDataStore @Inject constructor(
         }
     }
     
+    suspend fun setMotivationalPoints(points: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.MOTIVATIONAL_POINTS] = points
+        }
+    }
+    
+    suspend fun setVibrationEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.VIBRATION_ENABLED] = enabled
+        }
+    }
+    
     // Синхронные методы для получения настроек
     fun getAmbientTrack(): String = runBlocking {
         var trackValue = ""
@@ -126,5 +151,25 @@ class SettingsDataStore @Inject constructor(
             enabledValue = it
         }
         return@runBlocking enabledValue
+    }
+    
+    fun getMotivationalPoints(): Int = runBlocking {
+        var pointsValue = 0
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKey.MOTIVATIONAL_POINTS] ?: 0
+        }.collect { 
+            pointsValue = it
+        }
+        return@runBlocking pointsValue
+    }
+    
+    fun getVibrationEnabled(): Boolean = runBlocking {
+        var vibrationValue = true
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKey.VIBRATION_ENABLED] ?: true
+        }.collect { 
+            vibrationValue = it
+        }
+        return@runBlocking vibrationValue
     }
 } 

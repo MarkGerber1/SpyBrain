@@ -14,8 +14,12 @@ object SettingsContract {
         val heartbeatEnabled: Boolean = false,
         val voiceEnabled: Boolean = false,
         val voiceHintsEnabled: Boolean = false,
+        val vibrationEnabled: Boolean = true,
         val availableTracks: List<Pair<String, String>> = emptyList(),
-        val voiceId: String = ""
+        val voiceId: String = "",
+        val currentLanguage: String = "ru",
+        val isLoading: Boolean = false,
+        val error: String? = null
     ) : UiState
 
     sealed class Event : UiEvent {
@@ -26,10 +30,13 @@ object SettingsContract {
         data class VoiceToggled(val enabled: Boolean) : Event()
         data class VoiceHintsToggled(val enabled: Boolean) : Event()
         data class VoiceIdSelected(val voiceId: String) : Event()
+        data class VibrationToggled(val enabled: Boolean) : Event()
+        data class LanguageChanged(val language: String) : Event()
     }
 
     sealed class Effect : UiEffect {
         data class NavigateTo(val screen: Screen) : Effect()
         data class ShowToast(val message: String) : Effect()
+        data class RefreshUI(val language: String) : Effect()
     }
 } 

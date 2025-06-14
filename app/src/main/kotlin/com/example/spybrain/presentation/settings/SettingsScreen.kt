@@ -40,6 +40,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.res.stringResource
 import android.speech.tts.Voice
+import android.os.Vibrator
+import android.content.Context
+import androidx.compose.material.icons.filled.Vibration
 
 object LocaleManager {
     fun setLocale(activity: Activity, language: String) {
@@ -64,6 +67,10 @@ fun SettingsScreen(
             when (effect) {
                 is SettingsContract.Effect.NavigateTo -> navController.navigate(effect.screen.route)
                 is SettingsContract.Effect.ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                is SettingsContract.Effect.RefreshUI -> {
+                    // Обновление UI при смене языка
+                    // В реальном приложении здесь может быть дополнительная логика
+                }
             }
         }
     }
@@ -173,6 +180,7 @@ fun SettingsScreen(
                 }
             }
         }
+        
         item {
             Text(text = stringResource(R.string.settings_heartbeat), style = MaterialTheme.typography.titleLarge)
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -184,6 +192,25 @@ fun SettingsScreen(
                 Text(text = if (state.heartbeatEnabled) stringResource(R.string.settings_heartbeat_enabled) else stringResource(R.string.settings_heartbeat_disabled))
             }
         }
+        
+        item {
+            Text(text = stringResource(R.string.settings_vibration), style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Vibration,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Switch(
+                    checked = state.vibrationEnabled,
+                    onCheckedChange = { viewModel.setEvent(Event.VibrationToggled(it)) }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = if (state.vibrationEnabled) stringResource(R.string.settings_vibration_enabled) else stringResource(R.string.settings_vibration_disabled))
+            }
+        }
+        
         item {
             Text(text = stringResource(R.string.settings_voice_hints), style = MaterialTheme.typography.titleLarge)
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -195,10 +222,12 @@ fun SettingsScreen(
                 Text(text = if (state.voiceHintsEnabled) stringResource(R.string.settings_voice_hints_enabled) else stringResource(R.string.settings_voice_hints_disabled))
             }
         }
+        
         item {
             Text(text = stringResource(R.string.settings_voice_tts), style = MaterialTheme.typography.titleLarge)
             VoiceSelection(state, viewModel)
         }
+        
         item {
             Text(text = stringResource(R.string.settings_language), style = MaterialTheme.typography.titleLarge)
             val activity = context as? Activity
@@ -222,11 +251,8 @@ fun SettingsScreen(
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     LocaleManager.setLocale(activity, lang)
-                                    navController.navigate("meditation") {
-                                        popUpTo("meditation") {
-                                            inclusive = true
-                                        }
-                                    }
+                                    // Обновляем UI без перезапуска
+                                    viewModel.setEvent(Event.LanguageChanged(lang))
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(

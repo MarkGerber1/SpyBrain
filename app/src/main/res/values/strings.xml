@@ -71,6 +71,9 @@
     <string name="settings_heartbeat">Бьющееся сердце</string>
     <string name="settings_heartbeat_enabled">Включено</string>
     <string name="settings_heartbeat_disabled">Выключено</string>
+    <string name="settings_vibration">Вибрация</string>
+    <string name="settings_vibration_enabled">Включена</string>
+    <string name="settings_vibration_disabled">Выключена</string>
     <string name="settings_voice_hints">Голосовые подсказки (TTS)</string>
     <string name="settings_voice_hints_enabled">Включено</string>
     <string name="settings_voice_hints_disabled">Выключено</string>
@@ -157,7 +160,7 @@
     <string name="bottom_nav_breathing">Дыхание</string>
     <string name="bottom_nav_stats">Статистика</string>
     <string name="bottom_nav_settings">Настройки</string>
-    <string name="bottom_nav_reminders">Напоминания</string>
+    <string name="bottom_nav_heart_rate">Пульс</string>
 
     <!-- Meditation Screen -->
     <string name="meditation_error_loading">Ошибка загрузки медитаций</string>
@@ -205,4 +208,22 @@
     <string name="screen_breathing">Breathing</string>
     <string name="screen_stats">Stats</string>
     <string name="screen_settings">Settings</string>
+
+    <!-- Heart Rate Screen -->
+    <string name="heart_rate_title">Измерение пульса</string>
+    <string name="heart_rate_measure">Измерить пульс</string>
+    <string name="heart_rate_stop">Остановить</string>
+    <string name="heart_rate_measuring">Измерение...</string>
+    <string name="heart_rate_bpm">%1$d уд/мин</string>
+    <string name="heart_rate_no_camera">Камера недоступна</string>
+    <string name="heart_rate_camera_permission">Разрешите доступ к камере для измерения пульса</string>
+    <string name="heart_rate_place_finger">Поместите палец на камеру</string>
+    <string name="heart_rate_measuring_pulse">Измеряем пульс...</string>
+    <string name="heart_rate_measurement_complete">Измерение завершено</string>
+    <string name="heart_rate_measurement_failed">Ошибка измерения</string>
+    <string name="heart_rate_history">История измерений</string>
+    <string name="heart_rate_no_history">Нет истории измерений</string>
+    <string name="heart_rate_motivational_points">Мотивационные баллы: %1$d</string>
+    <string name="heart_rate_new_exercise_unlocked">Открыто новое упражнение!</string>
+    <string name="heart_rate_points_for_session">+1 балл за завершённую практику</string>
 </resources> 

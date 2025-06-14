@@ -2,7 +2,7 @@ package com.example.spybrain.presentation.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timeline
@@ -30,7 +30,7 @@ fun BottomNavigationBar(navController: NavController) {
         Triple(Screen.Meditation.route, Icons.Default.SelfImprovement, R.string.bottom_nav_meditation),
         Triple(Screen.Breathing.route, Icons.Default.Air, R.string.bottom_nav_breathing),
         Triple(Screen.Stats.route, Icons.Default.Timeline, R.string.bottom_nav_stats),
-        Triple(Screen.Reminders.route, Icons.Default.Notifications, R.string.bottom_nav_reminders),
+        Triple(Screen.HeartRate.route, Icons.Default.Favorite, R.string.bottom_nav_heart_rate),
         Triple(Screen.Settings.route, Icons.Default.Settings, R.string.bottom_nav_settings)
     )
     
