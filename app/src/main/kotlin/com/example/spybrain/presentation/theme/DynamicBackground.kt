@@ -1,21 +1,27 @@
 package com.example.spybrain.presentation.theme
 
+import android.content.Context
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.spybrain.R
 import kotlinx.coroutines.delay
 import java.util.Calendar
@@ -153,45 +159,104 @@ object DynamicBackgroundManager {
 @Composable
 fun DynamicBackground(
     modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit
+    content: @Composable () -> Unit
 ) {
-    var currentBackground by remember { mutableStateOf(DynamicBackgroundManager.getCurrentBackground()) }
+    val context = LocalContext.current
+    val timeOfDay = remember { getCurrentTimeOfDay() }
+    val backgroundData = remember(timeOfDay) { getBackgroundForTimeOfDay(timeOfDay) }
+    val greeting = remember(timeOfDay) { getGreetingForTimeOfDay(context, timeOfDay) }
     
-    // Эффект для обновления фона при смене времени суток
-    LaunchedEffect(key1 = Unit) {
-        while (true) {
-            val millisToNextChange = DynamicBackgroundManager.getMillisToNextChange()
-            delay(millisToNextChange)
-            currentBackground = DynamicBackgroundManager.getCurrentBackground()
-        }
-    }
+    // Анимация для плавного перехода
+    val infiniteTransition = rememberInfiniteTransition()
+    val backgroundAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.7f,
+        targetValue = 1.0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(8000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
     
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        backgroundData.gradientStart.copy(alpha = backgroundAlpha),
+                        backgroundData.gradientEnd.copy(alpha = backgroundAlpha)
+                    )
+                )
+            )
     ) {
         // Фоновое изображение
         Image(
-            painter = painterResource(id = currentBackground.backgroundResId),
-            contentDescription = "Background Image",
-            modifier = Modifier.fillMaxSize(),
+            painter = painterResource(id = backgroundData.backgroundResId),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.3f),
             contentScale = ContentScale.Crop
         )
         
-        // Накладываем градиент поверх изображения для лучшей читаемости
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            currentBackground.overlayStart,
-                            currentBackground.overlayEnd
-                        )
-                    )
-                )
-        )
+        // Приветствие с анимацией
+        AnimatedVisibility(
+            visible = true,
+            enter = fadeIn() + slideInVertically(),
+            modifier = Modifier.animateContentSize()
+        ) {
+            Text(
+                text = greeting,
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp
+                ),
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 64.dp)
+            )
+        }
         
-        // Содержимое экрана
+        // Основной контент
         content()
+    }
+}
+
+/**
+ * Получает текущее время суток
+ */
+private fun getCurrentTimeOfDay(): TimeOfDay {
+    val calendar = Calendar.getInstance()
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    return TimeOfDay.fromHour(hour)
+}
+
+/**
+ * Получает данные о фоне для времени суток
+ */
+private fun getBackgroundForTimeOfDay(timeOfDay: TimeOfDay): TimeBasedBackground {
+    return DynamicBackgroundManager.backgroundMap[timeOfDay] 
+        ?: DynamicBackgroundManager.backgroundMap[TimeOfDay.DAY]!!
+}
+
+/**
+ * Получает градиентные цвета для времени суток
+ */
+private fun getGradientColorsForTimeOfDay(timeOfDay: TimeOfDay): List<Color> {
+    val background = getBackgroundForTimeOfDay(timeOfDay)
+    return listOf(background.gradientStart, background.gradientEnd)
+}
+
+/**
+ * Получает приветствие для времени суток
+ */
+private fun getGreetingForTimeOfDay(context: Context, timeOfDay: TimeOfDay): String {
+    return when (timeOfDay) {
+        TimeOfDay.MORNING -> "Доброе утро! ☀️"
+        TimeOfDay.DAY -> "Добрый день! 🌤️"
+        TimeOfDay.EVENING -> "Добрый вечер! 🌅"
+        TimeOfDay.NIGHT -> "Доброй ночи! 🌙"
     }
 } 

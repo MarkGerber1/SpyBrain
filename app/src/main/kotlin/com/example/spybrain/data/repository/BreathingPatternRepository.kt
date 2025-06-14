@@ -1,19 +1,23 @@
 package com.example.spybrain.data.repository
 
+import android.content.Context
+import com.example.spybrain.R
 import com.example.spybrain.domain.model.BreathingPattern
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BreathingPatternRepository @Inject constructor() {
+class BreathingPatternRepository @Inject constructor(
+    private val context: Context
+) {
     
     fun getAllPatterns(): List<BreathingPattern> = listOf(
-        // Классическая медитация
+        // Спокойное дыхание
         BreathingPattern(
             id = "classic_meditation",
-            name = "Классическая медитация",
-            voicePrompt = "Дышите спокойно и глубоко. Вдохните через нос, выдохните через рот.",
-            description = "Простая и эффективная техника для начинающих",
+            name = context.getString(R.string.breathing_pattern_calm),
+            voicePrompt = context.getString(R.string.voice_prompt_calm),
+            description = context.getString(R.string.breathing_pattern_calm_desc),
             inhaleSeconds = 4,
             holdAfterInhaleSeconds = 0,
             exhaleSeconds = 4,
@@ -24,9 +28,9 @@ class BreathingPatternRepository @Inject constructor() {
         // Квадратное дыхание
         BreathingPattern(
             id = "box_breathing",
-            name = "Квадратное дыхание",
-            voicePrompt = "Представьте квадрат. Вдохните на 4 счета, задержите на 4, выдохните на 4, задержите на 4.",
-            description = "Техника для снятия стресса и улучшения концентрации",
+            name = context.getString(R.string.breathing_pattern_box),
+            voicePrompt = context.getString(R.string.voice_prompt_box),
+            description = context.getString(R.string.breathing_pattern_box_desc),
             inhaleSeconds = 4,
             holdAfterInhaleSeconds = 4,
             exhaleSeconds = 4,
@@ -34,12 +38,12 @@ class BreathingPatternRepository @Inject constructor() {
             totalCycles = 8
         ),
         
-        // Дыхание 4-7-8
+        // Дыхание для сна
         BreathingPattern(
             id = "breathing_478",
-            name = "Дыхание 4-7-8",
-            voicePrompt = "Вдохните на 4 счета, задержите дыхание на 7, выдохните на 8 счетов.",
-            description = "Техника для быстрого засыпания и расслабления",
+            name = context.getString(R.string.breathing_pattern_sleep),
+            voicePrompt = context.getString(R.string.voice_prompt_sleep),
+            description = context.getString(R.string.breathing_pattern_sleep_desc),
             inhaleSeconds = 4,
             holdAfterInhaleSeconds = 7,
             exhaleSeconds = 8,
@@ -47,12 +51,12 @@ class BreathingPatternRepository @Inject constructor() {
             totalCycles = 6
         ),
         
-        // Дыхание льва
+        // Сила льва
         BreathingPattern(
             id = "lion_breath",
-            name = "Дыхание льва",
-            voicePrompt = "Глубоко вдохните, затем выдохните с открытым ртом и высунутым языком, издавая звук 'ха'.",
-            description = "Энергетизирующая техника для снятия напряжения в лице",
+            name = context.getString(R.string.breathing_pattern_lion),
+            voicePrompt = context.getString(R.string.voice_prompt_lion),
+            description = context.getString(R.string.breathing_pattern_lion_desc),
             inhaleSeconds = 3,
             holdAfterInhaleSeconds = 0,
             exhaleSeconds = 6,
@@ -60,12 +64,12 @@ class BreathingPatternRepository @Inject constructor() {
             totalCycles = 5
         ),
         
-        // Дыхание пчелы
+        // Жужжание пчелы
         BreathingPattern(
             id = "bee_breath",
-            name = "Дыхание пчелы",
-            voicePrompt = "Закройте уши пальцами, вдохните глубоко, на выдохе издавайте жужжащий звук.",
-            description = "Успокаивающая техника для снятия тревоги",
+            name = context.getString(R.string.breathing_pattern_bee),
+            voicePrompt = context.getString(R.string.voice_prompt_bee),
+            description = context.getString(R.string.breathing_pattern_bee_desc),
             inhaleSeconds = 4,
             holdAfterInhaleSeconds = 0,
             exhaleSeconds = 6,
@@ -73,12 +77,12 @@ class BreathingPatternRepository @Inject constructor() {
             totalCycles = 7
         ),
         
-        // Дыхание огня
+        // Огненное дыхание
         BreathingPattern(
             id = "fire_breath",
-            name = "Дыхание огня",
-            voicePrompt = "Быстрые и ритмичные вдохи и выдохи через нос, как будто вы дышите огнем.",
-            description = "Энергетизирующая техника для пробуждения и очищения",
+            name = context.getString(R.string.breathing_pattern_fire),
+            voicePrompt = context.getString(R.string.voice_prompt_fire),
+            description = context.getString(R.string.breathing_pattern_fire_desc),
             inhaleSeconds = 1,
             holdAfterInhaleSeconds = 0,
             exhaleSeconds = 1,
@@ -86,12 +90,12 @@ class BreathingPatternRepository @Inject constructor() {
             totalCycles = 20
         ),
         
-        // Дыхание для сна
+        // Вечернее дыхание
         BreathingPattern(
             id = "sleep_breathing",
-            name = "Дыхание для сна",
-            voicePrompt = "Медленно и глубоко дышите, представляя, как с каждым выдохом уходит напряжение.",
-            description = "Специальная техника для улучшения качества сна",
+            name = context.getString(R.string.breathing_pattern_evening),
+            voicePrompt = context.getString(R.string.voice_prompt_evening),
+            description = context.getString(R.string.breathing_pattern_evening_desc),
             inhaleSeconds = 5,
             holdAfterInhaleSeconds = 2,
             exhaleSeconds = 7,
@@ -99,12 +103,12 @@ class BreathingPatternRepository @Inject constructor() {
             totalCycles = 10
         ),
         
-        // Дыхание для концентрации
+        // Ясность ума
         BreathingPattern(
             id = "focus_breathing",
-            name = "Дыхание для концентрации",
-            voicePrompt = "Сосредоточьтесь на дыхании. Вдохните ясность, выдохните отвлечения.",
-            description = "Техника для улучшения концентрации и ясности ума",
+            name = context.getString(R.string.breathing_pattern_clarity),
+            voicePrompt = context.getString(R.string.voice_prompt_clarity),
+            description = context.getString(R.string.breathing_pattern_clarity_desc),
             inhaleSeconds = 3,
             holdAfterInhaleSeconds = 3,
             exhaleSeconds = 3,
@@ -112,12 +116,12 @@ class BreathingPatternRepository @Inject constructor() {
             totalCycles = 12
         ),
         
-        // Дыхание для энергии
+        // Утренняя энергия
         BreathingPattern(
             id = "energy_breathing",
-            name = "Дыхание для энергии",
-            voicePrompt = "Вдохните энергию и жизненную силу, выдохните усталость и слабость.",
-            description = "Техника для повышения энергии и бодрости",
+            name = context.getString(R.string.breathing_pattern_morning),
+            voicePrompt = context.getString(R.string.voice_prompt_morning),
+            description = context.getString(R.string.breathing_pattern_morning_desc),
             inhaleSeconds = 4,
             holdAfterInhaleSeconds = 2,
             exhaleSeconds = 4,
@@ -125,12 +129,12 @@ class BreathingPatternRepository @Inject constructor() {
             totalCycles = 8
         ),
         
-        // Дыхание для творчества
+        // Творческий поток
         BreathingPattern(
             id = "creative_breathing",
-            name = "Дыхание для творчества",
-            voicePrompt = "Вдохните вдохновение, выдохните сомнения. Откройте поток творчества.",
-            description = "Техника для пробуждения творческого потенциала",
+            name = context.getString(R.string.breathing_pattern_creative),
+            voicePrompt = context.getString(R.string.voice_prompt_creative),
+            description = context.getString(R.string.breathing_pattern_creative_desc),
             inhaleSeconds = 6,
             holdAfterInhaleSeconds = 4,
             exhaleSeconds = 6,

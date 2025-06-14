@@ -24,6 +24,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 // NOTE: Этот модуль соответствует Clean Architecture — внедряет реализации через интерфейсы domain-слоя.
 @Module
@@ -81,7 +82,7 @@ object RepositoryProvidesModule {
 
     @Provides
     @Singleton
-    fun provideBreathingPatternRepository(): BreathingPatternRepository {
-        return BreathingPatternRepository()
+    fun provideBreathingPatternRepository(@ApplicationContext context: android.content.Context): BreathingPatternRepository {
+        return BreathingPatternRepository(context)
     }
 } 

@@ -1,6 +1,8 @@
 package com.example.spybrain.domain.usecase.meditation
 
+import android.content.Context
 import app.cash.turbine.test
+import com.example.spybrain.R
 import com.example.spybrain.domain.model.Meditation
 import com.example.spybrain.domain.repository.MeditationRepository
 import com.example.spybrain.test.utils.MainDispatcherRule
@@ -21,10 +23,12 @@ class GetMeditationsUseCaseTest {
 
     private lateinit var meditationRepository: MeditationRepository
     private lateinit var getMeditationsUseCase: GetMeditationsUseCase
+    private lateinit var context: Context
 
     @Before
     fun setup() {
         meditationRepository = mockk()
+        context = mockk(relaxed = true)
         getMeditationsUseCase = GetMeditationsUseCase(meditationRepository)
     }
 
@@ -47,16 +51,16 @@ class GetMeditationsUseCaseTest {
         val expectedMeditations = listOf(
             Meditation(
                 id = "1",
-                title = "Медитация для сна",
-                description = "Расслабляющая медитация",
+                title = "Вечерний покой",
+                description = "Расслабляющая медитация для глубокого сна",
                 durationMinutes = 10,
                 audioUrl = "audio/sleep.mp3",
                 category = "sleep"
             ),
             Meditation(
                 id = "2",
-                title = "Утренняя медитация",
-                description = "Энергичная медитация",
+                title = "Утренняя свежесть",
+                description = "Энергичная медитация для начала дня",
                 durationMinutes = 5,
                 audioUrl = "audio/morning.mp3",
                 category = "morning"

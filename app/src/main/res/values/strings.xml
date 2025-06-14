@@ -181,7 +181,6 @@
     <string name="breathing_advice_normal_bpm">Пульс нормальный — продолжайте дышать спокойно</string>
     <string name="breathing_advice_high_bpm">Пульс немного повышен — попробуйте удлинить выдох</string>
     <string name="breathing_advice_critical_bpm">Пульс высокий — замедлите дыхание или сделайте паузу</string>
-    <string name="breathing_phase_rest">Отдых...</string>
     <string name="breathing_voice_button">Голос</string>
 
     <!-- Errors (adding specific ones found) -->
@@ -226,4 +225,162 @@
     <string name="heart_rate_motivational_points">Мотивационные баллы: %1$d</string>
     <string name="heart_rate_new_exercise_unlocked">Открыто новое упражнение!</string>
     <string name="heart_rate_points_for_session">+1 балл за завершённую практику</string>
+
+    <!-- Breathing Patterns -->
+    <string name="breathing_pattern_calm">Спокойное дыхание</string>
+    <string name="breathing_pattern_box">Квадратное дыхание</string>
+    <string name="breathing_pattern_sleep">Дыхание для сна</string>
+    <string name="breathing_pattern_lion">Сила льва</string>
+    <string name="breathing_pattern_bee">Жужжание пчелы</string>
+    <string name="breathing_pattern_fire">Огненное дыхание</string>
+    <string name="breathing_pattern_evening">Вечернее дыхание</string>
+    <string name="breathing_pattern_clarity">Ясность ума</string>
+    <string name="breathing_pattern_morning">Утренняя энергия</string>
+    <string name="breathing_pattern_creative">Творческий поток</string>
+
+    <!-- Breathing Pattern Descriptions -->
+    <string name="breathing_pattern_calm_desc">Простая и эффективная техника для начинающих</string>
+    <string name="breathing_pattern_box_desc">Техника для снятия стресса и улучшения концентрации</string>
+    <string name="breathing_pattern_sleep_desc">Техника для быстрого засыпания и расслабления</string>
+    <string name="breathing_pattern_lion_desc">Энергетизирующая техника для снятия напряжения в лице</string>
+    <string name="breathing_pattern_bee_desc">Успокаивающая техника для снятия тревоги</string>
+    <string name="breathing_pattern_fire_desc">Энергетизирующая техника для пробуждения и очищения</string>
+    <string name="breathing_pattern_evening_desc">Специальная техника для улучшения качества сна</string>
+    <string name="breathing_pattern_clarity_desc">Техника для улучшения концентрации и ясности ума</string>
+    <string name="breathing_pattern_morning_desc">Техника для повышения энергии и бодрости</string>
+    <string name="breathing_pattern_creative_desc">Техника для пробуждения творческого потенциала</string>
+
+    <!-- Voice Prompts -->
+    <string name="voice_prompt_calm">Дышите спокойно и глубоко. Вдохните через нос, выдохните через рот.</string>
+    <string name="voice_prompt_box">Представьте квадрат. Вдохните на 4 счета, задержите на 4, выдохните на 4, задержите на 4.</string>
+    <string name="voice_prompt_sleep">Вдохните на 4 счета, задержите дыхание на 7, выдохните на 8 счетов.</string>
+    <string name="voice_prompt_lion">Глубоко вдохните, затем выдохните с открытым ртом и высунутым языком, издавая звук \'ха\'.</string>
+    <string name="voice_prompt_bee">Закройте уши пальцами, вдохните глубоко, на выдохе издавайте жужжащий звук.</string>
+    <string name="voice_prompt_fire">Быстрые и ритмичные вдохи и выдохи через нос, как будто вы дышите огнем.</string>
+    <string name="voice_prompt_evening">Медленно и глубоко дышите, представляя, как с каждым выдохом уходит напряжение.</string>
+    <string name="voice_prompt_clarity">Сосредоточьтесь на дыхании. Вдохните ясность, выдохните отвлечения.</string>
+    <string name="voice_prompt_morning">Вдохните энергию и жизненную силу, выдохните усталость и слабость.</string>
+    <string name="voice_prompt_creative">Вдохните вдохновение, выдохните сомнения. Откройте поток творчества.</string>
+
+    <!-- Breathing Phases -->
+    <string name="breathing_phase_inhale">Вдох</string>
+    <string name="breathing_phase_exhale">Выдох</string>
+    <string name="breathing_phase_hold">Задержка</string>
+    <string name="breathing_phase_rest">Отдых</string>
+    <string name="breathing_phase_hold_after_inhale">Задержка после вдоха</string>
+    <string name="breathing_phase_hold_after_exhale">Задержка после выдоха</string>
+
+    <!-- Breathing Messages -->
+    <string name="breathing_start_message">Начинаем дыхательную практику</string>
+    <string name="breathing_complete_message">Практика завершена. Отлично!</string>
+    <string name="breathing_cycle_message">Цикл %1$d из %2$d</string>
+    <string name="breathing_start_inhale">Начинаем. Вдох...</string>
+    <string name="breathing_relax_message">Расслабьтесь</string>
+
+    <!-- Motivational Messages -->
+    <string name="motivation_doing_great">Вы делаете это прекрасно</string>
+    <string name="motivation_keep_going">Продолжайте в том же духе</string>
+    <string name="motivation_breathing_calmer">Ваше дыхание становится все более спокойным</string>
+    <string name="motivation_right_path">Вы на правильном пути</string>
+    <string name="motivation_breath_brings_calm">Каждый вдох приносит вам спокойствие</string>
+    <string name="motivation_stronger_each_cycle">Вы становитесь сильнее с каждым циклом</string>
+
+    <!-- Voice Commands -->
+    <string name="voice_command_stop">стоп</string>
+    <string name="voice_command_start">начать</string>
+    <string name="voice_command_inhale">вдох</string>
+    <string name="voice_command_not_recognized">Команда не распознана</string>
+    <string name="voice_input_not_implemented">Голосовой ввод пока не реализован</string>
+
+    <!-- Pattern Builder -->
+    <string name="pattern_builder_title">Название</string>
+    <string name="pattern_builder_description">Описание (опционально)</string>
+    <string name="pattern_builder_inhale_time">Время вдоха (сек)</string>
+    <string name="pattern_builder_hold_after_inhale">Пауза после вдоха (сек)</string>
+    <string name="pattern_builder_exhale_time">Время выдоха (сек)</string>
+    <string name="pattern_builder_hold_after_exhale">Пауза после выдоха (сек)</string>
+    <string name="pattern_builder_cycles">Количество циклов</string>
+    <string name="pattern_builder_save">Сохранить шаблон</string>
+    <string name="pattern_builder_save_changes">Сохранить изменения</string>
+    <string name="pattern_builder_saved_patterns">Сохранённые шаблоны:</string>
+    <string name="pattern_builder_delete">Удалить шаблон</string>
+    <string name="pattern_builder_enter_name">Введите название шаблона</string>
+    <string name="pattern_builder_invalid_values">Неверные значения фаз или циклов</string>
+    <string name="pattern_builder_no_patterns">Нет доступных шаблонов</string>
+
+    <!-- Pattern Preview -->
+    <string name="pattern_preview_inhale">Вдох %1$dс, пауза %2$dс</string>
+    <string name="pattern_preview_exhale">Выдох %1$dс, пауза %2$dс</string>
+    <string name="pattern_preview_cycles">Циклов: %1$d</string>
+
+    <!-- Time Greetings -->
+    <string name="greeting_morning">Доброе утро!</string>
+    <string name="greeting_day">Добрый день!</string>
+    <string name="greeting_evening">Добрый вечер!</string>
+    <string name="greeting_night">Доброй ночи!</string>
+
+    <!-- Stats Messages -->
+    <string name="stats_no_breathing_sessions">У вас пока нет сеансов дыхания</string>
+    <string name="stats_no_meditation_sessions">У вас пока нет сеансов медитации</string>
+    <string name="stats_training_statistics">Статистика тренировок</string>
+
+    <!-- Voice Quality -->
+    <string name="voice_quality_high">Высокое</string>
+    <string name="voice_quality_normal">Среднее</string>
+    <string name="voice_quality_low">Низкое</string>
+    <string name="voice_quality_unknown">Неизвестное</string>
+    <string name="voice_gender_female">Женский</string>
+    <string name="voice_gender_male">Мужской</string>
+    <string name="voice_gender_unknown">Неопределенный</string>
+
+    <!-- Weekdays -->
+    <string name="weekday_monday">Понедельник</string>
+    <string name="weekday_tuesday">Вторник</string>
+    <string name="weekday_wednesday">Среда</string>
+    <string name="weekday_thursday">Четверг</string>
+    <string name="weekday_friday">Пятница</string>
+    <string name="weekday_saturday">Суббота</string>
+    <string name="weekday_sunday">Воскресенье</string>
+
+    <!-- Test Data -->
+    <string name="test_meditation_sleep_title">Медитация для сна</string>
+    <string name="test_meditation_sleep_desc">Расслабляющая медитация</string>
+    <string name="test_meditation_morning_title">Утренняя медитация</string>
+    <string name="test_meditation_morning_desc">Энергичная медитация</string>
+
+    <!-- Meditation Titles -->
+    <string name="meditation_sleep">Вечерний покой</string>
+    <string name="meditation_morning">Утренняя свежесть</string>
+    <string name="meditation_stress">Снятие стресса</string>
+    <string name="meditation_anxiety">Спокойствие души</string>
+    <string name="meditation_focus">Концентрация внимания</string>
+    <string name="meditation_energy">Внутренняя сила</string>
+    <string name="meditation_creativity">Творческое вдохновение</string>
+    <string name="meditation_gratitude">Благодарность</string>
+    <string name="meditation_love">Любовь к себе</string>
+    <string name="meditation_healing">Исцеление</string>
+
+    <!-- Meditation Descriptions -->
+    <string name="meditation_sleep_desc">Расслабляющая медитация для глубокого сна</string>
+    <string name="meditation_morning_desc">Энергичная медитация для начала дня</string>
+    <string name="meditation_stress_desc">Техники для снятия напряжения и стресса</string>
+    <string name="meditation_anxiety_desc">Успокаивающая практика для тревожных состояний</string>
+    <string name="meditation_focus_desc">Улучшение концентрации и ясности ума</string>
+    <string name="meditation_energy_desc">Пробуждение внутренней энергии и жизненной силы</string>
+    <string name="meditation_creativity_desc">Раскрытие творческого потенциала</string>
+    <string name="meditation_gratitude_desc">Практика благодарности и позитивного мышления</string>
+    <string name="meditation_love_desc">Развитие любви к себе и принятия</string>
+    <string name="meditation_healing_desc">Исцеляющая медитация для души и тела</string>
+
+    <!-- Meditation Categories -->
+    <string name="meditation_category_sleep">Сон</string>
+    <string name="meditation_category_morning">Утро</string>
+    <string name="meditation_category_stress">Стресс</string>
+    <string name="meditation_category_anxiety">Тревожность</string>
+    <string name="meditation_category_focus">Концентрация</string>
+    <string name="meditation_category_energy">Энергия</string>
+    <string name="meditation_category_creativity">Творчество</string>
+    <string name="meditation_category_gratitude">Благодарность</string>
+    <string name="meditation_category_love">Любовь</string>
+    <string name="meditation_category_healing">Исцеление</string>
 </resources> 

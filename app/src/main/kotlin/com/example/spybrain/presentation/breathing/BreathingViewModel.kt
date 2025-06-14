@@ -1,15 +1,19 @@
 package com.example.spybrain.presentation.breathing
 
+import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.example.spybrain.R
 import com.example.spybrain.domain.model.BreathingPattern
 import com.example.spybrain.domain.model.Session
 import com.example.spybrain.domain.model.SessionType
 import com.example.spybrain.data.repository.BreathingPatternRepository
+import com.example.spybrain.domain.repository.BreathingRepository
 import com.example.spybrain.domain.usecase.breathing.TrackBreathingSessionUseCase
 import com.example.spybrain.domain.usecase.stats.SaveSessionUseCase
 import com.example.spybrain.presentation.base.BaseViewModel
-import com.example.spybrain.service.VoiceAssistantService
+import com.example.spybrain.domain.service.IVoiceAssistant
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -17,20 +21,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import java.util.Date
 import javax.inject.Inject
-import com.example.spybrain.presentation.breathing.BreathingContract.Effect.Speak
 import java.util.Locale
 import com.example.spybrain.util.UiError
 import com.example.spybrain.domain.error.ErrorHandler
 import timber.log.Timber
+import java.util.Date
 
 @HiltViewModel
 class BreathingViewModel @Inject constructor(
     private val breathingPatternRepository: BreathingPatternRepository,
+    private val breathingRepository: BreathingRepository,
     private val trackBreathingSessionUseCase: TrackBreathingSessionUseCase,
     private val saveSessionUseCase: SaveSessionUseCase,
-    private val voiceAssistant: VoiceAssistantService
+    private val voiceAssistant: IVoiceAssistant,
+    @ApplicationContext private val context: Context
 ) : BaseViewModel<BreathingContract.Event, BreathingContract.State, BreathingContract.Effect>() {
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
@@ -42,35 +47,45 @@ class BreathingViewModel @Inject constructor(
     private var breathingJob: Job? = null
     private var sessionStartTime: Long = 0
 
-    override fun createInitialState(): BreathingContract.State {
-        return BreathingContract.State()
-    }
-
     init {
         loadPatterns()
     }
 
+    override fun createInitialState(): BreathingContract.State = BreathingContract.State()
+
     override fun handleEvent(event: BreathingContract.Event) {
         when (event) {
-            is BreathingContract.Event.LoadPatterns -> loadPatterns()
-            is BreathingContract.Event.StartPattern -> startPattern(event.pattern)
-            is BreathingContract.Event.StopPattern -> stopPattern()
+            is BreathingContract.Event.LoadPatterns -> {
+                loadPatterns()
+            }
+            is BreathingContract.Event.StartPattern -> {
+                startPattern(event.pattern)
+            }
+            is BreathingContract.Event.StopPattern -> {
+                stopPattern()
+            }
             is BreathingContract.Event.VoiceCommand -> {
-                try {
-                    val command = event.text.lowercase(Locale.getDefault())
-                    when {
-                        command.contains("стоп") || command.contains("stop") -> stopPattern()
-                        command.contains("начать") || command.contains("start") || command.contains("вдох") -> {
-                            uiState.value.patterns.firstOrNull()?.let { startPattern(it) }
-                                ?: setEffect { BreathingContract.Effect.ShowError(UiError.Custom("Нет доступных шаблонов")) }
-                        }
-                        else -> setEffect { BreathingContract.Effect.Speak("Команда не распознана") }
+                handleVoiceCommand(event)
+            }
+        }
+    }
+
+    private fun handleVoiceCommand(event: BreathingContract.Event.VoiceCommand) {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            try {
+                val command = event.text.lowercase(Locale.getDefault())
+                when {
+                    command.contains(context.getString(R.string.voice_command_stop)) || command.contains("stop") -> stopPattern()
+                    command.contains(context.getString(R.string.voice_command_start)) || command.contains("start") || command.contains(context.getString(R.string.voice_command_inhale)) -> {
+                        uiState.value.patterns.firstOrNull()?.let { startPattern(it) }
+                            ?: setEffect { BreathingContract.Effect.ShowError(UiError.Custom(context.getString(R.string.pattern_builder_no_patterns))) }
                     }
-                } catch (e: Exception) {
-                    Timber.e(e, "Ошибка при обработке голосовой команды")
-                    val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
-                    setEffect { BreathingContract.Effect.ShowError(uiError) }
+                    else -> setEffect { BreathingContract.Effect.Speak(context.getString(R.string.voice_command_not_recognized)) }
                 }
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при обработке голосовой команды")
+                val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
+                setEffect { BreathingContract.Effect.ShowError(uiError) }
             }
         }
     }
@@ -111,7 +126,7 @@ class BreathingViewModel @Inject constructor(
                 voiceAssistant.speakStart()
                 voiceAssistant.speakBreathingPrompt(pattern.voicePrompt)
             } else {
-                setEffect { Speak("Начинаем. Вдох...") }
+                setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_start_inhale)) }
             }
             
             breathingJob = viewModelScope.launch(coroutineExceptionHandler + SupervisorJob()) {
@@ -134,7 +149,7 @@ class BreathingViewModel @Inject constructor(
                 if (voiceAssistant.isReady()) {
                     voiceAssistant.speakInhale()
                 } else {
-                    setEffect { Speak("Вдох") }
+                    setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_phase_inhale)) }
                 }
                 
                 if (!runPhase(BreathingContract.BreathingPhase.Inhale, pattern.inhaleSeconds, currentJob)) break
@@ -144,7 +159,7 @@ class BreathingViewModel @Inject constructor(
                     if (voiceAssistant.isReady()) {
                         voiceAssistant.speakHold()
                     } else {
-                        setEffect { Speak("Задержка") }
+                        setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_phase_hold)) }
                     }
                     if (!runPhase(BreathingContract.BreathingPhase.HoldAfterInhale, pattern.holdAfterInhaleSeconds, currentJob)) break
                 }
@@ -153,7 +168,7 @@ class BreathingViewModel @Inject constructor(
                 if (voiceAssistant.isReady()) {
                     voiceAssistant.speakExhale()
                 } else {
-                    setEffect { Speak("Выдох") }
+                    setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_phase_exhale)) }
                 }
                 if (!runPhase(BreathingContract.BreathingPhase.Exhale, pattern.exhaleSeconds, currentJob)) break
                 
@@ -162,7 +177,7 @@ class BreathingViewModel @Inject constructor(
                     if (voiceAssistant.isReady()) {
                         voiceAssistant.speakRelax()
                     } else {
-                        setEffect { Speak("Отдых") }
+                        setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_phase_rest)) }
                     }
                     if (!runPhase(BreathingContract.BreathingPhase.HoldAfterExhale, pattern.holdAfterExhaleSeconds, currentJob)) break
                 }
@@ -182,7 +197,7 @@ class BreathingViewModel @Inject constructor(
                 if (voiceAssistant.isReady()) {
                     voiceAssistant.speakComplete()
                 } else {
-                    setEffect { Speak("Отлично! Вы завершили дыхательную практику.") }
+                    setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_complete_message)) }
                 }
                 
                 stopPatternInternal()
@@ -257,30 +272,30 @@ class BreathingViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             try {
                 val session = Session(
-                    id = "session_${System.currentTimeMillis()}",
+                    id = System.currentTimeMillis().toString(),
                     type = SessionType.BREATHING,
-                    startTime = Date(sessionStartTime),
-                    endTime = Date(),
+                    startTime = Date(System.currentTimeMillis() - durationMillis),
+                    endTime = Date(System.currentTimeMillis()),
                     durationSeconds = durationMillis / 1000,
                     relatedItemId = patternId
                 )
-                saveSessionUseCase(session)
-                trackBreathingSessionUseCase(session)
+                breathingRepository.trackBreathingSession(session)
+                Timber.d("Session tracked: $patternId, duration: ${durationMillis}ms")
             } catch (e: Exception) {
                 Timber.e(e, "Ошибка при отслеживании сессии дыхания")
-                val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
-                setEffect { BreathingContract.Effect.ShowError(uiError) }
             }
         }
     }
 
     override fun onCleared() {
         try {
-            stopPatternInternal()
-            super.onCleared()
+            breathingJob?.cancel()
+            voiceAssistant.release()
+            Timber.d("BreathingViewModel cleared")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка при очистке ViewModel")
+            Timber.e(e, "Ошибка при очистке BreathingViewModel")
         }
+        super.onCleared()
     }
 
     // Метод для анализа уровня пульса
@@ -297,7 +312,7 @@ class BreathingViewModel @Inject constructor(
 
     // Метод для обработки голосовой команды
     fun processVoiceCommand(command: String) {
-         handleEvent(BreathingContract.Event.VoiceCommand(command))
+         setEvent(BreathingContract.Event.VoiceCommand(command))
     }
     
     // Метод для запуска прослушивания голосовой команды (передается в UI)
