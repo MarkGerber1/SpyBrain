@@ -2,6 +2,7 @@ package com.example.spybrain.presentation.breathing
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -45,6 +46,7 @@ fun BreathingScreen(
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var activePattern by remember { mutableStateOf<BreathingPattern?>(null) }
+    var selectedCategory by remember { mutableStateOf("all") }
     
     // Эффект для обработки уведомлений и ошибок
     LaunchedEffect(key1 = viewModel) {
@@ -54,7 +56,7 @@ fun BreathingScreen(
                     Toast.makeText(context, effect.error.toString(), Toast.LENGTH_SHORT).show()
                 }
                 is BreathingContract.Effect.Vibrate -> {
-                    // Вибрация (требует разрешения)
+                    // Вибрация (требует разрешений)
                 }
                 is BreathingContract.Effect.Speak -> {
                     // Голосовая подсказка
@@ -90,7 +92,7 @@ fun BreathingScreen(
                 onStop = { viewModel.setEvent(BreathingContract.Event.StopPattern) }
             )
         } else {
-            // Список шаблонов
+            // Список шаблонов с категориями
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -109,14 +111,30 @@ fun BreathingScreen(
                         )
                     }
                 } else {
-                    Text(
-                        text = "Выберите шаблон дыхания:",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                    // Категории
+                    CategoryTabs(
+                        selectedCategory = selectedCategory,
+                        onCategorySelected = { selectedCategory = it }
                     )
                     
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Фильтрованные паттерны
+                    val filteredPatterns = when (selectedCategory) {
+                        "relaxation" -> state.patterns.filter { 
+                            it.id in listOf("classic_meditation", "breathing_478", "sleep_breathing") 
+                        }
+                        "energy" -> state.patterns.filter { 
+                            it.id in listOf("fire_breath", "energy_breathing", "lion_breath") 
+                        }
+                        "focus" -> state.patterns.filter { 
+                            it.id in listOf("box_breathing", "focus_breathing", "creative_breathing") 
+                        }
+                        else -> state.patterns
+                    }
+                    
                     PatternsList(
-                        patterns = state.patterns,
+                        patterns = filteredPatterns,
                         onPatternSelected = { pattern ->
                             activePattern = pattern
                             viewModel.setEvent(BreathingContract.Event.StartPattern(pattern))
@@ -124,6 +142,32 @@ fun BreathingScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun CategoryTabs(
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit
+) {
+    val categories = listOf(
+        "all" to "Все",
+        "relaxation" to "Расслабление",
+        "energy" to "Энергия",
+        "focus" to "Концентрация"
+    )
+    
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(categories) { (id, name) ->
+            FilterChip(
+                onClick = { onCategorySelected(id) },
+                label = { Text(name) },
+                selected = selectedCategory == id,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
         }
     }
 }

@@ -4,15 +4,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.spybrain.domain.model.BreathingPattern
 import com.example.spybrain.domain.model.Session
 import com.example.spybrain.domain.model.SessionType
-import com.example.spybrain.domain.usecase.breathing.GetBreathingPatternsUseCase
+import com.example.spybrain.data.repository.BreathingPatternRepository
 import com.example.spybrain.domain.usecase.breathing.TrackBreathingSessionUseCase
 import com.example.spybrain.domain.usecase.stats.SaveSessionUseCase
 import com.example.spybrain.presentation.base.BaseViewModel
+import com.example.spybrain.service.VoiceAssistantService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -22,21 +21,16 @@ import java.util.Date
 import javax.inject.Inject
 import com.example.spybrain.presentation.breathing.BreathingContract.Effect.Speak
 import java.util.Locale
-import com.example.spybrain.domain.service.IAiMentor
 import com.example.spybrain.util.UiError
-import com.example.spybrain.domain.service.IHealthAdvisor
-import com.example.spybrain.domain.service.IVoiceAssistant
 import com.example.spybrain.domain.error.ErrorHandler
 import timber.log.Timber
 
 @HiltViewModel
 class BreathingViewModel @Inject constructor(
-    private val getBreathingPatternsUseCase: GetBreathingPatternsUseCase,
+    private val breathingPatternRepository: BreathingPatternRepository,
     private val trackBreathingSessionUseCase: TrackBreathingSessionUseCase,
     private val saveSessionUseCase: SaveSessionUseCase,
-    private val aiMentor: IAiMentor,
-    private val healthAdvisor: IHealthAdvisor,
-    private val voiceAssistant: IVoiceAssistant
+    private val voiceAssistant: VoiceAssistantService
 ) : BaseViewModel<BreathingContract.Event, BreathingContract.State, BreathingContract.Effect>() {
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
@@ -84,17 +78,13 @@ class BreathingViewModel @Inject constructor(
     private fun loadPatterns() {
         viewModelScope.launch(coroutineExceptionHandler) {
             try {
-                getBreathingPatternsUseCase()
-                    .onStart { setState { copy(isLoading = true, error = null) } }
-                    .catch { error ->
-                        Timber.e(error, "Ошибка загрузки паттернов дыхания")
-                        val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(error))
-                        setState { copy(isLoading = false, error = uiError) }
-                        setEffect { BreathingContract.Effect.ShowError(uiError) }
-                    }
-                    .collect { patterns ->
-                        setState { copy(isLoading = false, patterns = patterns) }
-                    }
+                setState { copy(isLoading = true, error = null) }
+                
+                val patterns = breathingPatternRepository.getAllPatterns()
+                setState { copy(isLoading = false, patterns = patterns) }
+                
+                Timber.d("Loaded ${patterns.size} breathing patterns")
+                
             } catch (e: Exception) {
                 Timber.e(e, "Критическая ошибка при загрузке паттернов")
                 val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
@@ -115,8 +105,15 @@ class BreathingViewModel @Inject constructor(
                     currentPhase = BreathingContract.BreathingPhase.Idle
                 )
             }
+            
             // Голосовое сопровождение старта
-            setEffect { Speak("Начинаем. Вдох...") }
+            if (voiceAssistant.isReady()) {
+                voiceAssistant.speakStart()
+                voiceAssistant.speakBreathingPrompt(pattern.voicePrompt)
+            } else {
+                setEffect { Speak("Начинаем. Вдох...") }
+            }
+            
             breathingJob = viewModelScope.launch(coroutineExceptionHandler + SupervisorJob()) {
                 runBreathingCycle(pattern)
             }
@@ -131,53 +128,63 @@ class BreathingViewModel @Inject constructor(
         val currentJob = breathingJob ?: return
         try {
             while (currentJob.isActive && uiState.value.remainingCycles > 0) {
+                val currentCycle = pattern.totalCycles - uiState.value.remainingCycles + 1
+                
                 // Inhale
-                setEffect { Speak("Вдох") }
-                try {
-                    aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.Inhale)
-                } catch (e: Exception) {
-                    Timber.w(e, "Ошибка при получении совета для вдоха")
+                if (voiceAssistant.isReady()) {
+                    voiceAssistant.speakInhale()
+                } else {
+                    setEffect { Speak("Вдох") }
                 }
+                
                 if (!runPhase(BreathingContract.BreathingPhase.Inhale, pattern.inhaleSeconds, currentJob)) break
                 
                 // Hold After Inhale
                 if (pattern.holdAfterInhaleSeconds > 0) {
-                    setEffect { Speak("Задержка") }
-                    try {
-                        aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.HoldAfterInhale)
-                    } catch (e: Exception) {
-                        Timber.w(e, "Ошибка при получении совета для задержки после вдоха")
+                    if (voiceAssistant.isReady()) {
+                        voiceAssistant.speakHold()
+                    } else {
+                        setEffect { Speak("Задержка") }
                     }
                     if (!runPhase(BreathingContract.BreathingPhase.HoldAfterInhale, pattern.holdAfterInhaleSeconds, currentJob)) break
                 }
                 
                 // Exhale
-                setEffect { Speak("Выдох") }
-                try {
-                    aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.Exhale)
-                } catch (e: Exception) {
-                    Timber.w(e, "Ошибка при получении совета для выдоха")
+                if (voiceAssistant.isReady()) {
+                    voiceAssistant.speakExhale()
+                } else {
+                    setEffect { Speak("Выдох") }
                 }
                 if (!runPhase(BreathingContract.BreathingPhase.Exhale, pattern.exhaleSeconds, currentJob)) break
                 
                 // Hold After Exhale
                 if (pattern.holdAfterExhaleSeconds > 0) {
-                    setEffect { Speak("Отдых") }
-                    try {
-                        aiMentor.giveBreathingAdvice(BreathingContract.BreathingPhase.HoldAfterExhale)
-                    } catch (e: Exception) {
-                        Timber.w(e, "Ошибка при получении совета для задержки после выдоха")
+                    if (voiceAssistant.isReady()) {
+                        voiceAssistant.speakRelax()
+                    } else {
+                        setEffect { Speak("Отдых") }
                     }
                     if (!runPhase(BreathingContract.BreathingPhase.HoldAfterExhale, pattern.holdAfterExhaleSeconds, currentJob)) break
                 }
 
                 setState { copy(remainingCycles = remainingCycles - 1) }
+                
+                // Мотивация каждые 3 цикла
+                if (currentCycle % 3 == 0 && voiceAssistant.isReady()) {
+                    voiceAssistant.speakMotivation()
+                }
             }
             
             // Cycle finished or stopped
             if (currentJob.isActive) {
                 trackSessionEnd(pattern.id, System.currentTimeMillis() - sessionStartTime)
-                setEffect { Speak("Отлично! Вы завершили дыхательную практику.") }
+                
+                if (voiceAssistant.isReady()) {
+                    voiceAssistant.speakComplete()
+                } else {
+                    setEffect { Speak("Отлично! Вы завершили дыхательную практику.") }
+                }
+                
                 stopPatternInternal()
             }
         } catch (e: Exception) {

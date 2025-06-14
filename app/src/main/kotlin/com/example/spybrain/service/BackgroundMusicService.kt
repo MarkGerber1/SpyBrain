@@ -3,8 +3,10 @@ package com.example.spybrain.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -13,27 +15,64 @@ class BackgroundMusicService : Service() {
     @Inject
     lateinit var exoPlayer: ExoPlayer
 
+    override fun onCreate() {
+        super.onCreate()
+        setupExoPlayer()
+    }
+
+    private fun setupExoPlayer() {
+        exoPlayer.addListener(object : Player.Listener {
+            override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                Log.e("BackgroundMusicService", "Playback error: ${error.message}", error)
+                // Можно добавить уведомление пользователя об ошибке
+            }
+            
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_ENDED) {
+                    // Зацикливаем музыку
+                    exoPlayer.seekTo(0)
+                    exoPlayer.play()
+                }
+            }
+        })
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_PLAY -> {
                 val url = intent.getStringExtra(EXTRA_URL)
                 if (!url.isNullOrEmpty()) {
-                    exoPlayer.setMediaItem(MediaItem.fromUri(url))
-                    // exoPlayer.isLooping = true // ExoPlayer не поддерживает isLooping напрямую
-                    exoPlayer.prepare()
-                    exoPlayer.play()
+                    try {
+                        exoPlayer.setMediaItem(MediaItem.fromUri(url))
+                        exoPlayer.prepare()
+                        exoPlayer.play()
+                        Log.d("BackgroundMusicService", "Started playing: $url")
+                    } catch (e: Exception) {
+                        Log.e("BackgroundMusicService", "Error playing music: ${e.message}", e)
+                    }
+                } else {
+                    Log.w("BackgroundMusicService", "URL is null or empty")
                 }
             }
             ACTION_STOP -> {
-                exoPlayer.stop()
+                try {
+                    exoPlayer.stop()
+                    Log.d("BackgroundMusicService", "Music stopped")
+                } catch (e: Exception) {
+                    Log.e("BackgroundMusicService", "Error stopping music: ${e.message}", e)
+                }
             }
         }
         return START_STICKY
     }
 
     override fun onDestroy() {
-        exoPlayer.stop()
-        exoPlayer.release()
+        try {
+            exoPlayer.stop()
+            exoPlayer.release()
+        } catch (e: Exception) {
+            Log.e("BackgroundMusicService", "Error in onDestroy: ${e.message}", e)
+        }
         super.onDestroy()
     }
 

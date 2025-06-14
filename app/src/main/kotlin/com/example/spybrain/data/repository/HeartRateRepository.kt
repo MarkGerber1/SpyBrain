@@ -5,6 +5,8 @@ import com.example.spybrain.data.storage.dao.HeartRateDao
 import com.example.spybrain.data.storage.model.HeartRateMeasurement
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
+import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,7 +18,6 @@ class HeartRateRepository @Inject constructor(
     
     suspend fun saveMeasurement(heartRate: Int) {
         val measurement = HeartRateMeasurement(
-            id = 0, // Room автоматически сгенерирует ID
             heartRate = heartRate,
             timestamp = LocalDateTime.now()
         )
@@ -58,8 +59,12 @@ class HeartRateRepository @Inject constructor(
     }
     
     suspend fun getTodayMeasurements(): List<Int> {
-        val today = LocalDateTime.now().toLocalDate()
-        return heartRateDao.getMeasurementsByDate(today)
+        val today = LocalDate.now()
+        val startOfDay = today.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val endOfDay = today.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        
+        return heartRateDao.getMeasurementsFromDate(startOfDay)
+            .filter { it.timestamp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() < endOfDay }
             .map { it.heartRate }
     }
 } 

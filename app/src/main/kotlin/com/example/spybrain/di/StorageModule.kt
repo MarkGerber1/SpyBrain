@@ -14,8 +14,10 @@ import com.example.spybrain.data.storage.dao.MeditationSessionDao
 import com.example.spybrain.data.storage.dao.UserProfileDao
 import com.example.spybrain.data.storage.dao.CustomBreathingPatternDao
 import com.example.spybrain.data.storage.dao.AchievementDao
+import com.example.spybrain.data.storage.dao.HeartRateDao
 import com.example.spybrain.data.storage.MIGRATION_1_2
 import com.example.spybrain.data.storage.MIGRATION_2_3
+import com.example.spybrain.data.storage.MIGRATION_3_4
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -28,7 +30,7 @@ object StorageModule {
             AppDatabase::class.java,
             "spybrain.db"
         )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
         .build()
 
     @Provides
@@ -44,12 +46,16 @@ object StorageModule {
         db.meditationSessionDao() // FIXME: Не внедрять DAO напрямую в UseCase/ViewModel. Использовать репозиторий.
 
     @Provides
-    fun provideCustomBreathingPatternDao(db: AppDatabase): com.example.spybrain.data.storage.dao.CustomBreathingPatternDao =
+    fun provideCustomBreathingPatternDao(db: AppDatabase): CustomBreathingPatternDao =
         db.customBreathingPatternDao() // FIXME: Не внедрять DAO напрямую в UseCase/ViewModel. Использовать репозиторий.
 
     @Provides
-    fun provideAchievementDao(db: AppDatabase): com.example.spybrain.data.storage.dao.AchievementDao =
+    fun provideAchievementDao(db: AppDatabase): AchievementDao =
         db.achievementDao() // FIXME: Не внедрять DAO напрямую в UseCase/ViewModel. Использовать репозиторий.
+
+    @Provides
+    fun provideHeartRateDao(db: AppDatabase): HeartRateDao =
+        db.heartRateDao()
 
     // Provider for DataStore настроек
     @Provides

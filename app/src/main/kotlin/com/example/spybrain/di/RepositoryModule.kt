@@ -9,6 +9,7 @@ import com.example.spybrain.data.repository.CustomBreathingPatternRepositoryImpl
 import com.example.spybrain.data.repository.MeditationProgramRepositoryImpl
 import com.example.spybrain.data.repository.AchievementsRepositoryImpl
 import com.example.spybrain.data.repository.ReminderRepositoryImpl
+import com.example.spybrain.data.repository.BreathingPatternRepository
 import com.example.spybrain.domain.repository.BreathingRepository
 import com.example.spybrain.domain.repository.MeditationRepository
 import com.example.spybrain.domain.repository.ProfileRepository
@@ -71,4 +72,10 @@ abstract class RepositoryModule {
     abstract fun bindReminderRepository(
         impl: ReminderRepositoryImpl
     ): ReminderRepository
+
+    @Provides
+    @Singleton
+    fun provideBreathingPatternRepository(): BreathingPatternRepository {
+        return BreathingPatternRepository()
+    }
 } 

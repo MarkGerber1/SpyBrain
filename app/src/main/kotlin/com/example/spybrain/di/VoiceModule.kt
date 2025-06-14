@@ -6,6 +6,7 @@ import com.example.spybrain.service.HealthAdvisorService
 import com.example.spybrain.domain.service.IVoiceAssistant
 import com.example.spybrain.domain.service.IHealthAdvisor
 import com.example.spybrain.domain.service.IAiMentor
+import com.example.spybrain.service.VoiceAssistantService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +21,9 @@ object VoiceModule {
     @Singleton
     fun provideVoiceAssistantService(
         @ApplicationContext context: Context
-    ): IVoiceAssistant = VoiceAssistantService(context) // TODO реализовано: внедрение через интерфейс
+    ): VoiceAssistantService {
+        return VoiceAssistantService(context)
+    }
 
     @Provides
     @Singleton

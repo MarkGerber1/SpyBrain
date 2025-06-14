@@ -45,4 +45,17 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
             )
         """.trimIndent())
     }
+}
+
+// Migration from version 3 to 4: add heart rate measurements table
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("""
+            CREATE TABLE IF NOT EXISTS `heart_rate_measurements` (
+                `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                `heartRate` INTEGER NOT NULL,
+                `timestamp` TEXT NOT NULL
+            )
+        """.trimIndent())
+    }
 } 

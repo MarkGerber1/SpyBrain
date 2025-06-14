@@ -170,13 +170,35 @@ class SettingsViewModel @Inject constructor(
     
     // Запуск сервиса проигрывания фоновой музыки
     private fun playAmbientMusic(trackId: String) {
-        val audioUrl = "https://example.com/audio/$trackId.mp3" // Заменить на реальный URL из медитации
-        val intent = Intent(context, BackgroundMusicService::class.java).apply {
-            action = BackgroundMusicService.ACTION_PLAY
-            putExtra(BackgroundMusicService.EXTRA_URL, audioUrl)
+        try {
+            // Проверяем, что trackId не пустой
+            if (trackId.isEmpty()) {
+                setEffect { SettingsContract.Effect.ShowToast("Трек не выбран") }
+                return
+            }
+            
+            // Используем существующие аудиофайлы из папки raw
+            val audioUrl = when (trackId) {
+                "nature" -> "android.resource://${context.packageName}/raw/mixkit_spirit_in_the_woods_139"
+                "water" -> "android.resource://${context.packageName}/raw/mixkit_chillax_655"
+                "space" -> "android.resource://${context.packageName}/raw/mixkit_staring_at_the_night_sky_168"
+                "air" -> "android.resource://${context.packageName}/raw/mixkit_valley_sunset_127"
+                else -> {
+                    // Если трек не найден, используем дефолтный
+                    "android.resource://${context.packageName}/raw/mixkit_relaxation_05_749"
+                }
+            }
+            
+            val intent = Intent(context, BackgroundMusicService::class.java).apply {
+                action = BackgroundMusicService.ACTION_PLAY
+                putExtra(BackgroundMusicService.EXTRA_URL, audioUrl)
+            }
+            context.startService(intent)
+            setEffect { SettingsContract.Effect.ShowToast("Фоновая музыка включена") }
+            
+        } catch (e: Exception) {
+            setEffect { SettingsContract.Effect.ShowToast("Ошибка запуска музыки: ${e.message}") }
         }
-        context.startService(intent)
-        setEffect { SettingsContract.Effect.ShowToast("Фоновая музыка включена") }
     }
     
     // Остановка проигрывания фоновой музыки

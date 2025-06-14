@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 @Entity(tableName = "heart_rate_measurements")
 data class HeartRateMeasurement(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Long = 0,
     val heartRate: Int,
     val timestamp: LocalDateTime
 ) 

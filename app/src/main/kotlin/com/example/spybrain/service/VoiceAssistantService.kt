@@ -11,8 +11,13 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.util.Locale
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class VoiceAssistantService(private val context: Context) {
+@Singleton
+class VoiceAssistantService @Inject constructor(
+    private val context: Context
+) {
     
     private var tts: TextToSpeech? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -29,7 +34,7 @@ class VoiceAssistantService(private val context: Context) {
             tts = TextToSpeech(context) { status ->
                 if (status == TextToSpeech.SUCCESS) {
                     isInitialized = true
-                    setupDefaultVoice()
+                    setupVoice()
                     setupUtteranceListener()
                     Timber.d("TTS initialized successfully")
                 } else {
@@ -41,32 +46,38 @@ class VoiceAssistantService(private val context: Context) {
         }
     }
     
-    private fun setupDefaultVoice() {
+    private fun setupVoice() {
         try {
-            // Пытаемся найти лучший голос для русского языка
-            val voices = tts?.voices ?: return
+            // Устанавливаем русский язык
+            val result = tts?.setLanguage(Locale("ru", "RU"))
             
-            // Приоритет: русский женский голос
-            currentVoice = voices.find { voice ->
-                voice.locale.language == "ru" && voice.name.contains("female", ignoreCase = true)
-            } ?: voices.find { voice ->
-                voice.locale.language == "ru"
-            } ?: voices.find { voice ->
-                voice.locale.language == "en" && voice.name.contains("female", ignoreCase = true)
-            } ?: voices.firstOrNull()
-            
-            currentVoice?.let { voice ->
-                tts?.voice = voice
-                tts?.language = voice.locale
-                Timber.d("Selected voice: ${voice.name} (${voice.locale})")
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                // Если русский не поддерживается, используем английский
+                tts?.setLanguage(Locale.US)
+                Timber.w("Russian language not supported, using English")
             }
             
-            // Настройка параметров качества
-            tts?.setSpeechRate(0.85f) // Немного медленнее для лучшего понимания
-            tts?.setPitch(1.0f) // Нормальная высота
+            // Ищем мягкий женский голос
+            val voices = tts?.voices
+            val softFemaleVoice = voices?.find { voice ->
+                voice.name.contains("female", ignoreCase = true) ||
+                voice.name.contains("женский", ignoreCase = true) ||
+                voice.name.contains("soft", ignoreCase = true) ||
+                voice.name.contains("gentle", ignoreCase = true)
+            }
+            
+            softFemaleVoice?.let { voice ->
+                tts?.voice = voice
+                currentVoice = voice
+                Timber.d("Using voice: ${voice.name}")
+            }
+            
+            // Настраиваем параметры для мягкого голоса
+            tts?.setSpeechRate(0.8f) // Немного медленнее
+            tts?.setPitch(1.1f) // Немного выше для женского голоса
             
         } catch (e: Exception) {
-            Timber.e(e, "Failed to setup default voice")
+            Timber.e(e, "Failed to setup voice")
         }
     }
     
@@ -214,4 +225,64 @@ class VoiceAssistantService(private val context: Context) {
             Timber.e(e, "Failed to release TTS")
         }
     }
+    
+    fun speakBreathingPrompt(prompt: String) {
+        if (!isInitialized) {
+            Timber.w("TTS not initialized yet")
+            return
+        }
+        
+        tts?.let { tts ->
+            tts.speak(prompt, TextToSpeech.QUEUE_FLUSH, null, "breathing_prompt")
+            Timber.d("Speaking: $prompt")
+        }
+    }
+    
+    fun speakInhale() {
+        speakBreathingPrompt("Вдох")
+    }
+    
+    fun speakExhale() {
+        speakBreathingPrompt("Выдох")
+    }
+    
+    fun speakHold() {
+        speakBreathingPrompt("Задержите")
+    }
+    
+    fun speakRelax() {
+        speakBreathingPrompt("Расслабьтесь")
+    }
+    
+    fun speakStart() {
+        speakBreathingPrompt("Начинаем дыхательную практику")
+    }
+    
+    fun speakComplete() {
+        speakBreathingPrompt("Практика завершена. Отлично!")
+    }
+    
+    fun speakCycle(cycle: Int, total: Int) {
+        speakBreathingPrompt("Цикл $cycle из $total")
+    }
+    
+    fun speakMotivation() {
+        val motivations = listOf(
+            "Вы делаете это прекрасно",
+            "Продолжайте в том же духе",
+            "Ваше дыхание становится все более спокойным",
+            "Вы на правильном пути",
+            "Каждый вдох приносит вам спокойствие",
+            "Вы становитесь сильнее с каждым циклом"
+        )
+        val randomMotivation = motivations.random()
+        speakBreathingPrompt(randomMotivation)
+    }
+    
+    fun shutdown() {
+        tts?.shutdown()
+        isInitialized = false
+    }
+    
+    fun isReady(): Boolean = isInitialized
 } 
