@@ -13,11 +13,12 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.example.spybrain.domain.service.IVoiceAssistant
 
 @Singleton
 class VoiceAssistantService @Inject constructor(
     private val context: Context
-) {
+) : IVoiceAssistant {
     
     private var tts: TextToSpeech? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -285,4 +286,15 @@ class VoiceAssistantService @Inject constructor(
     }
     
     fun isReady(): Boolean = isInitialized
+    
+    // Реализация интерфейса IVoiceAssistant
+    override fun speak(text: String) {
+        speakBreathingPrompt(text)
+    }
+    
+    override fun startListening(onResult: (String) -> Unit) {
+        // TODO: Реализовать распознавание речи
+        // Пока что просто логируем
+        Timber.d("Voice listening started (not implemented yet)")
+    }
 } 

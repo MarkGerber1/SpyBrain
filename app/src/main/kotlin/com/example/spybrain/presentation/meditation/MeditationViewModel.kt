@@ -20,7 +20,7 @@ import java.util.Date
 import javax.inject.Inject
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
-import com.example.spybrain.voice.AiMentorService
+import com.example.spybrain.service.AiMentorService
 import kotlinx.coroutines.delay
 import com.example.spybrain.domain.error.ErrorHandler
 import com.example.spybrain.domain.service.IPlayerService

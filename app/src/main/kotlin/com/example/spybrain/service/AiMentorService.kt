@@ -1,4 +1,4 @@
-package com.example.spybrain.voice
+package com.example.spybrain.service
 
 import javax.inject.Inject
 import javax.inject.Singleton

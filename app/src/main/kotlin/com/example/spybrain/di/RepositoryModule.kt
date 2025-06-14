@@ -20,6 +20,7 @@ import com.example.spybrain.domain.repository.AchievementsRepository
 import com.example.spybrain.domain.repository.ReminderRepository
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
@@ -27,7 +28,7 @@ import javax.inject.Singleton
 // NOTE: Этот модуль соответствует Clean Architecture — внедряет реализации через интерфейсы domain-слоя.
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
+abstract class RepositoryBindsModule {
 
     @Binds
     @Singleton
@@ -72,6 +73,11 @@ abstract class RepositoryModule {
     abstract fun bindReminderRepository(
         impl: ReminderRepositoryImpl
     ): ReminderRepository
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object RepositoryProvidesModule {
 
     @Provides
     @Singleton

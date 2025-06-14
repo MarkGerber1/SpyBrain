@@ -3,7 +3,7 @@ package com.example.spybrain.di
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import com.example.spybrain.voice.VoiceAssistantService
+import com.example.spybrain.service.VoiceAssistantService
 import com.example.spybrain.service.HealthAdvisorService
 
 @EntryPoint

@@ -30,7 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import android.app.Activity
 import android.content.res.Configuration
 import java.util.Locale
-import com.example.spybrain.voice.VoiceAssistantService
+import com.example.spybrain.service.VoiceAssistantService
 import androidx.compose.ui.unit.Dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.lazy.LazyColumn

@@ -295,11 +295,6 @@ class BreathingViewModel @Inject constructor(
         LOW, NORMAL, ELEVATED, HIGH
     }
 
-    // Метод для получения динамических советов от HealthAdvisor
-    fun getDynamicAdvices(phase: BreathingContract.BreathingPhase, bpm: Int): String {
-        return healthAdvisor.getAdvices(phase, bpm).joinToString(" • ")
-    }
-
     // Метод для обработки голосовой команды
     fun processVoiceCommand(command: String) {
          handleEvent(BreathingContract.Event.VoiceCommand(command))

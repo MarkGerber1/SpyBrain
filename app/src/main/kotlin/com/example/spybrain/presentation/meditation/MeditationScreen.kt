@@ -42,7 +42,7 @@ import com.example.spybrain.R
 import com.example.spybrain.domain.model.Meditation
 import com.example.spybrain.presentation.settings.SettingsViewModel
 import com.example.spybrain.service.BackgroundMusicService
-import com.example.spybrain.voice.VoiceAssistantService
+import com.example.spybrain.service.VoiceAssistantService
 import kotlinx.coroutines.delay
 import android.widget.Toast
 import androidx.compose.runtime.DisposableEffect
