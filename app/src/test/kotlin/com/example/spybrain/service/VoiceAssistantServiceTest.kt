@@ -9,7 +9,7 @@ class VoiceAssistantServiceTest {
     @Test
     fun `service can be created`() {
         val context = mockk<Context>(relaxed = true)
-        val service = VoiceAssistantService(context)
+        val service = VoiceAssistantService(context, null)
         assertNotNull(service)
     }
     // Для настоящих тестов логики используйте интеграционные тесты с Robolectric или Instrumented

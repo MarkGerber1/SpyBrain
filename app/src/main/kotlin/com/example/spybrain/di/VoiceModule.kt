@@ -20,9 +20,10 @@ object VoiceModule {
     @Provides
     @Singleton
     fun provideVoiceAssistantService(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        settingsDataStore: com.example.spybrain.data.datastore.SettingsDataStore
     ): VoiceAssistantService {
-        return VoiceAssistantService(context)
+        return VoiceAssistantService(context, settingsDataStore)
     }
 
     @Provides

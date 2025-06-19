@@ -95,12 +95,12 @@
     <string name="stats_title">Overall Statistics</string>
     <string name="stats_total_meditation_minutes">Meditation (min)</string>
     <string name="stats_total_breathing_minutes">Breathing (min)</string>
-    <string name="stats_completed_meditation_sessions">Completed meditation sessions</string>
-    <string name="stats_completed_breathing_sessions">Completed breathing sessions</string>
+    <string name="stats_completed_meditation_sessions">Meditation sessions</string>
+    <string name="stats_completed_breathing_sessions">Breathing sessions</string>
     <string name="stats_current_streak_days">Current streak (days)</string>
-    <string name="stats_longest_streak_days">Longest streak (days)</string>
-    <string name="stats_breathing_history_title">Breathing Session History</string>
-    <string name="stats_meditation_history_title">Meditation History</string>
+    <string name="stats_longest_streak_days">Max streak (days)</string>
+    <string name="stats_breathing_history_title">Breathing session history</string>
+    <string name="stats_meditation_history_title">Meditation history</string>
 
     <!-- Navigation -->
     <string name="nav_meditation">Meditation</string>
@@ -224,4 +224,113 @@
     <string name="stats_total_sessions_count">Total Sessions</string>
     <string name="stats_weekly_progress">Weekly Progress</string>
     <string name="stats_monthly_progress">Monthly Progress</string>
+
+    <!-- Meditation Names -->
+    <string name="meditation_mindfulness_basics">Flow of Awareness</string>
+    <string name="meditation_deep_breathing">Harmony of Breath</string>
+    <string name="meditation_body_scan">Journey Through Body</string>
+    <string name="meditation_loving_kindness">Garden of Love</string>
+    <string name="meditation_walking">Dance of Steps</string>
+    <string name="meditation_sleep">Embrace of Night</string>
+    <string name="meditation_anxiety">Island of Peace</string>
+    <string name="meditation_focus">Beam of Attention</string>
+    <string name="meditation_stress_relief">Wave of Relaxation</string>
+    <string name="meditation_morning">Awakening of Light</string>
+    <string name="meditation_evening">Sunset of Soul</string>
+    <string name="meditation_gratitude">Treasure of Gratitude</string>
+    <string name="meditation_compassion">Ocean of Compassion</string>
+    <string name="meditation_zen">Silence of Zen</string>
+    <string name="meditation_vipassana">Wisdom Insight</string>
+    <string name="meditation_transcendental">Gates of Transcendence</string>
+    
+    <!-- Meditation Descriptions -->
+    <string name="meditation_mindfulness_basics_desc">Open the door to the world of the present moment</string>
+    <string name="meditation_deep_breathing_desc">Breathe in the rhythm of the universe</string>
+    <string name="meditation_body_scan_desc">Explore the temple of your body with love</string>
+    <string name="meditation_loving_kindness_desc">Plant seeds of love in your heart</string>
+    <string name="meditation_walking_desc">Every step is a meditation in motion</string>
+    <string name="meditation_sleep_desc">Dive into the embrace of deep sleep</string>
+    <string name="meditation_anxiety_desc">Find your island of peace in the ocean of anxiety</string>
+    <string name="meditation_focus_desc">Gather rays of attention into one powerful beam</string>
+    <string name="meditation_stress_relief_desc">Let waves of relaxation wash away tension</string>
+    <string name="meditation_morning_desc">Energetic start to the day</string>
+    <string name="meditation_evening_desc">Gently end the day in harmony with yourself</string>
+    <string name="meditation_gratitude_desc">Open the treasure chest of gratitude in your heart</string>
+    <string name="meditation_compassion_desc">Dive into the ocean of compassion for yourself and the world</string>
+    <string name="meditation_zen_desc">Experience the depth of zen silence</string>
+    <string name="meditation_vipassana_desc">Gain insight through vipassana meditation</string>
+    <string name="meditation_transcendental_desc">Step through the threshold into the world of transcendence</string>
+
+    <!-- Meditation Tracks -->
+    <string name="meditation_tracks_title">Meditation Tracks</string>
+    <string name="meditation_track_description">Meditation music for relaxation</string>
+    <string name="meditation_track_angelic">Angelic Melody</string>
+    <string name="meditation_track_chill">Chill</string>
+    <string name="meditation_track_dreaming">Dreaming</string>
+    <string name="meditation_track_forest_spirit">Forest Spirit</string>
+    <string name="meditation_track_night_sky">Night Sky</string>
+    <string name="meditation_track_relaxation">Relaxation</string>
+    <string name="meditation_track_spiritual">Spiritual</string>
+    <string name="meditation_track_valley_sunset">Valley Sunset</string>
+    
+    <!-- Player Controls -->
+    <string name="playing">Playing</string>
+    <string name="selected">Selected</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="meditations">Meditations</string>
+
+    <!-- New strings from BreathingScreen.kt -->
+    <string name="breath_in">INHALE</string>
+    <string name="breath_out">EXHALE</string>
+    <string name="breath_hold">HOLD</string>
+    <string name="breath_ready">READY</string>
+    <string name="hold_after_inhale">Hold after inhale</string>
+    <string name="hold_after_exhale">Hold after exhale</string>
+    <string name="cycle_of">Cycle %1$d of %2$d</string>
+    <string name="save_changes">Save changes</string>
+    <string name="breathing_params">Breathing parameters</string>
+    <string name="inhale_seconds">Inhale (sec)</string>
+    <string name="exhale_seconds">Exhale (sec)</string>
+    <string name="pause_seconds">Pause (sec)</string>
+    <string name="cycles_count">Number of cycles</string>
+    <string name="saved_patterns">Saved patterns</string>
+    <string name="greeting_night">Good night</string>
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_day">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="motivation_1">Breathing is your path to harmony!</string>
+    <string name="motivation_2">Meditation is the key to inner peace</string>
+    <string name="motivation_3">Every breath is a new opportunity</string>
+    <string name="motivation_4">Silence is the music of the soul</string>
+    <string name="motivation_5">Mindfulness is the gift of the present moment</string>
+    <string name="motivation_6">Calmness is your superpower</string>
+    <string name="motivation_7">Breathe deeply, live brightly!</string>
+    <string name="motivation_8">Meditation is a journey to yourself</string>
+    <string name="motivation_9">There is life in every breath</string>
+    <string name="motivation_10">Calm mind is a source of strength</string>
+    <string name="motivation_11">Breathing is a bridge between body and mind</string>
+    <string name="motivation_12">Meditation is the art of being here and now</string>
+    <string name="motivation_13">Silence speaks louder than words</string>
+    <string name="motivation_14">Every moment is meditation</string>
+    <string name="motivation_15">Breathe and let go</string>
+    <string name="motivation_16">Calmness is a choice</string>
+    <string name="motivation_17">Meditation is the path to enlightenment</string>
+    <string name="motivation_18">Breathing is the rhythm of life</string>
+    <string name="motivation_19">Mindfulness is the key to happiness</string>
+    <string name="motivation_20">Silence is the language of the soul</string>
+    <string name="toast_voice_hints_on">Voice hints enabled</string>
+    <string name="toast_voice_hints_off">Voice hints disabled</string>
+    <string name="toast_voice_changed">Voice changed</string>
+    <string name="toast_vibration_on">Vibration enabled</string>
+    <string name="toast_vibration_off">Vibration disabled</string>
+    <string name="toast_language_changed">Language changed to %1$s</string>
+    <string name="toast_theme_changed">Theme changed</string>
+    <string name="toast_heartbeat_on">Heart visualization enabled</string>
+    <string name="toast_heartbeat_off">Heart visualization disabled</string>
+    <string name="toast_voice_on">Voice enabled</string>
+    <string name="toast_voice_off">Voice disabled</string>
+    <string name="toast_track_not_selected">Track not selected</string>
+    <string name="toast_ambient_on">Ambient music enabled</string>
+    <string name="toast_ambient_error">Music start error: %1$s</string>
 </resources> 

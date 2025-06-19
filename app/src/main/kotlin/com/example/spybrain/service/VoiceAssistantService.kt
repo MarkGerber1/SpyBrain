@@ -4,213 +4,218 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.speech.tts.Voice
 import android.speech.tts.UtteranceProgressListener
-import timber.log.Timber
+import android.util.Log
+import com.example.spybrain.data.datastore.SettingsDataStore
+import com.example.spybrain.util.VibrationUtil
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.example.spybrain.R
 import com.example.spybrain.domain.service.IVoiceAssistant
-import dagger.hilt.android.qualifiers.ApplicationContext
 
 @Singleton
 class VoiceAssistantService @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val settingsDataStore: SettingsDataStore? = null
 ) : IVoiceAssistant {
     
-    private var tts: TextToSpeech? = null
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    
-    private var currentVoice: Voice? = null
+    private var textToSpeech: TextToSpeech? = null
     private var isInitialized = false
+    private val scope = CoroutineScope(Dispatchers.Main)
+    
+    // Доступные голоса
+    private val availableVoices = mutableListOf<Voice>()
+    private var currentVoice: Voice? = null
     
     init {
         initializeTTS()
     }
     
     private fun initializeTTS() {
-        tts = TextToSpeech(context) { status ->
+        textToSpeech = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 isInitialized = true
-                
-                // Устанавливаем русский язык по умолчанию
-                val result = tts?.setLanguage(Locale("ru"))
-                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Timber.w("Russian language not supported, falling back to default")
-                    tts?.setLanguage(Locale.getDefault())
-                }
-                
-                // Настраиваем параметры речи
-                tts?.setSpeechRate(0.8f) // Немного медленнее для лучшего понимания
-                tts?.setPitch(1.1f) // Немного выше для более мягкого звучания
-                
-                // Ищем женский голос
-                val voices = tts?.voices
-                val femaleVoice = voices?.find { voice ->
-                    voice.quality >= Voice.QUALITY_NORMAL &&
-                    (voice.name.contains("женский", ignoreCase = true) ||
-                     voice.name.contains("female", ignoreCase = true)) &&
-                    (voice.locale.language == "ru" || voice.locale.language == "en")
-                }
-                
-                femaleVoice?.let { voice ->
-                    currentVoice = voice
-                    tts?.voice = voice
-                    tts?.language = voice.locale
-                    Timber.d("Female voice set: ${voice.name}")
-                }
-                
-                setupUtteranceListener()
-                Timber.d("TTS initialized successfully")
+                setupVoices()
+                Timber.d("TTS инициализирован успешно")
             } else {
-                Timber.e("TTS initialization failed with status: $status")
+                Timber.e("Ошибка инициализации TTS: $status")
             }
         }
     }
     
-    private fun setupUtteranceListener() {
-        try {
-            tts?.setOnUtteranceProgressListener(object : android.speech.tts.UtteranceProgressListener() {
-                override fun onStart(utteranceId: String?) {
-                    Timber.d("TTS started: $utteranceId")
-                }
-                
-                override fun onDone(utteranceId: String?) {
-                    Timber.d("TTS completed: $utteranceId")
-                }
-                
-                override fun onError(utteranceId: String?) {
-                    Timber.e("TTS error: $utteranceId")
-                }
-            })
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to setup utterance listener")
-        }
-    }
-    
-    fun getAvailableVoices(): List<Voice> {
-        return try {
-            tts?.voices?.filter { voice ->
+    private fun setupVoices() {
+        textToSpeech?.let { tts ->
+            // Получаем доступные голоса
+            val voices = tts.voices?.filter { voice ->
                 // Фильтруем только качественные голоса
                 voice.quality >= Voice.QUALITY_NORMAL &&
-                (voice.locale.language == "ru" || voice.locale.language == "en")
-            }?.sortedBy { it.name } ?: emptyList()
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to get available voices")
-            emptyList()
+                (voice.locale == Locale("ru", "RU") || 
+                 voice.locale == Locale.US || 
+                 voice.locale == Locale.UK)
+            } ?: emptyList()
+            
+            availableVoices.clear()
+            availableVoices.addAll(voices)
+            
+            // Устанавливаем дефолтный голос
+            scope.launch {
+                val voiceId = settingsDataStore?.getVoiceId() ?: ""
+                setVoice(voiceId)
+            }
+            
+            Timber.d("Доступно голосов: ${availableVoices.size}")
         }
     }
     
-    fun getVoiceDescription(voice: Voice): String {
+    fun getAvailableVoices(): List<Voice> = availableVoices
+    
+    fun setVoice(voiceId: String) {
+        textToSpeech?.let { tts ->
+            val voice = availableVoices.find { it.name == voiceId }
+            if (voice != null) {
+                currentVoice = voice
+                tts.voice = voice
+                Timber.d("Голос установлен: ${voice.name}")
+            } else {
+                // Устанавливаем дефолтный голос
+                val defaultVoice = availableVoices.firstOrNull { 
+                    it.locale == Locale("ru", "RU") 
+                } ?: availableVoices.firstOrNull()
+                
+                defaultVoice?.let {
+                    currentVoice = it
+                    tts.voice = it
+                    Timber.d("Установлен дефолтный голос: ${it.name}")
+                }
+            }
+        }
+    }
+    
+    fun speak(text: String, onComplete: (() -> Unit)? = null) {
+        if (!isInitialized) {
+            Timber.w("TTS не инициализирован")
+            return
+        }
+        
+        textToSpeech?.let { tts ->
+            // Настраиваем параметры для более естественного звучания
+            tts.setSpeechRate(0.85f) // Немного медленнее для естественности
+            tts.setPitch(1.0f) // Нормальная высота
+            
+            // Добавляем вибрацию если включена
+            scope.launch {
+                val vibrationEnabled = settingsDataStore?.getVibrationEnabled() ?: false
+                if (vibrationEnabled) {
+                    VibrationUtil.shortVibration(context)
+                }
+            }
+            
+            val result = tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "utteranceId")
+            
+            if (result == TextToSpeech.SUCCESS) {
+                Timber.d("TTS: $text")
+                onComplete?.invoke()
+            } else {
+                Timber.e("Ошибка TTS: $result")
+            }
+        }
+    }
+    
+    fun speakWithEmotion(text: String, emotion: Emotion = Emotion.NEUTRAL) {
+        textToSpeech?.let { tts ->
+            when (emotion) {
+                Emotion.CALM -> {
+                    tts.setSpeechRate(0.75f)
+                    tts.setPitch(0.9f)
+                }
+                Emotion.ENERGETIC -> {
+                    tts.setSpeechRate(1.1f)
+                    tts.setPitch(1.1f)
+                }
+                Emotion.GENTLE -> {
+                    tts.setSpeechRate(0.7f)
+                    tts.setPitch(0.85f)
+                }
+                Emotion.NEUTRAL -> {
+                    tts.setSpeechRate(0.85f)
+                    tts.setPitch(1.0f)
+                }
+            }
+            
+            speak(text)
+        }
+    }
+    
+    fun speakBreathingInstruction(instruction: String) {
+        speakWithEmotion(instruction, Emotion.CALM)
+    }
+    
+    fun speakMeditationGuidance(guidance: String) {
+        speakWithEmotion(guidance, Emotion.GENTLE)
+    }
+    
+    fun speakAchievement(achievement: String) {
+        speakWithEmotion(achievement, Emotion.ENERGETIC)
+    }
+    
+    fun stop() {
+        textToSpeech?.stop()
+    }
+    
+    fun shutdown() {
+        textToSpeech?.shutdown()
+        isInitialized = false
+    }
+    
+    override fun isReady(): Boolean = isInitialized
+    
+    fun getVoiceId(): String {
+        return currentVoice?.name ?: ""
+    }
+    
+    fun getVoiceDescription(voice: android.speech.tts.Voice): String {
         return try {
             val quality = when (voice.quality) {
-                Voice.QUALITY_HIGH -> context.getString(R.string.voice_quality_high)
-                Voice.QUALITY_NORMAL -> context.getString(R.string.voice_quality_normal)
-                Voice.QUALITY_LOW -> context.getString(R.string.voice_quality_low)
-                else -> context.getString(R.string.voice_quality_unknown)
+                android.speech.tts.Voice.QUALITY_HIGH -> "Высокое"
+                android.speech.tts.Voice.QUALITY_NORMAL -> "Среднее"
+                android.speech.tts.Voice.QUALITY_LOW -> "Низкое"
+                else -> "Неизвестное"
             }
             
             val gender = when {
-                voice.name.contains("female", ignoreCase = true) -> context.getString(R.string.voice_gender_female)
-                voice.name.contains("male", ignoreCase = true) -> context.getString(R.string.voice_gender_male)
-                else -> context.getString(R.string.voice_gender_unknown)
+                voice.name.contains("female", ignoreCase = true) -> "Женский"
+                voice.name.contains("male", ignoreCase = true) -> "Мужской"
+                else -> "Нейтральный"
             }
             
             "${voice.name} ($gender, $quality качество, ${voice.locale.displayLanguage})"
         } catch (e: Exception) {
-            Timber.e(e, "Failed to get voice description")
+            Timber.e(e, "Ошибка при получении описания голоса")
             voice.name
         }
     }
     
     fun setVoiceById(voiceId: String) {
-        try {
-            val voices = getAvailableVoices()
-            val selectedVoice = voices.find { it.name == voiceId }
-            
-            selectedVoice?.let { voice ->
-                currentVoice = voice
-                tts?.voice = voice
-                tts?.language = voice.locale
-                Timber.d("Voice set to: ${voice.name}")
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to set voice")
-        }
+        setVoice(voiceId)
     }
     
-    fun speak(text: String, utteranceId: String = "default") {
-        try {
-            if (!isInitialized) {
-                Timber.w("TTS not initialized yet")
-                return
-            }
-            
-            serviceScope.launch {
-                tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to speak text")
-        }
-    }
-    
-    fun speakWithDelay(text: String, delayMs: Long = 1000) {
-        try {
-            serviceScope.launch {
-                kotlinx.coroutines.delay(delayMs)
-                speak(text)
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to speak with delay")
-        }
-    }
-    
-    fun stop() {
-        try {
-            tts?.stop()
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to stop TTS")
-        }
-    }
-    
-    fun setSpeechRate(rate: Float) {
-        try {
-            tts?.setSpeechRate(rate.coerceIn(0.1f, 2.0f))
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to set speech rate")
-        }
-    }
-    
-    fun setPitch(pitch: Float) {
-        try {
-            tts?.setPitch(pitch.coerceIn(0.1f, 2.0f))
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to set pitch")
-        }
-    }
-    
-    fun isSpeaking(): Boolean {
-        return try {
-            tts?.isSpeaking == true
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to check speaking status")
-            false
-        }
-    }
-    
-    fun getCurrentVoice(): Voice? {
-        return currentVoice
+    enum class Emotion {
+        CALM, ENERGETIC, GENTLE, NEUTRAL
     }
     
     override fun release() {
         try {
-            tts?.stop()
-            tts?.shutdown()
-            serviceScope.cancel()
+            textToSpeech?.stop()
+            textToSpeech?.shutdown()
+            scope.cancel()
             Timber.d("VoiceAssistantService released")
         } catch (e: Exception) {
             Timber.e(e, "Failed to release TTS")
@@ -223,7 +228,7 @@ class VoiceAssistantService @Inject constructor(
             return
         }
         
-        tts?.let { tts ->
+        textToSpeech?.let { tts ->
             tts.speak(prompt, TextToSpeech.QUEUE_FLUSH, null, "breathing_prompt")
             Timber.d("Speaking: $prompt")
         }
@@ -270,14 +275,6 @@ class VoiceAssistantService @Inject constructor(
         speakBreathingPrompt(randomMotivation)
     }
     
-    fun shutdown() {
-        tts?.shutdown()
-        isInitialized = false
-    }
-    
-    override fun isReady(): Boolean = isInitialized
-    
-    // Реализация интерфейса IVoiceAssistant
     override fun speak(text: String) {
         speakBreathingPrompt(text)
     }

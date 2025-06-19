@@ -57,52 +57,82 @@ class MeditationRepositoryImpl @Inject constructor(
             "sleep", "сон", "вечерний-покой" -> Triple(
                 context.getString(R.string.meditation_sleep),
                 context.getString(R.string.meditation_sleep_desc),
-                context.getString(R.string.meditation_category_sleep)
+                context.getString(R.string.category_sleep)
             )
             "morning", "утро", "утренняя-свежесть" -> Triple(
                 context.getString(R.string.meditation_morning),
                 context.getString(R.string.meditation_morning_desc),
-                context.getString(R.string.meditation_category_morning)
+                context.getString(R.string.category_focus)
             )
             "stress", "стресс", "снятие-стресса" -> Triple(
-                context.getString(R.string.meditation_stress),
-                context.getString(R.string.meditation_stress_desc),
-                context.getString(R.string.meditation_category_stress)
+                context.getString(R.string.meditation_stress_relief),
+                context.getString(R.string.meditation_stress_relief_desc),
+                context.getString(R.string.category_anxiety)
             )
             "anxiety", "тревожность", "спокойствие-души" -> Triple(
                 context.getString(R.string.meditation_anxiety),
                 context.getString(R.string.meditation_anxiety_desc),
-                context.getString(R.string.meditation_category_anxiety)
+                context.getString(R.string.category_anxiety)
             )
             "focus", "концентрация", "концентрация-внимания" -> Triple(
                 context.getString(R.string.meditation_focus),
                 context.getString(R.string.meditation_focus_desc),
-                context.getString(R.string.meditation_category_focus)
+                context.getString(R.string.category_focus)
             )
-            "energy", "энергия", "внутренняя-сила" -> Triple(
-                context.getString(R.string.meditation_energy),
-                context.getString(R.string.meditation_energy_desc),
-                context.getString(R.string.meditation_category_energy)
+            "mindfulness", "осознанность", "основы-осознанности" -> Triple(
+                context.getString(R.string.meditation_mindfulness_basics),
+                context.getString(R.string.meditation_mindfulness_basics_desc),
+                context.getString(R.string.category_mindfulness)
             )
-            "creativity", "творчество", "творческое-вдохновение" -> Triple(
-                context.getString(R.string.meditation_creativity),
-                context.getString(R.string.meditation_creativity_desc),
-                context.getString(R.string.meditation_category_creativity)
+            "breathing", "дыхание", "глубокое-дыхание" -> Triple(
+                context.getString(R.string.meditation_deep_breathing),
+                context.getString(R.string.meditation_deep_breathing_desc),
+                context.getString(R.string.category_focus)
+            )
+            "body_scan", "сканирование-тела" -> Triple(
+                context.getString(R.string.meditation_body_scan),
+                context.getString(R.string.meditation_body_scan_desc),
+                context.getString(R.string.category_mindfulness)
+            )
+            "loving_kindness", "любящая-доброта" -> Triple(
+                context.getString(R.string.meditation_loving_kindness),
+                context.getString(R.string.meditation_loving_kindness_desc),
+                context.getString(R.string.category_mindfulness)
+            )
+            "walking", "ходьба", "ходячая-медитация" -> Triple(
+                context.getString(R.string.meditation_walking),
+                context.getString(R.string.meditation_walking_desc),
+                context.getString(R.string.category_mindfulness)
             )
             "gratitude", "благодарность" -> Triple(
                 context.getString(R.string.meditation_gratitude),
                 context.getString(R.string.meditation_gratitude_desc),
-                context.getString(R.string.meditation_category_gratitude)
+                context.getString(R.string.category_mindfulness)
             )
-            "love", "любовь", "любовь-к-себе" -> Triple(
-                context.getString(R.string.meditation_love),
-                context.getString(R.string.meditation_love_desc),
-                context.getString(R.string.meditation_category_love)
+            "compassion", "сострадание" -> Triple(
+                context.getString(R.string.meditation_compassion),
+                context.getString(R.string.meditation_compassion_desc),
+                context.getString(R.string.category_mindfulness)
             )
-            "healing", "исцеление" -> Triple(
-                context.getString(R.string.meditation_healing),
-                context.getString(R.string.meditation_healing_desc),
-                context.getString(R.string.meditation_category_healing)
+            "zen", "дзен" -> Triple(
+                context.getString(R.string.meditation_zen),
+                context.getString(R.string.meditation_zen_desc),
+                context.getString(R.string.category_focus)
+            )
+            "vipassana", "випассана" -> Triple(
+                context.getString(R.string.meditation_vipassana),
+                context.getString(R.string.meditation_vipassana_desc),
+                context.getString(R.string.category_mindfulness)
+            )
+            "transcendental", "трансцендентальная" -> Triple(
+                context.getString(R.string.meditation_transcendental),
+                context.getString(R.string.meditation_transcendental_desc),
+                context.getString(R.string.category_focus)
+            )
+            "evening", "вечер", "вечерняя-медитация" -> Triple(
+                context.getString(R.string.meditation_evening),
+                context.getString(R.string.meditation_evening_desc),
+                context.getString(R.string.category_sleep)
             )
             else -> {
                 // Fallback для неизвестных файлов
@@ -120,4 +150,21 @@ class MeditationRepositoryImpl @Inject constructor(
     override suspend fun trackMeditationSession(session: Session) {
         dao.insert(session.toEntity())
     }
+
+    data class MeditationTrack(
+        val id: String,
+        val titleRes: Int,
+        val assetPath: String
+    )
+
+    val meditationTracks = listOf(
+        MeditationTrack("angelic", R.string.meditation_track_angelic, "audio/meditation_music/meditation_angelic.mp3"),
+        MeditationTrack("chill", R.string.meditation_track_chill, "audio/meditation_music/meditation_chill.mp3"),
+        MeditationTrack("dreaming", R.string.meditation_track_dreaming, "audio/meditation_music/meditation_dreaming.mp3"),
+        MeditationTrack("forest_spirit", R.string.meditation_track_forest_spirit, "audio/meditation_music/meditation_forest_spirit.mp3"),
+        MeditationTrack("night_sky", R.string.meditation_track_night_sky, "audio/meditation_music/meditation_night_sky.mp3"),
+        MeditationTrack("relaxation", R.string.meditation_track_relaxation, "audio/meditation_music/meditation_relaxation.mp3"),
+        MeditationTrack("spiritual", R.string.meditation_track_spiritual, "audio/meditation_music/meditation_spiritual.mp3"),
+        MeditationTrack("valley_sunset", R.string.meditation_track_valley_sunset, "audio/meditation_music/meditation_valley_sunset.mp3")
+    )
 } 

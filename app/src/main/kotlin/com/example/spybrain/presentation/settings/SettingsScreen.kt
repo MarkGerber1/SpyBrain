@@ -30,6 +30,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import android.app.Activity
 import android.content.res.Configuration
 import java.util.Locale
+import android.speech.tts.Voice
+import android.os.Vibrator
+import android.content.Context
+import androidx.compose.material.icons.filled.Vibration
 import com.example.spybrain.service.VoiceAssistantService
 import androidx.compose.ui.unit.Dp
 import androidx.compose.material.icons.Icons
@@ -39,10 +43,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.res.stringResource
-import android.speech.tts.Voice
-import android.os.Vibrator
-import android.content.Context
-import androidx.compose.material.icons.filled.Vibration
 
 object LocaleManager {
     fun setLocale(activity: Activity, language: String) {
@@ -390,7 +390,10 @@ fun VoiceSelection(
     viewModel: SettingsViewModel
 ) {
     val context = LocalContext.current
-    val voiceService = remember { VoiceAssistantService(context) }
+    val voiceService = remember { 
+        // Создаем простую версию без settingsDataStore для UI
+        VoiceAssistantService(context, null)
+    }
     var voices by remember { mutableStateOf<List<Voice>>(emptyList()) }
     LaunchedEffect(Unit) {
         voices = voiceService.getAvailableVoices()

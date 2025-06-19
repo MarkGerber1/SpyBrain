@@ -39,10 +39,14 @@ class SettingsViewModel @Inject constructor(
             .onEach { enabled -> 
                 setState { copy(ambientEnabled = enabled) }
                 
-                // Используем актуальное значение после setState
-                settingsDataStore.ambientTrackFlow.map { track ->
-                    handleAmbientMusicChange(enabled, track)
-                }.launchIn(viewModelScope)
+                // Автоматически запускаем музыку при включении
+                if (enabled) {
+                    settingsDataStore.ambientTrackFlow.map { track ->
+                        handleAmbientMusicChange(true, track)
+                    }.launchIn(viewModelScope)
+                } else {
+                    stopAmbientMusic()
+                }
             }
             .launchIn(viewModelScope)
             
@@ -51,7 +55,7 @@ class SettingsViewModel @Inject constructor(
             .onEach { track -> 
                 setState { copy(ambientTrack = track) }
                 
-                // Используем актуальное значение после setState
+                // Автоматически переключаем трек если музыка включена
                 settingsDataStore.ambientEnabledFlow.map { enabled ->
                     if (enabled) {
                         handleAmbientMusicChange(true, track)
@@ -89,6 +93,15 @@ class SettingsViewModel @Inject constructor(
         settingsDataStore.voiceIdFlow
             .onEach { setState { copy(voiceId = it) } }
             .launchIn(viewModelScope)
+            
+        // Автоматически запускаем фоновую музыку при старте приложения (если включена)
+        viewModelScope.launch {
+            val isEnabled = settingsDataStore.getAmbientEnabled()
+            val track = settingsDataStore.getAmbientTrack()
+            if (isEnabled && track.isNotEmpty()) {
+                handleAmbientMusicChange(true, track)
+            }
+        }
     }
 
     override fun handleEvent(event: SettingsContract.Event) {
@@ -96,7 +109,7 @@ class SettingsViewModel @Inject constructor(
             is SettingsContract.Event.ThemeSelected -> {
                 viewModelScope.launch { 
                     settingsDataStore.setTheme(event.theme)
-                    setEffect { SettingsContract.Effect.ShowToast("Тема изменена") }
+                    setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_theme_changed)) }
                 }
             }
             is SettingsContract.Event.AmbientToggled -> {
@@ -118,25 +131,25 @@ class SettingsViewModel @Inject constructor(
             is SettingsContract.Event.HeartbeatToggled -> {
                 viewModelScope.launch { 
                     settingsDataStore.setHeartbeatEnabled(event.enabled)
-                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) "Визуализация сердца включена" else "Визуализация сердца выключена") }
+                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) context.getString(R.string.toast_heartbeat_on) else context.getString(R.string.toast_heartbeat_off)) }
                 }
             }
             is SettingsContract.Event.VoiceToggled -> {
                 viewModelScope.launch { 
                     settingsDataStore.setVoiceEnabled(event.enabled)
-                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) "Голос включен" else "Голос выключен") }
+                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) context.getString(R.string.toast_voice_on) else context.getString(R.string.toast_voice_off)) }
                 }
             }
             is SettingsContract.Event.VoiceHintsToggled -> {
                 viewModelScope.launch { 
                     settingsDataStore.setVoiceHintsEnabled(event.enabled)
-                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) "Голосовые подсказки включены" else "Голосовые подсказки выключены") }
+                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) context.getString(R.string.toast_voice_hints_on) else context.getString(R.string.toast_voice_hints_off)) }
                 }
             }
             is SettingsContract.Event.VoiceIdSelected -> {
                 viewModelScope.launch { 
                     settingsDataStore.setVoiceId(event.voiceId)
-                    setEffect { SettingsContract.Effect.ShowToast("Голос изменен") }
+                    setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_voice_changed)) }
                 }
             }
             is SettingsContract.Event.VibrationToggled -> {
@@ -146,14 +159,14 @@ class SettingsViewModel @Inject constructor(
                         // Тестируем вибрацию
                         testVibration()
                     }
-                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) "Вибрация включена" else "Вибрация выключена") }
+                    setEffect { SettingsContract.Effect.ShowToast(if (event.enabled) context.getString(R.string.toast_vibration_on) else context.getString(R.string.toast_vibration_off)) }
                 }
             }
             is SettingsContract.Event.LanguageChanged -> {
                 viewModelScope.launch {
                     setState { copy(currentLanguage = event.language) }
                     setEffect { SettingsContract.Effect.RefreshUI(event.language) }
-                    setEffect { SettingsContract.Effect.ShowToast("Язык изменен на ${if (event.language == "ru") "Русский" else "English"}") }
+                    setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_language_changed, if (event.language == "ru") "Русский" else "English")) }
                 }
             }
         }
@@ -173,7 +186,7 @@ class SettingsViewModel @Inject constructor(
         try {
             // Проверяем, что trackId не пустой
             if (trackId.isEmpty()) {
-                setEffect { SettingsContract.Effect.ShowToast("Трек не выбран") }
+                setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_track_not_selected)) }
                 return
             }
             
@@ -194,10 +207,10 @@ class SettingsViewModel @Inject constructor(
                 putExtra(BackgroundMusicService.EXTRA_URL, audioUrl)
             }
             context.startService(intent)
-            setEffect { SettingsContract.Effect.ShowToast("Фоновая музыка включена") }
+            setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_ambient_on)) }
             
         } catch (e: Exception) {
-            setEffect { SettingsContract.Effect.ShowToast("Ошибка запуска музыки: ${e.message}") }
+            setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_ambient_error, e.message ?: "")) }
         }
     }
     

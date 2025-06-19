@@ -10,6 +10,7 @@ import com.example.spybrain.data.repository.MeditationProgramRepositoryImpl
 import com.example.spybrain.data.repository.AchievementsRepositoryImpl
 import com.example.spybrain.data.repository.ReminderRepositoryImpl
 import com.example.spybrain.data.repository.BreathingPatternRepository
+import com.example.spybrain.data.repository.HeartRateRepository
 import com.example.spybrain.domain.repository.BreathingRepository
 import com.example.spybrain.domain.repository.MeditationRepository
 import com.example.spybrain.domain.repository.ProfileRepository
@@ -84,5 +85,14 @@ object RepositoryProvidesModule {
     @Singleton
     fun provideBreathingPatternRepository(@ApplicationContext context: android.content.Context): BreathingPatternRepository {
         return BreathingPatternRepository(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHeartRateRepository(
+        heartRateDao: com.example.spybrain.data.storage.dao.HeartRateDao,
+        settingsDataStore: com.example.spybrain.data.datastore.SettingsDataStore
+    ): HeartRateRepository {
+        return HeartRateRepository(heartRateDao, settingsDataStore)
     }
 } 

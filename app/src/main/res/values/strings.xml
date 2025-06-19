@@ -314,10 +314,10 @@
     <string name="pattern_preview_cycles">Циклов: %1$d</string>
 
     <!-- Time Greetings -->
-    <string name="greeting_morning">Доброе утро!</string>
-    <string name="greeting_day">Добрый день!</string>
-    <string name="greeting_evening">Добрый вечер!</string>
-    <string name="greeting_night">Доброй ночи!</string>
+    <string name="greeting_morning">Доброе утро</string>
+    <string name="greeting_afternoon">Добрый день</string>
+    <string name="greeting_evening">Добрый вечер</string>
+    <string name="greeting_night">Доброй ночи</string>
 
     <!-- Stats Messages -->
     <string name="stats_no_breathing_sessions">У вас пока нет сеансов дыхания</string>
@@ -349,26 +349,17 @@
     <string name="test_meditation_morning_desc">Энергичная медитация</string>
 
     <!-- Meditation Titles -->
-    <string name="meditation_sleep">Вечерний покой</string>
-    <string name="meditation_morning">Утренняя свежесть</string>
     <string name="meditation_stress">Снятие стресса</string>
-    <string name="meditation_anxiety">Спокойствие души</string>
-    <string name="meditation_focus">Концентрация внимания</string>
     <string name="meditation_energy">Внутренняя сила</string>
     <string name="meditation_creativity">Творческое вдохновение</string>
-    <string name="meditation_gratitude">Благодарность</string>
     <string name="meditation_love">Любовь к себе</string>
     <string name="meditation_healing">Исцеление</string>
 
     <!-- Meditation Descriptions -->
-    <string name="meditation_sleep_desc">Расслабляющая медитация для глубокого сна</string>
     <string name="meditation_morning_desc">Энергичная медитация для начала дня</string>
     <string name="meditation_stress_desc">Техники для снятия напряжения и стресса</string>
-    <string name="meditation_anxiety_desc">Успокаивающая практика для тревожных состояний</string>
-    <string name="meditation_focus_desc">Улучшение концентрации и ясности ума</string>
     <string name="meditation_energy_desc">Пробуждение внутренней энергии и жизненной силы</string>
     <string name="meditation_creativity_desc">Раскрытие творческого потенциала</string>
-    <string name="meditation_gratitude_desc">Практика благодарности и позитивного мышления</string>
     <string name="meditation_love_desc">Развитие любви к себе и принятия</string>
     <string name="meditation_healing_desc">Исцеляющая медитация для души и тела</string>
 
@@ -383,4 +374,142 @@
     <string name="meditation_category_gratitude">Благодарность</string>
     <string name="meditation_category_love">Любовь</string>
     <string name="meditation_category_healing">Исцеление</string>
+
+    <!-- Meditation Names -->
+    <string name="meditation_mindfulness_basics">Поток осознанности</string>
+    <string name="meditation_deep_breathing">Гармония дыхания</string>
+    <string name="meditation_body_scan">Путешествие по телу</string>
+    <string name="meditation_loving_kindness">Сад любви</string>
+    <string name="meditation_walking">Танец шагов</string>
+    <string name="meditation_sleep">Объятия ночи</string>
+    <string name="meditation_anxiety">Остров спокойствия</string>
+    <string name="meditation_focus">Луч внимания</string>
+    <string name="meditation_stress_relief">Волна расслабления</string>
+    <string name="meditation_morning">Пробуждение света</string>
+    <string name="meditation_evening">Закат души</string>
+    <string name="meditation_gratitude">Сокровище благодарности</string>
+    <string name="meditation_compassion">Океан сострадания</string>
+    <string name="meditation_zen">Тишина дзен</string>
+    <string name="meditation_vipassana">Прозрение мудрости</string>
+    <string name="meditation_transcendental">Врата трансценденции</string>
+    
+    <!-- Meditation Descriptions -->
+    <string name="meditation_mindfulness_basics_desc">Откройте дверь в мир настоящего момента</string>
+    <string name="meditation_deep_breathing_desc">Дышите в ритме вселенной</string>
+    <string name="meditation_body_scan_desc">Исследуйте храм вашего тела с любовью</string>
+    <string name="meditation_loving_kindness_desc">Посадите семена любви в своем сердце</string>
+    <string name="meditation_walking_desc">Каждый шаг — это медитация в движении</string>
+    <string name="meditation_sleep_desc">Погрузитесь в объятия глубокого сна</string>
+    <string name="meditation_anxiety_desc">Найдите свой островок спокойствия в океане тревог</string>
+    <string name="meditation_focus_desc">Соберите лучи внимания в один мощный луч</string>
+    <string name="meditation_stress_relief_desc">Позвольте волнам расслабления смыть напряжение</string>
+    <string name="meditation_evening_desc">Мягко завершите день в гармонии с собой</string>
+    <string name="meditation_gratitude_desc">Откройте сокровищницу благодарности в своем сердце</string>
+    <string name="meditation_compassion_desc">Погрузитесь в океан сострадания к себе и миру</string>
+    <string name="meditation_zen_desc">Познайте глубину тишины дзен</string>
+    <string name="meditation_vipassana_desc">Обретите прозрение через инсайт-медитацию</string>
+    <string name="meditation_transcendental_desc">Переступите порог в мир трансценденции</string>
+
+    <!-- Meditation Tracks -->
+    <string name="meditation_tracks_title">Медитационные треки</string>
+    <string name="meditation_track_description">Медитационная музыка для расслабления</string>
+    <string name="meditation_track_angelic">Ангельская мелодия</string>
+    <string name="meditation_track_chill">Спокойствие</string>
+    <string name="meditation_track_dreaming">Мечтания</string>
+    <string name="meditation_track_forest_spirit">Дух леса</string>
+    <string name="meditation_track_night_sky">Ночное небо</string>
+    <string name="meditation_track_relaxation">Релаксация</string>
+    <string name="meditation_track_spiritual">Духовность</string>
+    <string name="meditation_track_valley_sunset">Закат в долине</string>
+    
+    <!-- Player Controls -->
+    <string name="playing">Воспроизводится</string>
+    <string name="selected">Выбрано</string>
+    <string name="next">Следующий</string>
+    <string name="previous">Предыдущий</string>
+    <string name="meditations">Медитации</string>
+
+    <!-- Personal Greeting -->
+    <string name="default_user_name">Друг</string>
+
+    <!-- Missing strings that were removed by build system -->
+    <string name="achievements">Достижения</string>
+    <string name="completed_sessions">Завершенные сессии</string>
+    <string name="edit_profile">Редактировать профиль</string>
+    <string name="join_date">Дата регистрации</string>
+    <string name="reminders">Напоминания</string>
+    <string name="settings_background_music">Фоновая музыка</string>
+    <string name="settings_breathing_options">Опции дыхания</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_ru">Русский</string>
+    <string name="settings_language_system">Системный</string>
+    <string name="settings_meditation_options">Опции медитации</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_dark">Темная</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_system">Системная</string>
+    <string name="settings_voice_guidance">Голосовое сопровождение</string>
+    <string name="stats_monthly_progress">Месячный прогресс</string>
+    <string name="stats_total_sessions_count">Общее количество сессий</string>
+    <string name="stats_weekly_progress">Недельный прогресс</string>
+    <string name="streak">Серия</string>
+    <string name="total_meditation_time">Общее время медитации</string>
+
+    <string name="breath_in">ВДОХ</string>
+    <string name="breath_out">ВЫДОХ</string>
+    <string name="breath_hold">ДЕРЖИТЕ</string>
+    <string name="breath_ready">ГОТОВО</string>
+    <string name="inhale">Вдох</string>
+    <string name="exhale">Выдох</string>
+    <string name="hold_after_inhale">Задержка после вдоха</string>
+    <string name="hold_after_exhale">Задержка после выдоха</string>
+    <string name="cycle_of">Цикл %1$d из %2$d</string>
+    <string name="stop">Остановить</string>
+    <string name="save_changes">Сохранить изменения</string>
+    <string name="cancel">Отмена</string>
+    <string name="breathing_params">Параметры дыхания</string>
+    <string name="inhale_seconds">Вдох (сек)</string>
+    <string name="exhale_seconds">Выдох (сек)</string>
+    <string name="pause_seconds">Пауза (сек)</string>
+    <string name="cycles_count">Количество циклов</string>
+    <string name="saved_patterns">Сохранённые шаблоны</string>
+    <string name="greeting_night">Доброй ночи</string>
+    <string name="greeting_morning">Доброе утро</string>
+    <string name="greeting_day">Добрый день</string>
+    <string name="greeting_evening">Добрый вечер</string>
+    <string name="motivation_1">Дыхание — твой путь к гармонии!</string>
+    <string name="motivation_2">Медитация — ключ к внутреннему спокойствию</string>
+    <string name="motivation_3">Каждый вдох — это новая возможность</string>
+    <string name="motivation_4">Тишина — это музыка души</string>
+    <string name="motivation_5">Осознанность — дар настоящего момента</string>
+    <string name="motivation_6">Спокойствие — твоя суперсила</string>
+    <string name="motivation_7">Дыши глубоко, живи ярко!</string>
+    <string name="motivation_8">Медитация — путешествие к себе</string>
+    <string name="motivation_9">В каждом дыхании — жизнь</string>
+    <string name="motivation_10">Спокойствие ума — источник силы</string>
+    <string name="motivation_11">Дыхание — мост между телом и разумом</string>
+    <string name="motivation_12">Медитация — искусство быть здесь и сейчас</string>
+    <string name="motivation_13">Тишина говорит громче слов</string>
+    <string name="motivation_14">Каждый момент — это медитация</string>
+    <string name="motivation_15">Дыши и отпускай</string>
+    <string name="motivation_16">Спокойствие — это выбор</string>
+    <string name="motivation_17">Медитация — путь к просветлению</string>
+    <string name="motivation_18">Дыхание — ритм жизни</string>
+    <string name="motivation_19">Осознанность — ключ к счастью</string>
+    <string name="motivation_20">Тишина — язык души</string>
+    <string name="toast_voice_hints_on">Голосовые подсказки включены</string>
+    <string name="toast_voice_hints_off">Голосовые подсказки выключены</string>
+    <string name="toast_voice_changed">Голос изменен</string>
+    <string name="toast_vibration_on">Вибрация включена</string>
+    <string name="toast_vibration_off">Вибрация выключена</string>
+    <string name="toast_language_changed">Язык изменен на %1$s</string>
+    <string name="toast_theme_changed">Тема изменена</string>
+    <string name="toast_heartbeat_on">Визуализация сердца включена</string>
+    <string name="toast_heartbeat_off">Визуализация сердца выключена</string>
+    <string name="toast_voice_on">Голос включен</string>
+    <string name="toast_voice_off">Голос выключен</string>
+    <string name="toast_track_not_selected">Трек не выбран</string>
+    <string name="toast_ambient_on">Фоновая музыка включена</string>
+    <string name="toast_ambient_error">Ошибка запуска музыки: %1$s</string>
+
 </resources> 

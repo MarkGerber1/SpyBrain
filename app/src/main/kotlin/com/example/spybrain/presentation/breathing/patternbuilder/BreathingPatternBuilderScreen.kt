@@ -224,7 +224,7 @@ fun BreathingPatternBuilderScreen(
                                         VibrationUtil.vibrateLight(context)
                                         viewModel.setEvent(BreathingPatternBuilderContract.Event.EnterInhale(it)) 
                                     },
-                                    label = { Text("Вдох (сек)") },
+                                    label = { Text(stringResource(R.string.inhale_seconds)) },
                                     leadingIcon = { Icon(Icons.Default.Air, contentDescription = null) },
                                     modifier = Modifier.weight(1f),
                                     colors = OutlinedTextFieldDefaults.colors(
@@ -238,7 +238,7 @@ fun BreathingPatternBuilderScreen(
                                     onValueChange = { 
                                         viewModel.setEvent(BreathingPatternBuilderContract.Event.EnterHoldInhale(it)) 
                                     },
-                                    label = { Text("Пауза (сек)") },
+                                    label = { Text(stringResource(R.string.pause_seconds)) },
                                     leadingIcon = { Icon(Icons.Default.Pause, contentDescription = null) },
                                     modifier = Modifier.weight(1f),
                                     colors = OutlinedTextFieldDefaults.colors(
@@ -258,7 +258,7 @@ fun BreathingPatternBuilderScreen(
                                         VibrationUtil.vibrateLight(context)
                                         viewModel.setEvent(BreathingPatternBuilderContract.Event.EnterExhale(it)) 
                                     },
-                                    label = { Text("Выдох (сек)") },
+                                    label = { Text(stringResource(R.string.exhale_seconds)) },
                                     leadingIcon = { Icon(Icons.Default.Air, contentDescription = null) },
                                     modifier = Modifier.weight(1f),
                                     colors = OutlinedTextFieldDefaults.colors(
@@ -272,7 +272,7 @@ fun BreathingPatternBuilderScreen(
                                     onValueChange = { 
                                         viewModel.setEvent(BreathingPatternBuilderContract.Event.EnterHoldExhale(it)) 
                                     },
-                                    label = { Text("Пауза (сек)") },
+                                    label = { Text(stringResource(R.string.pause_seconds)) },
                                     leadingIcon = { Icon(Icons.Default.Pause, contentDescription = null) },
                                     modifier = Modifier.weight(1f),
                                     colors = OutlinedTextFieldDefaults.colors(
@@ -288,7 +288,7 @@ fun BreathingPatternBuilderScreen(
                                     VibrationUtil.vibrateLight(context)
                                     viewModel.setEvent(BreathingPatternBuilderContract.Event.EnterCycles(it)) 
                                 },
-                                label = { Text("Количество циклов") },
+                                label = { Text(stringResource(R.string.cycles_count)) },
                                 leadingIcon = { Icon(Icons.Default.Repeat, contentDescription = null) },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -310,7 +310,7 @@ fun BreathingPatternBuilderScreen(
                             ) {
                                 Icon(Icons.Default.Save, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Сохранить шаблон", fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.save_changes), fontWeight = FontWeight.Bold)
                             }
                         }
                     }

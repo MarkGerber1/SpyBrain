@@ -4,6 +4,7 @@ import com.example.spybrain.domain.model.CustomBreathingPattern
 import com.example.spybrain.presentation.base.UiState
 import com.example.spybrain.presentation.base.UiEvent
 import com.example.spybrain.presentation.base.UiEffect
+import com.example.spybrain.util.UiError
 
 object BreathingPatternBuilderContract {
     data class State(
@@ -15,7 +16,9 @@ object BreathingPatternBuilderContract {
         val holdAfterInhaleSeconds: String = "",
         val exhaleSeconds: String = "",
         val holdAfterExhaleSeconds: String = "",
-        val totalCycles: String = ""
+        val totalCycles: String = "",
+        val isLoading: Boolean = false,
+        val error: UiError? = null
     ) : UiState
 
     sealed class Event : UiEvent {
@@ -33,7 +36,7 @@ object BreathingPatternBuilderContract {
     }
 
     sealed class Effect : UiEffect {
-        data class ShowError(val error: com.example.spybrain.util.UiError) : Effect()
+        data class ShowError(val error: UiError) : Effect()
         data class ShowSuccessMessage(val message: String) : Effect()
     }
 } 

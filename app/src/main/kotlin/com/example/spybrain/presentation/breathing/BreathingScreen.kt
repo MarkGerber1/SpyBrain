@@ -36,6 +36,8 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.runtime.saveable.rememberSaveable
+import com.example.spybrain.util.VibrationUtil
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,10 +55,12 @@ fun BreathingScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is BreathingContract.Effect.ShowError -> {
+                    VibrationUtil.longVibration(context)
                     Toast.makeText(context, effect.error.toString(), Toast.LENGTH_SHORT).show()
                 }
                 is BreathingContract.Effect.Vibrate -> {
-                    // Вибрация (требует разрешений)
+                    // Вибрация при смене фазы дыхания
+                    VibrationUtil.breathingVibration(context)
                 }
                 is BreathingContract.Effect.Speak -> {
                     // Голосовая подсказка
@@ -73,6 +77,7 @@ fun BreathingScreen(
                 actions = {
                     // Кнопка для создания собственного шаблона
                     IconButton(onClick = { 
+                        VibrationUtil.shortVibration(context)
                         navController.navigate("pattern_builder")
                     }) {
                         Icon(Icons.Default.Add, contentDescription = "Создать шаблон")
@@ -85,7 +90,7 @@ fun BreathingScreen(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
-        } else if (state.currentPattern != null && state.currentPhase != BreathingPhase.Idle) {
+        } else if (state.currentPattern != null && state.currentPhase != BreathingContract.BreathingPhase.Idle) {
             // Активная сессия дыхания
             ActiveBreathingSession(
                 state = state,
@@ -136,6 +141,7 @@ fun BreathingScreen(
                     PatternsList(
                         patterns = filteredPatterns,
                         onPatternSelected = { pattern ->
+                            VibrationUtil.achievementVibration(context)
                             activePattern = pattern
                             viewModel.setEvent(BreathingContract.Event.StartPattern(pattern))
                         }
@@ -151,6 +157,7 @@ fun CategoryTabs(
     selectedCategory: String,
     onCategorySelected: (String) -> Unit
 ) {
+    val context = LocalContext.current
     val categories = listOf(
         "all" to "Все",
         "relaxation" to "Расслабление",
@@ -163,7 +170,10 @@ fun CategoryTabs(
     ) {
         items(categories) { (id, name) ->
             FilterChip(
-                onClick = { onCategorySelected(id) },
+                onClick = { 
+                    VibrationUtil.shortVibration(context)
+                    onCategorySelected(id) 
+                },
                 label = { Text(name) },
                 selected = selectedCategory == id,
                 modifier = Modifier.padding(vertical = 4.dp)
@@ -306,11 +316,11 @@ fun ActiveBreathingSession(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = when(state.currentPhase) {
-                    BreathingPhase.Inhale -> "Вдох"
-                    BreathingPhase.HoldAfterInhale -> "Задержка после вдоха"
-                    BreathingPhase.Exhale -> "Выдох"
-                    BreathingPhase.HoldAfterExhale -> "Задержка после выдоха"
-                    BreathingPhase.Idle -> ""
+                    BreathingContract.BreathingPhase.Inhale -> stringResource(R.string.breath_in)
+                    BreathingContract.BreathingPhase.HoldAfterInhale -> stringResource(R.string.breath_hold)
+                    BreathingContract.BreathingPhase.Exhale -> stringResource(R.string.breath_out)
+                    BreathingContract.BreathingPhase.HoldAfterExhale -> stringResource(R.string.breath_hold)
+                    BreathingContract.BreathingPhase.Idle -> ""
                 },
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
@@ -354,27 +364,27 @@ fun ActiveBreathingSession(
 
 @Composable
 fun AnimatedBreathCircle(
-    phase: BreathingPhase,
+    phase: BreathingContract.BreathingPhase,
     progress: Float
 ) {
     val sizeMultiplier by animateFloatAsState(
         targetValue = when (phase) {
-            BreathingPhase.Inhale -> 0.3f + progress * 0.7f
-            BreathingPhase.HoldAfterInhale -> 1.0f
-            BreathingPhase.Exhale -> 1.0f - progress * 0.7f
-            BreathingPhase.HoldAfterExhale -> 0.3f
-            BreathingPhase.Idle -> 0.5f
+            BreathingContract.BreathingPhase.Inhale -> 0.3f + progress * 0.7f
+            BreathingContract.BreathingPhase.HoldAfterInhale -> 1.0f
+            BreathingContract.BreathingPhase.Exhale -> 1.0f - progress * 0.7f
+            BreathingContract.BreathingPhase.HoldAfterExhale -> 0.3f
+            BreathingContract.BreathingPhase.Idle -> 0.5f
         },
         animationSpec = tween(300),
         label = "size"
     )
     
     val color = when (phase) {
-        BreathingPhase.Inhale -> Color(0xFF81D4FA)
-        BreathingPhase.HoldAfterInhale -> Color(0xFF64B5F6)
-        BreathingPhase.Exhale -> Color(0xFF42A5F5)
-        BreathingPhase.HoldAfterExhale -> Color(0xFF2196F3)
-        BreathingPhase.Idle -> Color(0xFF1976D2)
+        BreathingContract.BreathingPhase.Inhale -> Color(0xFF81D4FA)
+        BreathingContract.BreathingPhase.HoldAfterInhale -> Color(0xFF64B5F6)
+        BreathingContract.BreathingPhase.Exhale -> Color(0xFF42A5F5)
+        BreathingContract.BreathingPhase.HoldAfterExhale -> Color(0xFF2196F3)
+        BreathingContract.BreathingPhase.Idle -> Color(0xFF1976D2)
     }
     
     Box(
@@ -424,11 +434,11 @@ fun AnimatedBreathCircle(
         ) {
             Text(
                 text = when(phase) {
-                    BreathingPhase.Inhale -> "ВДОХ"
-                    BreathingPhase.HoldAfterInhale -> "ДЕРЖИТЕ"
-                    BreathingPhase.Exhale -> "ВЫДОХ"
-                    BreathingPhase.HoldAfterExhale -> "ДЕРЖИТЕ"
-                    BreathingPhase.Idle -> "ГОТОВО"
+                    BreathingContract.BreathingPhase.Inhale -> stringResource(R.string.breath_in)
+                    BreathingContract.BreathingPhase.HoldAfterInhale -> stringResource(R.string.breath_hold)
+                    BreathingContract.BreathingPhase.Exhale -> stringResource(R.string.breath_out)
+                    BreathingContract.BreathingPhase.HoldAfterExhale -> stringResource(R.string.breath_hold)
+                    BreathingContract.BreathingPhase.Idle -> stringResource(R.string.breath_ready)
                 },
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onSurface

@@ -14,20 +14,51 @@ import timber.log.Timber
 object VibrationUtil {
     
     /**
-     * Легкая вибрация для UI взаимодействий
+     * Получает Vibrator с учетом версии Android
      */
-    fun vibrateLight(context: Context) {
+    private fun getVibrator(context: Context): Vibrator? {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vibratorManager.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка получения Vibrator")
+            null
+        }
+    }
+    
+    /**
+     * Проверяет поддержку вибрации
+     */
+    fun hasVibrator(context: Context): Boolean {
+        return getVibrator(context)?.hasVibrator() == true
+    }
+    
+    /**
+     * Вибрация для ошибок
+     */
+    fun vibrateError(context: Context) {
+        val vibrator = getVibrator(context) ?: return
+        
         try {
-            val vibrator = getVibrator(context)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val effect = VibrationEffect.createOneShot(20, VibrationEffect.DEFAULT_AMPLITUDE)
+                val effect = VibrationEffect.createWaveform(
+                    longArrayOf(0, 200, 100, 200, 100, 200),
+                    intArrayOf(0, 255, 0, 255, 0, 255),
+                    -1
+                )
                 vibrator.vibrate(effect)
             } else {
                 @Suppress("DEPRECATION")
-                vibrator.vibrate(20)
+                vibrator.vibrate(longArrayOf(0, 200, 100, 200, 100, 200), -1)
             }
+            Timber.d("Вибрация ошибки выполнена")
         } catch (e: Exception) {
-            Timber.e(e, "Failed to vibrate light")
+            Timber.e(e, "Ошибка вибрации ошибки")
         }
     }
     
@@ -35,34 +66,13 @@ object VibrationUtil {
      * Вибрация для успешных действий
      */
     fun vibrateSuccess(context: Context) {
+        val vibrator = getVibrator(context) ?: return
+        
         try {
-            val vibrator = getVibrator(context)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val effect = VibrationEffect.createWaveform(
-                    longArrayOf(0, 50, 100, 50),
-                    intArrayOf(0, 100, 0, 100),
-                    -1
-                )
-                vibrator.vibrate(effect)
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(longArrayOf(0, 50, 100, 50), -1)
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to vibrate success")
-        }
-    }
-    
-    /**
-     * Вибрация для ошибок
-     */
-    fun vibrateError(context: Context) {
-        try {
-            val vibrator = getVibrator(context)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createWaveform(
                     longArrayOf(0, 100, 50, 100, 50, 100),
-                    intArrayOf(0, 150, 0, 150, 0, 150),
+                    intArrayOf(0, 128, 0, 128, 0, 128),
                     -1
                 )
                 vibrator.vibrate(effect)
@@ -70,109 +80,155 @@ object VibrationUtil {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(longArrayOf(0, 100, 50, 100, 50, 100), -1)
             }
+            Timber.d("Вибрация успеха выполнена")
         } catch (e: Exception) {
-            Timber.e(e, "Failed to vibrate error")
+            Timber.e(e, "Ошибка вибрации успеха")
+        }
+    }
+    
+    /**
+     * Легкая вибрация для тактильной обратной связи
+     */
+    fun vibrateLight(context: Context) {
+        val vibrator = getVibrator(context) ?: return
+        
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val effect = VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE / 2)
+                vibrator.vibrate(effect)
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(50)
+            }
+            Timber.d("Легкая вибрация выполнена")
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка легкой вибрации")
+        }
+    }
+    
+    /**
+     * Короткая вибрация для уведомлений
+     */
+    fun shortVibration(context: Context) {
+        val vibrator = getVibrator(context) ?: return
+        
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val effect = VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
+                vibrator.vibrate(effect)
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(100)
+            }
+            Timber.d("Короткая вибрация выполнена")
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка короткой вибрации")
+        }
+    }
+    
+    /**
+     * Длинная вибрация для важных событий
+     */
+    fun longVibration(context: Context) {
+        val vibrator = getVibrator(context) ?: return
+        
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val effect = VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)
+                vibrator.vibrate(effect)
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(500)
+            }
+            Timber.d("Длинная вибрация выполнена")
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка длинной вибрации")
         }
     }
     
     /**
      * Вибрация для дыхательных упражнений
      */
-    fun vibrateBreathing(context: Context, phase: BreathingPhase) {
+    fun breathingVibration(context: Context) {
+        val vibrator = getVibrator(context) ?: return
+        
         try {
-            val vibrator = getVibrator(context)
-            when (phase) {
-                BreathingPhase.INHALE -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        val effect = VibrationEffect.createOneShot(200, 80)
-                        vibrator.vibrate(effect)
-                    } else {
-                        @Suppress("DEPRECATION")
-                        vibrator.vibrate(200)
-                    }
-                }
-                BreathingPhase.EXHALE -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        val effect = VibrationEffect.createOneShot(300, 60)
-                        vibrator.vibrate(effect)
-                    } else {
-                        @Suppress("DEPRECATION")
-                        vibrator.vibrate(300)
-                    }
-                }
-                BreathingPhase.HOLD -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        val effect = VibrationEffect.createOneShot(100, 40)
-                        vibrator.vibrate(effect)
-                    } else {
-                        @Suppress("DEPRECATION")
-                        vibrator.vibrate(100)
-                    }
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val effect = VibrationEffect.createWaveform(
+                    longArrayOf(0, 200, 100, 200, 100, 200),
+                    intArrayOf(0, 255, 0, 255, 0, 255),
+                    -1
+                )
+                vibrator.vibrate(effect)
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(longArrayOf(0, 200, 100, 200, 100, 200), -1)
             }
+            Timber.d("Вибрация для дыхания выполнена")
         } catch (e: Exception) {
-            Timber.e(e, "Failed to vibrate breathing")
+            Timber.e(e, "Ошибка вибрации для дыхания")
         }
     }
     
     /**
      * Вибрация для медитации
      */
-    fun vibrateMeditation(context: Context) {
+    fun meditationVibration(context: Context) {
+        val vibrator = getVibrator(context) ?: return
+        
         try {
-            val vibrator = getVibrator(context)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createWaveform(
-                    longArrayOf(0, 500, 1000, 500),
-                    intArrayOf(0, 30, 0, 30),
+                    longArrayOf(0, 300, 200, 300, 200, 300),
+                    intArrayOf(0, 128, 0, 128, 0, 128),
                     -1
                 )
                 vibrator.vibrate(effect)
             } else {
                 @Suppress("DEPRECATION")
-                vibrator.vibrate(longArrayOf(0, 500, 1000, 500), -1)
+                vibrator.vibrate(longArrayOf(0, 300, 200, 300, 200, 300), -1)
             }
+            Timber.d("Вибрация для медитации выполнена")
         } catch (e: Exception) {
-            Timber.e(e, "Failed to vibrate meditation")
+            Timber.e(e, "Ошибка вибрации для медитации")
         }
     }
     
     /**
      * Вибрация для достижений
      */
-    fun vibrateAchievement(context: Context) {
+    fun achievementVibration(context: Context) {
+        val vibrator = getVibrator(context) ?: return
+        
         try {
-            val vibrator = getVibrator(context)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createWaveform(
-                    longArrayOf(0, 100, 200, 100, 200, 100, 200),
-                    intArrayOf(0, 120, 0, 120, 0, 120, 0),
+                    longArrayOf(0, 100, 50, 100, 50, 100, 50, 100),
+                    intArrayOf(0, 255, 0, 255, 0, 255, 0, 255),
                     -1
                 )
                 vibrator.vibrate(effect)
             } else {
                 @Suppress("DEPRECATION")
-                vibrator.vibrate(longArrayOf(0, 100, 200, 100, 200, 100, 200), -1)
+                vibrator.vibrate(longArrayOf(0, 100, 50, 100, 50, 100, 50, 100), -1)
             }
+            Timber.d("Вибрация для достижений выполнена")
         } catch (e: Exception) {
-            Timber.e(e, "Failed to vibrate achievement")
+            Timber.e(e, "Ошибка вибрации для достижений")
         }
     }
     
     /**
-     * Получение Vibrator с учетом версии Android
+     * Останавливает вибрацию
      */
-    private fun getVibrator(context: Context): Vibrator {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    fun stopVibration(context: Context) {
+        val vibrator = getVibrator(context) ?: return
+        
+        try {
+            vibrator.cancel()
+            Timber.d("Вибрация остановлена")
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка остановки вибрации")
         }
-    }
-    
-    enum class BreathingPhase {
-        INHALE, EXHALE, HOLD
     }
 } 

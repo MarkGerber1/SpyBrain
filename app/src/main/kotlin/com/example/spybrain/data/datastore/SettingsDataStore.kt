@@ -172,4 +172,14 @@ class SettingsDataStore @Inject constructor(
         }
         return@runBlocking vibrationValue
     }
+    
+    fun getVoiceId(): String = runBlocking {
+        var voiceIdValue = ""
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKey.VOICE_ID] ?: ""
+        }.collect { 
+            voiceIdValue = it
+        }
+        return@runBlocking voiceIdValue
+    }
 } 
