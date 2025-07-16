@@ -63,7 +63,7 @@ class StatsViewModel @Inject constructor(
         when (event) {
             StatsContract.Event.LoadStatsAndHistory -> loadStatsAndHistory()
             StatsContract.Event.RefreshStats -> loadStatsAndHistory()
-            StatsContract.Event.ShowMotivationalMessage -> showMotivationalMessage()
+            is StatsContract.Event.ShowMotivationalMessage -> showMotivationalMessage(event.message)
         }
     }
 
@@ -116,9 +116,9 @@ class StatsViewModel @Inject constructor(
         }
     }
 
-    private fun showMotivationalMessage() {
-        val stats = uiState.value.stats
-        val message = generateMotivationalMessage(stats)
+    private fun showMotivationalMessage(customMessage: String? = null) {
+        val message = customMessage ?: generateMotivationalMessage(uiState.value.stats)
+        setState { copy(motivationalMessage = message) }
         setEffect { StatsContract.Effect.ShowMotivationalMessage(message) }
     }
 

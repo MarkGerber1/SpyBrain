@@ -23,7 +23,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Alignment
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -386,7 +386,7 @@ fun MeditationList(
                             Text(text = meditation.title, style = MaterialTheme.typography.titleMedium)
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                text = meditation.description,
+                                text = meditation.description ?: "",
                                 style = MaterialTheme.typography.bodyMedium,
                                 maxLines = 2
                             )
@@ -401,7 +401,7 @@ fun MeditationList(
                                     style = MaterialTheme.typography.bodySmall
                                 )
                                 Text(
-                                    text = meditation.category,
+                                    text = meditation.category ?: "",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -476,7 +476,7 @@ fun MeditationPlayerUI(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = meditation.description,
+                        text = meditation.description ?: "",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.8f),
                         textAlign = TextAlign.Center,

@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.meditation
+package com.example.spybrain.presentation.meditation
 
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.domain.model.Meditation
@@ -320,7 +320,7 @@ class MeditationViewModel @Inject constructor(
 
         try {
             // РџСЂРѕРІРµСЂСЏРµРј URL РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ
-            if (meditation.audioUrl.isBlank()) {
+            if (meditation.audioUrl.isNullOrBlank()) {
                 setEffect { MeditationContract.Effect.ShowError(UiError.Custom("URL Р°СѓРґРёРѕ РѕС‚СЃСўСЃС‚РІСўРµС‚")) }
                 return
             }
@@ -352,7 +352,7 @@ class MeditationViewModel @Inject constructor(
 
                     // AI РЅР°СЃС‚Р°РІРЅРёРє: РІСЃС‚СѓРїРёС‚РµР»СЊРЅС‹Р№ СЃРѕРІРµС‚
                     try {
-                        aiMentor.giveMeditationAdvice()
+                        aiMentor.giveMeditationAdvice("defaultUser")
                     } catch (e: Exception) {
                         Timber.w(e, "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЃРѕРІРµС‚Р° РѕС‚ AI РЅР°СЃС‚Р°РІРЅРёРєР°")
                         // РќРµ РїСЂРµСЂС‹РІР°РµРј РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ РёР·-Р·Р° РѕС€РёР±РєРё AI
@@ -372,7 +372,7 @@ class MeditationViewModel @Inject constructor(
                                 delay(60000L)
                                 if (isActive) {
                                     try {
-                                        aiMentor.giveMeditationAdvice()
+                                        aiMentor.giveMeditationAdvice("defaultUser")
                                     } catch (e: Exception) {
                                         Timber.w(e, "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё РїРµСЂРёРѕРґРёС‡РµСЃРєРѕРіРѕ СЃРѕРІРµС‚Р°")
                                         // РџСЂРѕРґРѕР»Р¶Р°РµРј С†РёРєР»

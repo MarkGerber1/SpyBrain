@@ -36,7 +36,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.DropdownMenu as ExposedDropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 
