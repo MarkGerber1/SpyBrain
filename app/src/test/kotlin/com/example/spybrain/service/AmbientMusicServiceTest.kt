@@ -1,4 +1,4 @@
-package com.example.spybrain.service
+﻿package com.example.spybrain.service
 
 import android.content.Context
 import io.mockk.mockk
@@ -12,5 +12,6 @@ class AmbientMusicServiceTest {
         assertNotNull(service)
     }
 
-    // Для настоящих тестов логики используйте интеграционные тесты с Robolectric или Instrumented
-} 
+    // Р”Р»СЏ РЅР°СЃС‚РѕСЏС‰РёС… С‚РµСЃС‚РѕРІ Р»РѕРіРёРєРё РёСЃРїРѕР»СЊР·СѓР№С‚Рµ РёРЅС‚РµРіСЂР°С†РёРѕРЅРЅС‹Рµ С‚РµСЃС‚С‹ СЃ Robolectric РёР»Рё Instrumented
+}
+

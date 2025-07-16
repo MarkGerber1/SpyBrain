@@ -1,4 +1,4 @@
-package com.example.spybrain.di
+﻿package com.example.spybrain.di
 
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -19,9 +19,15 @@ import com.example.spybrain.data.storage.MIGRATION_1_2
 import com.example.spybrain.data.storage.MIGRATION_2_3
 import com.example.spybrain.data.storage.MIGRATION_3_4
 
+/**
+ * DI-модуль для представления зависимостей хранения.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object StorageModule {
+    /**
+     * Предоставляет AppDatabase.
+     */
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
@@ -33,35 +39,56 @@ object StorageModule {
         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
         .build()
 
+    /**
+     * Предоставляет BreathingSessionDao.
+     */
     @Provides
     fun provideBreathingSessionDao(db: AppDatabase): BreathingSessionDao =
         db.breathingSessionDao() // FIXME: Не внедрять DAO напрямую в UseCase/ViewModel. Использовать репозиторий.
 
+    /**
+     * Предоставляет UserProfileDao.
+     */
     @Provides
     fun provideUserProfileDao(db: AppDatabase): UserProfileDao =
         db.userProfileDao() // FIXME: Не внедрять DAO напрямую в UseCase/ViewModel. Использовать репозиторий.
 
+    /**
+     * Предоставляет MeditationSessionDao.
+     */
     @Provides
     fun provideMeditationSessionDao(db: AppDatabase): MeditationSessionDao =
         db.meditationSessionDao() // FIXME: Не внедрять DAO напрямую в UseCase/ViewModel. Использовать репозиторий.
 
+    /**
+     * Предоставляет CustomBreathingPatternDao.
+     */
     @Provides
     fun provideCustomBreathingPatternDao(db: AppDatabase): CustomBreathingPatternDao =
-        db.customBreathingPatternDao() // FIXME: Не внедрять DAO напрямую в UseCase/ViewModel. Использовать репозиторий.
+        db.customBreathingPatternDao() 
+        // FIXME: Не внедрять DAO напрямую в UseCase/ViewModel. Использовать репозиторий.
 
+    /**
+     * Предоставляет AchievementDao.
+     */
     @Provides
     fun provideAchievementDao(db: AppDatabase): AchievementDao =
         db.achievementDao() // FIXME: Не внедрять DAO напрямую в UseCase/ViewModel. Использовать репозиторий.
 
+    /**
+     * Предоставляет HeartRateDao.
+     */
     @Provides
     fun provideHeartRateDao(db: AppDatabase): HeartRateDao =
         db.heartRateDao()
 
-    // Provider for DataStore настроек
+    /**
+     * Предоставляет SettingsDataStore.
+     */
     @Provides
     @Singleton
     fun provideSettingsDataStore(@ApplicationContext context: Context): com.example.spybrain.data.datastore.SettingsDataStore =
         com.example.spybrain.data.datastore.SettingsDataStore(context)
 
-    // Реализация биндингов хранилищ
-} 
+    // Реализация биндинга синглтонов хранения
+}

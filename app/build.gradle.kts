@@ -1,13 +1,19 @@
 @file:Suppress("DSL_SCOPE_VIOLATION")
+
+import org.gradle.testing.jacoco.tasks.JacocoReport
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hiltAndroid)
+    id("io.gitlab.arturbosch.detekt") version "1.23.4"
+    id("org.jlleitschuh.gradle.ktlint") version "11.6.1"
+    id("jacoco")
 }
 
 ksp {
-    arg("room.schemaLocation", "${projectDir}/schemas")
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 android {
@@ -88,29 +94,29 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-    
+
     // AndroidX Core
     implementation(libs.core.ktx)
     implementation(libs.bundles.lifecycle)
-    
+
     implementation(platform(libs.compose.bom))
     implementation("androidx.compose.animation:animation")
     implementation(libs.bundles.compose)
     implementation(libs.activity.compose)
     implementation("androidx.compose.material:material-icons-extended")
-    
+
     // Navigation
     implementation(libs.navigation.compose)
     implementation(libs.hilt.navigation.compose)
-    
+
     // Splash Screen
     implementation(libs.core.splashscreen)
     // Material Components (XML темы)
     implementation("com.google.android.material:material:1.10.0")
-    
+
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
-    
+
     // Media
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
@@ -119,24 +125,24 @@ dependencies {
     implementation("androidx.media3:media3-datasource:1.2.0")
     implementation("androidx.media3:media3-exoplayer-dash:1.2.0")
     implementation("androidx.media3:media3-exoplayer-hls:1.2.0")
-    
+
     // TTS
     implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")
-    
+
     // Audio Effects
     implementation("androidx.media:media:1.7.0")
-    
+
     // DataStore
     implementation(libs.datastore.preferences)
-    
+
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
-    
+
     // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
-    
+
     // Testing
     testImplementation(libs.junit)
     testImplementation("io.mockk:mockk:1.13.5")
@@ -151,7 +157,7 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.android.compiler)
-    
+
     // Debug
     debugImplementation(libs.bundles.compose.debug)
 
@@ -168,4 +174,39 @@ dependencies {
     androidTestImplementation("androidx.room:room-testing:2.6.1")
 
     implementation("androidx.navigation:navigation-compose:2.7.3")
-} 
+}
+
+// Detekt configuration
+detekt {
+    config.setFrom(files("$projectDir/config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    allRules = false
+    autoCorrect = true
+    parallel = true
+}
+
+// KtLint configuration
+ktlint {
+    android.set(true)
+    verbose.set(true)
+    filter {
+        exclude { element -> element.file.path.contains("build/") }
+    }
+}
+
+// JaCoCo configuration
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.withType<Test> {
+    finalizedBy(tasks.named("jacocoTestReport"))
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn(tasks.named("test"))
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}

@@ -1,4 +1,4 @@
-package com.example.spybrain.service
+﻿package com.example.spybrain.service
 
 import android.app.Service
 import android.content.Intent
@@ -24,12 +24,12 @@ class BackgroundMusicService : Service() {
         exoPlayer.addListener(object : Player.Listener {
             override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
                 Log.e("BackgroundMusicService", "Playback error: ${error.message}", error)
-                // Можно добавить уведомление пользователя об ошибке
+                // РњРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ СѓРІРµРґРѕРјР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РѕР± РѕС€РёР±РєРµ
             }
-            
+
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
-                    // Зацикливаем музыку
+                    // Р—Р°С†РёРєР»РёРІР°РµРј РјСѓР·С‹РєСѓ
                     exoPlayer.seekTo(0)
                     exoPlayer.play()
                 }
@@ -83,4 +83,4 @@ class BackgroundMusicService : Service() {
         const val ACTION_STOP = "com.example.spybrain.service.BACKGROUND_MUSIC_STOP"
         const val EXTRA_URL = "com.example.spybrain.service.EXTRA_URL"
     }
-} 
+}

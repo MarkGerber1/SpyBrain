@@ -1,4 +1,4 @@
-package com.example.spybrain.service
+﻿package com.example.spybrain.service
 
 import com.example.spybrain.domain.service.IHealthAdvisor
 import com.example.spybrain.presentation.breathing.BreathingContract
@@ -6,32 +6,33 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 /**
- * Сервис для выдачи динамических советов в процессе дыхательных практик
+ * РЎРµСЂРІРёСЃ РґР»СЏ РІС‹РґР°С‡Рё РґРёРЅР°РјРёС‡РµСЃРєРёС… СЃРѕРІРµС‚РѕРІ РІ РїСЂРѕС†РµСЃСЃРµ РґС‹С…Р°С‚РµР»СЊРЅС‹С… РїСЂР°РєС‚РёРє
  */
 class HealthAdvisorService @Inject constructor() : IHealthAdvisor {
     private val inhaleTips = listOf(
-        "Сконцентрируйтесь на медленном вдохе",
-        "Попробуйте глубже вдохнуть через нос"
+        "РЎРєРѕРЅС†РµРЅС‚СЂРёСЂСѓР№С‚РµСЃСЊ РЅР° РјРµРґР»РµРЅРЅРѕРј РІРґРѕС…Рµ",
+        "РџРѕРїСЂРѕР±СѓР№С‚Рµ РіР»СѓР±Р¶Рµ РІРґРѕС…РЅСѓС‚СЊ С‡РµСЂРµР· РЅРѕСЃ"
     )
     private val holdAfterInhaleTips = listOf(
-        "Держите воздух: чувствуете расслабление?",
-        "Сохраняйте спокойствие на паузе"
+        "Р”РµСЂР¶РёС‚Рµ РІРѕР·РґСѓС…: С‡СѓРІСЃС‚РІСѓРµС‚Рµ СЂР°СЃСЃР»Р°Р±Р»РµРЅРёРµ?",
+        "РЎРѕС…СЂР°РЅСЏР№С‚Рµ СЃРїРѕРєРѕР№СЃС‚РІРёРµ РЅР° РїР°СѓР·Рµ"
     )
     private val exhaleTips = listOf(
-        "Выдохните медленно, освобождая напряжение",
-        "Отпустите воздух плавно"
+        "Р’С‹РґРѕС…РЅРёС‚Рµ РјРµРґР»РµРЅРЅРѕ, РѕСЃРІРѕР±РѕР¶РґР°СЏ РЅР°РїСЂСЏР¶РµРЅРёРµ",
+        "РћС‚РїСѓСЃС‚РёС‚Рµ РІРѕР·РґСѓС… РїР»Р°РІРЅРѕ"
     )
     private val holdAfterExhaleTips = listOf(
-        "Почувствуйте лёгкость после выдоха",
-        "Расслабьтесь перед следующим вдохом"
+        "РџРѕС‡СѓРІСЃС‚РІСѓР№С‚Рµ Р»С‘РіРєРѕСЃС‚СЊ РїРѕСЃР»Рµ РІС‹РґРѕС…Р°",
+        "Р Р°СЃСЃР»Р°Р±СЊС‚РµСЃСЊ РїРµСЂРµРґ СЃР»РµРґСѓСЋС‰РёРј РІРґРѕС…РѕРј"
     )
 
     /**
-     * Формирует список советов в зависимости от фазы дыхания и текущего BPM
+     * Р¤РѕСЂРјРёСЂСѓРµС‚ СЃРїРёСЃРѕРє СЃРѕРІРµС‚РѕРІ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С„Р°Р·С‹ РґС‹С…Р°РЅРёСЏ Рё С‚РµРєСѓС‰РµРіРѕ BPM
      */
-    override fun getAdvices(phase: Any, bpm: Int): List<String> {
-        // TODO реализовано: логика советов по здоровью
-        return emptyList()
+    override fun getAdvices(userId: String): List<String> {
+        // TODO: Реализовать логику
+        // Временно: throw NotImplementedError("HealthAdvisorService logic not implemented yet")
+        return listOf("Совет по здоровью для пользователя $userId")
     }
 }
-// NOTE реализовано по аудиту: IHealthAdvisor адаптер 
+// NOTE СЂРµР°Р»РёР·РѕРІР°РЅРѕ РїРѕ Р°СѓРґРёС‚Сѓ: IHealthAdvisor Р°РґР°РїС‚РµСЂ

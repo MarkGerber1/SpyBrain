@@ -1,7 +1,10 @@
-package com.example.spybrain.presentation.stats
+﻿package com.example.spybrain.presentation.stats
 
 import app.cash.turbine.test
-import com.example.spybrain.domain.usecase.stats.GetStatsUseCase
+import com.example.spybrain.domain.usecase.stats.GetOverallStatsUseCase
+import com.example.spybrain.domain.usecase.stats.GetSessionHistoryUseCase
+import com.example.spybrain.domain.usecase.stats.GetBreathingHistoryUseCase
+import com.example.spybrain.domain.usecase.achievements.CheckAchievementsUseCase
 import com.example.spybrain.presentation.stats.StatsViewModel
 import com.example.spybrain.test.utils.MainDispatcherRule
 import io.mockk.coEvery
@@ -17,14 +20,30 @@ class StatsViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private lateinit var getStatsUseCase: GetStatsUseCase
+    private lateinit var getOverallStatsUseCase: GetOverallStatsUseCase
+    private lateinit var getSessionHistoryUseCase: GetSessionHistoryUseCase
+    private lateinit var getBreathingHistoryUseCase: GetBreathingHistoryUseCase
+    private lateinit var checkAchievementsUseCase: CheckAchievementsUseCase
     private lateinit var viewModel: StatsViewModel
 
     @Before
     fun setup() {
-        getStatsUseCase = mockk(relaxed = true)
-        coEvery { getStatsUseCase() } returns flowOf(mockk(relaxed = true))
-        viewModel = StatsViewModel(getStatsUseCase)
+        getOverallStatsUseCase = mockk(relaxed = true)
+        getSessionHistoryUseCase = mockk(relaxed = true)
+        getBreathingHistoryUseCase = mockk(relaxed = true)
+        checkAchievementsUseCase = mockk(relaxed = true)
+
+        coEvery { getOverallStatsUseCase() } returns flowOf(mockk(relaxed = true))
+        coEvery { getSessionHistoryUseCase() } returns flowOf(emptyList())
+        coEvery { getBreathingHistoryUseCase() } returns flowOf(emptyList())
+        coEvery { checkAchievementsUseCase(any()) } returns emptyList()
+
+        viewModel = StatsViewModel(
+            getOverallStatsUseCase = getOverallStatsUseCase,
+            getSessionHistoryUseCase = getSessionHistoryUseCase,
+            getBreathingHistoryUseCase = getBreathingHistoryUseCase,
+            checkAchievementsUseCase = checkAchievementsUseCase
+        )
     }
 
     @Test
@@ -34,5 +53,6 @@ class StatsViewModelTest {
             assertNotNull(state.stats)
         }
     }
-    // Добавьте дополнительные тесты для событий и логики ViewModel
-} 
+    // Р”РѕР±Р°РІСЊС‚Рµ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ С‚РµСЃС‚С‹ РґР»СЏ СЃРѕР±С‹С‚РёР№ Рё Р»РѕРіРёРєРё ViewModel
+}
+

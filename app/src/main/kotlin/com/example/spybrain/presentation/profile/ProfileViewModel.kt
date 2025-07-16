@@ -1,4 +1,4 @@
-package com.example.spybrain.presentation.profile
+﻿package com.example.spybrain.presentation.profile
 
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.presentation.base.BaseViewModel
@@ -9,8 +9,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.spybrain.util.UiError
-import com.example.spybrain.domain.error.ErrorHandler // FIXME билд-фикс 09.05.2025
+import com.example.spybrain.domain.error.ErrorHandler // FIXME Р±РёР»Рґ-С„РёРєСЃ 09.05.2025
+import com.example.spybrain.presentation.base.UiEvent
+import com.example.spybrain.presentation.base.UiState
+import com.example.spybrain.presentation.base.UiEffect
 
+/**
+ */
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getUserProfileUseCase: GetUserProfileUseCase,
@@ -51,12 +56,12 @@ class ProfileViewModel @Inject constructor(
         val newName = uiState.value.newName.trim()
         val oldProfile = uiState.value.profile
         if (oldProfile == null) {
-            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(Exception("Профиль не загружен")))
+            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(Exception("РџСЂРѕС„РёР»СЊ РЅРµ Р·Р°РіСЂСѓР¶РµРЅ")))
             setEffect { ProfileContract.Effect.ShowError(uiError) }
             return
         }
         if (newName.isBlank()) {
-            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(Exception("Имя не может быть пустым")))
+            val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(Exception("РРјСЏ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј")))
             setEffect { ProfileContract.Effect.ShowError(uiError) }
             return
         }
@@ -66,4 +71,4 @@ class ProfileViewModel @Inject constructor(
             setState { copy(profile = updatedProfile, showDialog = false) }
         }
     }
-} 
+}

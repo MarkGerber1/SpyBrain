@@ -1,4 +1,4 @@
-package com.example.spybrain.presentation.breathing.patternbuilder
+﻿package com.example.spybrain.presentation.breathing.patternbuilder
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
@@ -16,7 +16,13 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import com.example.spybrain.presentation.base.UiEvent
+import com.example.spybrain.presentation.base.UiState
+import com.example.spybrain.presentation.base.UiEffect
 
+/**
+ * ViewModel для конструктора дыхательных паттернов.
+ */
 @HiltViewModel
 class BreathingPatternBuilderViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -39,10 +45,9 @@ class BreathingPatternBuilderViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             try {
                 setState { copy(isLoading = true, error = null) }
-                getCustomPatternsUseCase().collect { patterns ->
-                    setState { copy(isLoading = false, patterns = patterns) }
-                    Timber.d("Загружено ${patterns.size} пользовательских паттернов")
-                }
+                val patterns = getCustomPatternsUseCase()
+                setState { copy(isLoading = false, patterns = patterns) }
+                Timber.d("Загружено ${patterns.size} пользовательских паттернов")
             } catch (e: Exception) {
                 Timber.e(e, "Ошибка при загрузке паттернов")
                 val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
@@ -52,9 +57,17 @@ class BreathingPatternBuilderViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Создает начальное состояние конструктора паттернов.
+     * @return Начальное состояние.
+     */
     override fun createInitialState(): BreathingPatternBuilderContract.State =
         BreathingPatternBuilderContract.State()
 
+    /**
+     * Обрабатывает событие UI.
+     * @param event Событие UI.
+     */
     override fun handleEvent(event: BreathingPatternBuilderContract.Event) {
         when (event) {
             is BreathingPatternBuilderContract.Event.LoadPattern -> {
@@ -90,7 +103,7 @@ class BreathingPatternBuilderViewModel @Inject constructor(
         }
     }
 
-    private fun loadPattern(id: String) {
+    private fun loadPattern(id: Long) {
         try {
             val pattern = uiState.value.patterns.find { it.id == id }
             pattern?.let {
@@ -119,10 +132,7 @@ class BreathingPatternBuilderViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             try {
                 setState { copy(isLoading = true, error = null) }
-                
                 val state = uiState.value
-                
-                // Валидация
                 if (state.name.isBlank()) {
                     setEffect {
                         BreathingPatternBuilderContract.Effect.ShowError(
@@ -132,11 +142,9 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                     setState { copy(isLoading = false) }
                     return@launch
                 }
-                
                 val inhale = state.inhaleSeconds.toIntOrNull() ?: 0
                 val exhale = state.exhaleSeconds.toIntOrNull() ?: 0
                 val cycles = state.totalCycles.toIntOrNull() ?: 0
-                
                 if (inhale <= 0 || exhale <= 0 || cycles <= 0) {
                     setEffect {
                         BreathingPatternBuilderContract.Effect.ShowError(
@@ -146,8 +154,6 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                     setState { copy(isLoading = false) }
                     return@launch
                 }
-                
-                // Проверка разумных пределов
                 if (inhale > 60 || exhale > 60 || cycles > 100) {
                     setEffect {
                         BreathingPatternBuilderContract.Effect.ShowError(
@@ -157,9 +163,8 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                     setState { copy(isLoading = false) }
                     return@launch
                 }
-                
                 val pattern = CustomBreathingPattern(
-                    id = state.id ?: "custom_${System.currentTimeMillis()}",
+                    id = state.id ?: System.currentTimeMillis(),
                     name = state.name.trim(),
                     description = state.description.trim(),
                     inhaleSeconds = inhale,
@@ -168,13 +173,9 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                     holdAfterExhaleSeconds = state.holdAfterExhaleSeconds.toIntOrNull() ?: 0,
                     totalCycles = cycles
                 )
-                
                 addCustomPatternUseCase(pattern)
                 Timber.d("Паттерн сохранен: ${pattern.name}")
-                
                 setEffect { BreathingPatternBuilderContract.Effect.ShowSuccessMessage("Шаблон сохранен!") }
-                
-                // Очищаем форму
                 setState {
                     copy(
                         isLoading = false,
@@ -188,7 +189,6 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                         totalCycles = ""
                     )
                 }
-                
             } catch (e: Exception) {
                 Timber.e(e, "Ошибка при сохранении паттерна")
                 val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
@@ -202,13 +202,10 @@ class BreathingPatternBuilderViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             try {
                 setState { copy(isLoading = true, error = null) }
-                
-                deleteCustomPatternUseCase(pattern)
+                deleteCustomPatternUseCase(pattern.id)
                 Timber.d("Паттерн удален: ${pattern.name}")
-                
                 setEffect { BreathingPatternBuilderContract.Effect.ShowSuccessMessage("Шаблон удален!") }
                 setState { copy(isLoading = false) }
-                
             } catch (e: Exception) {
                 Timber.e(e, "Ошибка при удалении паттерна")
                 val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
@@ -217,4 +214,4 @@ class BreathingPatternBuilderViewModel @Inject constructor(
             }
         }
     }
-} 
+}

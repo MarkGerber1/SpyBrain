@@ -1,4 +1,4 @@
-package com.example.spybrain.data.datastore
+﻿package com.example.spybrain.data.datastore
 
 import android.content.Context
 import com.example.spybrain.test.utils.MainDispatcherRule
@@ -32,7 +32,8 @@ class SettingsDataStoreTest {
         settingsDataStore.setTheme(theme)
 
         // Then
-        // Проверяем, что метод вызывается (реальная проверка будет в интеграционных тестах)
+        // Проверяем, что метод вызывается
+        // (реальная проверка будет в интеграционных тестах)
     }
 
     @Test
@@ -44,7 +45,7 @@ class SettingsDataStoreTest {
         settingsDataStore.setAmbientEnabled(enabled)
 
         // Then
-        // Проверяем, что метод вызывается
+        // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РјРµС‚РѕРґ РІС‹Р·С‹РІР°РµС‚СЃСЏ
     }
 
     @Test
@@ -56,7 +57,7 @@ class SettingsDataStoreTest {
         settingsDataStore.setAmbientTrack(track)
 
         // Then
-        // Проверяем, что метод вызывается
+        // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РјРµС‚РѕРґ РІС‹Р·С‹РІР°РµС‚СЃСЏ
     }
 
     @Test
@@ -68,7 +69,7 @@ class SettingsDataStoreTest {
         settingsDataStore.setHeartbeatEnabled(enabled)
 
         // Then
-        // Проверяем, что метод вызывается
+        // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РјРµС‚РѕРґ РІС‹Р·С‹РІР°РµС‚СЃСЏ
     }
 
     @Test
@@ -80,7 +81,7 @@ class SettingsDataStoreTest {
         settingsDataStore.setVoiceEnabled(enabled)
 
         // Then
-        // Проверяем, что метод вызывается
+        // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РјРµС‚РѕРґ РІС‹Р·С‹РІР°РµС‚СЃСЏ
     }
 
     @Test
@@ -92,7 +93,7 @@ class SettingsDataStoreTest {
         settingsDataStore.setVoiceHintsEnabled(enabled)
 
         // Then
-        // Проверяем, что метод вызывается
+        // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РјРµС‚РѕРґ РІС‹Р·С‹РІР°РµС‚СЃСЏ
     }
 
     @Test
@@ -104,6 +105,7 @@ class SettingsDataStoreTest {
         settingsDataStore.setVoiceId(voiceId)
 
         // Then
-        // Проверяем, что метод вызывается
+        // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РјРµС‚РѕРґ РІС‹Р·С‹РІР°РµС‚СЃСЏ
     }
-} 
+}
+

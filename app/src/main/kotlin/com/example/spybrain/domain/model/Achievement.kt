@@ -1,9 +1,9 @@
-package com.example.spybrain.domain.model
+﻿package com.example.spybrain.domain.model
 
 import java.io.Serializable
 
 /**
- * Модель достижения со статусом и датой получения.
+ * РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ РґРѕСЃС‚РёР¶РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
  */
 data class Achievement(
     val id: String = "",
@@ -16,4 +16,4 @@ data class Achievement(
     val progress: Float = 0f,
     val requiredValue: Int = 100,
     val unlockedAt: Long? = null
-) : Serializable 
+) : Serializable

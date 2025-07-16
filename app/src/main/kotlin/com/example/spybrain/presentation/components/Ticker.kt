@@ -1,4 +1,4 @@
-package com.example.spybrain.presentation.components
+﻿package com.example.spybrain.presentation.components
 
 import android.text.TextUtils
 import android.widget.TextView
@@ -12,7 +12,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.graphics.toArgb
 
 /**
- * Компонент бегущей строки (Ticker) для показа динамических советов
+ * @param text РўРµРєСЃС‚ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ.
+ * @param modifier РњРѕРґРёС„РёРєР°С‚РѕСЂ Compose.
  */
 @Composable
 fun Ticker(
@@ -38,4 +39,8 @@ fun Ticker(
         },
         modifier = modifier
     )
-} 
+}
+
+fun ticker(/* параметры */) {
+    // ... existing code ...
+}

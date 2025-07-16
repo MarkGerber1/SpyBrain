@@ -1,4 +1,4 @@
-package com.example.spybrain.data.repository
+﻿package com.example.spybrain.data.repository
 
 import android.content.Context
 import com.example.spybrain.domain.model.MeditationProgram
@@ -14,12 +14,16 @@ import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Реализация репозитория программ медитации.
+  Предоставляет статический список программ.
+ */
 @Singleton
 class MeditationProgramRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : MeditationProgramRepository {
     override fun getMeditationPrograms(): Flow<List<MeditationProgram>> {
-        // Статические программы пока отсутствуют
+        // РЎС‚Р°С‚РёС‡РµСЃРєРёРµ РїСЂРѕРіСЂР°РјРјС‹ РїРѕРєР° РѕС‚СЃСўСЃС‚РІСѓСЋС‚
         return flowOf(emptyList())
     }
-} 
+}

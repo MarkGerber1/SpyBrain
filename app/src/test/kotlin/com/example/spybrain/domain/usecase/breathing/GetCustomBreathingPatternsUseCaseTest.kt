@@ -1,4 +1,4 @@
-package com.example.spybrain.domain.usecase.breathing
+﻿package com.example.spybrain.domain.usecase.breathing
 
 import com.example.spybrain.domain.model.CustomBreathingPattern
 import com.example.spybrain.domain.repository.CustomBreathingPatternRepository
@@ -36,4 +36,5 @@ class GetCustomBreathingPatternsUseCaseTest {
         val result = useCase.invoke().first()
         assertEquals(patterns, result)
     }
-} 
+}
+

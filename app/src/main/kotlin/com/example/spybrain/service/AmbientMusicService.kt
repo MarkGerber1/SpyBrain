@@ -1,4 +1,4 @@
-package com.example.spybrain.service
+﻿package com.example.spybrain.service
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -32,32 +32,32 @@ import kotlinx.coroutines.launch
 import androidx.media3.common.C
 
 class AmbientMusicService : Service() {
-    
+
     private val binder = LocalBinder()
     private var exoPlayer: ExoPlayer? = null
     private var audioSink: AudioSink? = null
     private var presetReverb: PresetReverb? = null
-    
+
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var fadeJob: Job? = null
-    
+
     companion object {
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "ambient_music_channel"
         private const val FADE_DURATION_MS = 3000L
     }
-    
+
     inner class LocalBinder : Binder() {
         fun getService(): AmbientMusicService = this@AmbientMusicService
     }
-    
+
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
         initializePlayer()
         Timber.d("AmbientMusicService created")
     }
-    
+
     private fun initializePlayer() {
         try {
             exoPlayer = ExoPlayer.Builder(this)
@@ -66,7 +66,7 @@ class AmbientMusicService : Service() {
                     setAudioAttributes(
                         AudioAttributes.Builder()
                             .setUsage(C.USAGE_MEDIA)
-                            .setContentType(C.CONTENT_TYPE_MUSIC)
+                            .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
                             .build(),
                         true
                     )
@@ -94,7 +94,7 @@ class AmbientMusicService : Service() {
             Timber.e(e, "Failed to initialize player")
         }
     }
-    
+
     private fun setupReverb() {
         try {
             val audioSessionId = exoPlayer?.audioSessionId ?: return
@@ -106,7 +106,7 @@ class AmbientMusicService : Service() {
             Timber.e(e, "Failed to setup reverb")
         }
     }
-    
+
     private fun setupAudioEffects() {
         try {
             presetReverb?.let { reverb ->
@@ -117,7 +117,7 @@ class AmbientMusicService : Service() {
             Timber.e(e, "Failed to setup audio effects")
         }
     }
-    
+
     fun playAmbientMusic(trackId: String) {
         try {
             val mediaItem = when (trackId) {
@@ -128,21 +128,21 @@ class AmbientMusicService : Service() {
                 "fire" -> MediaItem.fromUri("asset:///audio/ambient_fire.mp3")
                 else -> MediaItem.fromUri("asset:///audio/ambient_nature.mp3")
             }
-            
+
             exoPlayer?.apply {
                 setMediaItem(mediaItem)
                 prepare()
                 play()
             }
-            
+
             startForeground(NOTIFICATION_ID, createNotification())
             Timber.d("Started playing ambient music: $trackId")
-            
+
         } catch (e: Exception) {
             Timber.e(e, "Failed to play ambient music")
         }
     }
-    
+
     fun stopAmbientMusic() {
         try {
             fadeJob?.cancel()
@@ -153,7 +153,7 @@ class AmbientMusicService : Service() {
             Timber.e(e, "Failed to stop ambient music")
         }
     }
-    
+
     private suspend fun fadeOutAndStop() {
         try {
             val player = exoPlayer ?: return
@@ -161,22 +161,27 @@ class AmbientMusicService : Service() {
             val steps = 30
             val volumeStep = initialVolume / steps
             val stepDuration = FADE_DURATION_MS / steps
-            
+
             repeat(steps) { step ->
                 val newVolume = initialVolume - (volumeStep * step)
                 player.volume = newVolume.coerceAtLeast(0f)
                 kotlinx.coroutines.delay(stepDuration)
             }
-            
+
             player.stop()
-            stopForeground(true)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                stopForeground(STOP_FOREGROUND_REMOVE)
+            } else {
+                @Suppress("DEPRECATION")
+                stopForeground(true)
+            }
             stopSelf()
-            
+
         } catch (e: Exception) {
             Timber.e(e, "Failed to fade out")
         }
     }
-    
+
     fun setVolume(volume: Float) {
         try {
             exoPlayer?.volume = volume.coerceIn(0f, 1f)
@@ -184,11 +189,11 @@ class AmbientMusicService : Service() {
             Timber.e(e, "Failed to set volume")
         }
     }
-    
+
     fun isPlaying(): Boolean {
         return exoPlayer?.isPlaying == true
     }
-    
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -196,15 +201,15 @@ class AmbientMusicService : Service() {
                 "Ambient Music",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Фоновая музыка для медитации"
+                description = "Р¤РѕРЅРѕРІР°СЏ РјСѓР·С‹РєР° РґР»СЏ РјРµРґРёС‚Р°С†РёРё"
                 setShowBadge(false)
             }
-            
+
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
-    
+
     private fun createNotification(): Notification {
         val intent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
@@ -212,19 +217,19 @@ class AmbientMusicService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Фоновая музыка")
-            .setContentText("Воспроизводится приятная музыка для медитации")
+            .setContentTitle("Р¤РѕРЅРѕРІР°СЏ РјСѓР·С‹РєР°")
+            .setContentText("Р’РѕСЃРїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ РїСЂРёСЏС‚РЅР°СЏ РјСѓР·С‹РєР° РґР»СЏ РјРµРґРёС‚Р°С†РёРё")
             .setSmallIcon(R.drawable.ic_notification)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .setSilent(true)
             .build()
     }
-    
+
     override fun onBind(intent: Intent): IBinder {
         return binder
     }
-    
+
     override fun onDestroy() {
         try {
             fadeJob?.cancel()
@@ -237,4 +242,4 @@ class AmbientMusicService : Service() {
         }
         super.onDestroy()
     }
-} 
+}

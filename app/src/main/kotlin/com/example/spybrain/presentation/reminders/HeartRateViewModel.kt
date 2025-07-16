@@ -1,14 +1,14 @@
-package com.example.spybrain.presentation.reminders
+﻿package com.example.spybrain.presentation.reminders
 
 import android.content.Context
 import android.hardware.camera2.CameraManager
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.data.repository.HeartRateRepository
-import com.example.spybrain.presentation.base.BaseViewModel
 import com.example.spybrain.presentation.base.UiEvent
 import com.example.spybrain.presentation.base.UiState
 import com.example.spybrain.presentation.base.UiEffect
 import com.example.spybrain.presentation.navigation.Screen
+import com.example.spybrain.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
@@ -17,7 +17,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import com.example.spybrain.presentation.reminders.HeartRateContract
 
+/**
+ * @constructor Р’РЅРµРґСЂРµРЅРёРµ Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№ С‡РµСЂРµР· Hilt.
+ * @param context РљРѕРЅС‚РµРєСЃС‚ РїСЂРёР»РѕР¶РµРЅРёСЏ.
+ * @param heartRateRepository Р РµРїРѕР·РёС‚РѕСЂРёР№ РїСѓР»СЊСЃРѕРјРµС‚СЂР°.
+ */
 @HiltViewModel
 class HeartRateViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -37,8 +47,8 @@ class HeartRateViewModel @Inject constructor(
             try {
                 val history = heartRateRepository.getMeasurementHistory()
                 val points = heartRateRepository.getMotivationalPoints()
-                
-                setState { 
+
+                setState {
                     copy(
                         measurementHistory = history,
                         motivationalPoints = points
@@ -77,43 +87,43 @@ class HeartRateViewModel @Inject constructor(
         if (uiState.value.isMeasuring) return
 
         setState { copy(isMeasuring = true, error = null) }
-        
+
         measurementJob = viewModelScope.launch {
             try {
-                // Симуляция измерения пульса через камеру
-                // В реальном приложении здесь будет логика работы с Camera2 API
+                // РЎРёРјСѓР»СЏС†РёСЏ РёР·РјРµСЂРµРЅРёСЏ РїСѓР»СЊСЃР° С‡РµСЂРµР· РєР°РјРµСЂСѓ
+                // Р’ СЂРµР°Р»СЊРЅРѕРј РїСЂРёР»РѕР¶РµРЅРёРё Р·РґРµСЃСЊ Р±СѓРґРµС‚ Р»РѕРіРёРєР° СЂР°Р±РѕС‚С‹ СЃ Camera2 API
                 simulateHeartRateMeasurement()
             } catch (e: Exception) {
-                setState { 
+                setState {
                     copy(
                         isMeasuring = false,
-                        error = "Ошибка измерения: ${e.message}"
+                        error = "РћС€РёР±РєР° РёР·РјРµСЂРµРЅРёСЏ: ${e.message}"
                     )
                 }
-                setEffect { HeartRateContract.Effect.ShowToast("Ошибка измерения пульса") }
+                setEffect { HeartRateContract.Effect.ShowToast("РћС€РёР±РєР° РёР·РјРµСЂРµРЅРёСЏ РїСѓР»СЊСЃР°") }
             }
         }
     }
 
     private suspend fun simulateHeartRateMeasurement() {
-        // Симуляция процесса измерения
-        delay(2000) // Задержка для "подготовки" камеры
-        
+        // РЎРёРјСѓР»СЏС†РёСЏ РїСЂРѕС†РµСЃСЃР° РёР·РјРµСЂРµРЅРёСЏ
+        delay(2000) // Р—Р°РґРµСЂР¶РєР° РґР»СЏ "РїРѕРґРіРѕС‚РѕРІРєРё" РєР°РјРµСЂС‹
+
         var measurementCount = 0
         val maxMeasurements = 10
-        
+
         while (uiState.value.isMeasuring && measurementCount < maxMeasurements) {
-            // Генерируем случайный пульс в диапазоне 60-100
+            // Р“РµРЅРµСЂРёСЂСѓРµРј СЃР»СѓС‡Р°Р№РЅС‹Р№ РїСѓР»СЊСЃ РІ РґРёР°РїР°Р·РѕРЅРµ 60-100
             val simulatedHeartRate = (60..100).random()
-            
+
             setState { copy(currentHeartRate = simulatedHeartRate) }
-            
-            delay(1000) // Измерение каждую секунду
+
+            delay(1000) // РР·РјРµСЂРµРЅРёРµ РєР°Р¶РґСѓСЋ СЃРµРєСѓРЅРґСѓ
             measurementCount++
         }
-        
+
         if (uiState.value.isMeasuring) {
-            // Завершаем измерение
+            // Р—Р°РІРµСЂС€Р°РµРј РёР·РјРµСЂРµРЅРёРµ
             val finalHeartRate = uiState.value.currentHeartRate
             handleMeasurementCompleted(finalHeartRate)
         }
@@ -122,36 +132,36 @@ class HeartRateViewModel @Inject constructor(
     private fun stopHeartRateMeasurement() {
         measurementJob?.cancel()
         setState { copy(isMeasuring = false) }
-        setEffect { HeartRateContract.Effect.ShowToast("Измерение остановлено") }
+        setEffect { HeartRateContract.Effect.ShowToast("РР·РјРµСЂРµРЅРёРµ РѕСЃС‚Р°РЅРѕРІР»РµРЅРѕ") }
     }
 
     private fun handleMeasurementCompleted(heartRate: Int) {
         viewModelScope.launch {
             try {
-                // Сохраняем измерение
+                // РЎРѕС…СЂР°РЅСЏРµРј РёР·РјРµСЂРµРЅРёРµ
                 heartRateRepository.saveMeasurement(heartRate)
-                
-                // Добавляем мотивационный балл
+
+                // Р”РѕР±Р°РІР»СЏРµРј РјРѕС‚РёРІР°С†РёРѕРЅРЅС‹Р№ Р±Р°Р»Р»
                 addMotivationalPoint()
-                
-                // Обновляем историю
+
+                // РћР±РЅРѕРІР»СЏРµРј РёСЃС‚РѕСЂРёСЋ
                 val updatedHistory = heartRateRepository.getMeasurementHistory()
-                
-                setState { 
+
+                setState {
                     copy(
                         isMeasuring = false,
                         currentHeartRate = heartRate,
                         measurementHistory = updatedHistory
                     )
                 }
-                
-                setEffect { HeartRateContract.Effect.ShowToast("Измерение завершено: $heartRate уд/мин") }
-                
+
+                setEffect { HeartRateContract.Effect.ShowToast("РР·РјРµСЂРµРЅРёРµ Р·Р°РІРµСЂС€РµРЅРѕ: $heartRate СѓРґ/РјРёРЅ") }
+
             } catch (e: Exception) {
-                setState { 
+                setState {
                     copy(
                         isMeasuring = false,
-                        error = "Ошибка сохранения: ${e.message}"
+                        error = "РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ: ${e.message}"
                     )
                 }
             }
@@ -162,26 +172,26 @@ class HeartRateViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val newPoints = heartRateRepository.addMotivationalPoint()
-                val shouldShowUnlock = newPoints % 10 == 0 // Показываем уведомление каждые 10 баллов
-                
-                setState { 
+                val shouldShowUnlock = newPoints % 10 == 0 // РџРѕРєР°Р·С‹РІР°РµРј СѓРІРµРґРѕРјР»РµРЅРёРµ РєР°Р¶РґС‹Рµ 10 Р±Р°Р»Р»РѕРІ
+
+                setState {
                     copy(
                         motivationalPoints = newPoints,
                         showNewExerciseUnlocked = shouldShowUnlock
                     )
                 }
-                
+
                 if (shouldShowUnlock) {
-                    setEffect { HeartRateContract.Effect.ShowToast("Открыто новое упражнение!") }
-                    
-                    // Скрываем уведомление через 5 секунд
+                    setEffect { HeartRateContract.Effect.ShowToast("РћС‚РєСЂС‹С‚Рѕ РЅРѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ!") }
+
+                    // РЎРєСЂС‹РІР°РµРј СѓРІРµРґРѕРјР»РµРЅРёРµ С‡РµСЂРµР· 5 СЃРµРєСѓРЅРґ
                     delay(5000)
                     setState { copy(showNewExerciseUnlocked = false) }
                 }
-                
+
             } catch (e: Exception) {
-                setState { copy(error = "Ошибка обновления баллов: ${e.message}") }
+                setState { copy(error = "РћС€РёР±РєР° РѕР±РЅРѕРІР»РµРЅРёСЏ Р±Р°Р»Р»РѕРІ: ${e.message}") }
             }
         }
     }
-} 
+}

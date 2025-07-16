@@ -1,7 +1,15 @@
-package com.example.spybrain.domain.model
+﻿package com.example.spybrain.domain.model
 
+/**
+ * РџРµСЂРµС‡РёСЃР»РµРЅРёРµ С‚РёРїРѕРІ СЂР°СЃРїРёСЃР°РЅРёСЏ.
+ */
 enum class ScheduleType {
+    /** Р•Р¶РµРґРЅРµРІРЅРѕРµ СЂР°СЃРїРёСЃР°РЅРёРµ. */
     DAILY,
+    /** Р•Р¶РµРЅРµРґРµР»СЊРЅРѕРµ СЂР°СЃРїРёСЃР°РЅРёРµ. */
     WEEKLY,
+    /**
+     * РљР°СЃС‚РѕРј (Р°РІС‚РѕСЃРіРµРЅРµСЂРёСЂРѕРІР°РЅРѕ).
+     */
     CUSTOM
-} 
+}

@@ -1,5 +1,8 @@
 package com.example.spybrain.presentation.stats
 
+import java.util.Date
+import java.util.Locale
+import java.util.UUID
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.presentation.base.BaseViewModel
 import com.example.spybrain.presentation.stats.StatsContract
@@ -19,8 +22,15 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import com.example.spybrain.domain.error.ErrorHandler
 import timber.log.Timber
-import java.util.*
-
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import com.example.spybrain.presentation.base.UiEvent
+import com.example.spybrain.presentation.base.UiState
+import com.example.spybrain.presentation.base.UiEffect
+/**
+ */
 @HiltViewModel
 class StatsViewModel @Inject constructor(
     private val getOverallStatsUseCase: GetOverallStatsUseCase,
@@ -30,7 +40,7 @@ class StatsViewModel @Inject constructor(
 ) : BaseViewModel<StatsContract.Event, StatsContract.State, StatsContract.Effect>() {
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
-        Timber.e(exception, "Ошибка в StatsViewModel корутине")
+        Timber.e(exception, "РћС€РёР±РєР° РІ StatsViewModel РєРѕСЂСѓС‚РёРЅРµ")
         val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(exception))
         setEffect { StatsContract.Effect.ShowError(uiError) }
     }
@@ -61,35 +71,38 @@ class StatsViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             try {
                 setState { copy(isLoading = true, error = null) }
-                
+
                 getOverallStatsUseCase()
                     .onStart { setState { copy(isLoading = true, error = null) } }
                     .catch { error ->
-                        Timber.e(error, "Ошибка загрузки статистики")
+                        Timber.e(error, "РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё СЃС‚Р°С‚РёСЃС‚РёРєРё")
                         val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(error))
                         setState { copy(isLoading = false, error = uiError) }
                         setEffect { StatsContract.Effect.ShowError(uiError) }
                     }
                     .collect { stats ->
                         setState { copy(isLoading = false, stats = stats) }
-                        
-                        // Проверяем достижения
+
+                        // РџСЂРѕРІРµСЂСЏРµРј РґРѕСЃС‚РёР¶РµРЅРёСЏ
                         checkAchievements(stats)
-                        
-                        // Показываем мотивационное сообщение
+
+                        // РџРѕРєР°Р·С‹РІР°РµРј РјРѕС‚РёРІР°С†РёРѕРЅРЅРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ
                         showMotivationalMessage()
-                        
-                        Timber.d("Статистика загружена: ${stats.completedMeditationSessions + stats.completedBreathingSessions} сессий")
+
+                        Timber.d(
+                            "Статистика загружена: " +
+                                "${stats.completedMeditationSessions + stats.completedBreathingSessions} сессий"
+                        )
                     }
             } catch (e: Exception) {
-                Timber.e(e, "Критическая ошибка при загрузке статистики")
+                Timber.e(e, "РљСЂРёС‡РµСЃРєР°СЏ РѕС€РёР±РєР° РїСЂРё Р·Р°РіСЂСѓР·РєРµ СЃС‚Р°С‚РёСЃС‚РёРєРё")
                 val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
                 setState { copy(isLoading = false, error = uiError) }
                 setEffect { StatsContract.Effect.ShowError(uiError) }
             }
         }
     }
-    
+
     private fun checkAchievements(stats: Stats) {
         viewModelScope.launch(coroutineExceptionHandler) {
             try {
@@ -98,39 +111,39 @@ class StatsViewModel @Inject constructor(
                     setEffect { StatsContract.Effect.ShowAchievements(achievements) }
                 }
             } catch (e: Exception) {
-                Timber.e(e, "Ошибка при проверке достижений")
+                Timber.e(e, "РћС€РёР±РєР° РїСЂРё РїСЂРѕРІРµСЂРєРµ РґРѕСЃС‚РёР¶РµРЅРёР№")
             }
         }
     }
-    
+
     private fun showMotivationalMessage() {
         val stats = uiState.value.stats
         val message = generateMotivationalMessage(stats)
         setEffect { StatsContract.Effect.ShowMotivationalMessage(message) }
     }
-    
+
     private fun generateMotivationalMessage(stats: Stats?): String {
-        if (stats == null) return "Начните свой путь к осознанности сегодня!"
-        
+        if (stats == null) return "РќР°С‡РЅРёС‚Рµ СЃРІРѕР№ РїСѓС‚СЊ Рє РѕСЃРѕР·РЅР°РЅРЅРѕСЃС‚Рё СЃРµРіРѕРґРЅСЏ!"
+
         val totalSessions = stats.completedMeditationSessions + stats.completedBreathingSessions
-        
+
         return when {
-            totalSessions == 0 -> "Начните свой путь к осознанности сегодня!"
-            totalSessions < 5 -> "Отличное начало! Каждый шаг важен."
-            totalSessions < 10 -> "Вы на правильном пути! Продолжайте в том же духе."
-            totalSessions < 25 -> "Впечатляющий прогресс! Вы становитесь сильнее."
-            totalSessions < 50 -> "Невероятно! Вы настоящий мастер осознанности."
-            totalSessions < 100 -> "Легендарный уровень! Вы вдохновляете других."
-            else -> "Вы достигли просветления! Поделитесь мудростью с миром."
+            totalSessions == 0 -> "РќР°С‡РЅРёС‚Рµ СЃРІРѕР№ РїСѓС‚СЊ Рє РѕСЃРѕР·РЅР°РЅРЅРѕСЃС‚Рё СЃРµРіРѕРґРЅСЏ!"
+            totalSessions < 5 -> "РћС‚Р»РёС‡РЅРѕРµ РЅР°С‡Р°Р»Рѕ! РљР°Р¶РґС‹Р№ С€Р°Рі РІР°Р¶РµРЅ."
+            totalSessions < 10 -> "Р’С‹ РЅР° РїСЂР°РІРёР»СЊРЅРѕРј РїСѓС‚Рё! РџСЂРѕРґРѕР»Р¶Р°Р№С‚Рµ РІ С‚РѕРј Р¶Рµ РґСѓС…Рµ."
+            totalSessions < 25 -> "Р’РїРµС‡Р°С‚Р»СЏСЋС‰РёР№ РїСЂРѕРіСЂРµСЃСЃ! Р’С‹ СЃС‚Р°РЅРѕРІРёС‚РµСЃСЊ СЃРёР»СЊРЅРµРµ."
+            totalSessions < 50 -> "РќРµРІРµСЂРѕСЏС‚РЅРѕ! Р’С‹ РЅР°СЃС‚РѕСЏС‰РёР№ РјР°СЃС‚РµСЂ РѕСЃРѕР·РЅР°РЅРЅРѕСЃС‚Рё."
+            totalSessions < 100 -> "Р›РµРіРµРЅРґР°СЂРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ! Р’С‹ РІРґРѕС…РЅРѕРІР»СЏРµС‚Рµ РґСЂСѓРіРёС…."
+            else -> "Р’С‹ РґРѕСЃС‚РёРіР»Рё РїСЂРѕСЃРІРµС‚Р»РµРЅРёСЏ! РџРѕРґРµР»РёС‚РµСЃСЊ РјСѓРґСЂРѕСЃС‚СЊСЋ СЃ РјРёСЂРѕРј."
         }
     }
 
     override fun onCleared() {
         try {
-            // Дополнительная очистка ресурсов при необходимости
+            // Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РѕС‡РёСЃС‚РєР° СЂРµСЃСѓСЂСЃРѕРІ РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё
             super.onCleared()
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка при очистке StatsViewModel")
+            Timber.e(e, "РћС€РёР±РєР° РїСЂРё РѕС‡РёСЃС‚РєРµ StatsViewModel")
         }
     }
-} 
+}

@@ -1,7 +1,8 @@
-package com.example.spybrain.presentation.meditation
+﻿package com.example.spybrain.presentation.meditation
 
 import com.example.spybrain.data.repository.MeditationRepositoryImpl.MeditationTrack
 import com.example.spybrain.domain.model.Meditation
+import com.example.spybrain.domain.model.Session
 import com.example.spybrain.domain.service.IAiMentor
 import com.example.spybrain.domain.service.IPlayerService
 import com.example.spybrain.domain.service.IVoiceAssistant
@@ -39,24 +40,15 @@ class MeditationViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        
-        getMeditationsUseCase = mockk<GetMeditationsUseCase> {
-            coEvery { invoke() } returns flowOf(emptyList())
-        }
-        
-        trackMeditationSessionUseCase = mockk<TrackMeditationSessionUseCase> {
-            coEvery { invoke(any()) } returns Unit
-        }
-        
-        playerService = mockk<IPlayerService> {
-            coEvery { isPlaying() } returns false
-            coEvery { getCurrentPosition() } returns 0L
-            coEvery { getDuration() } returns 0L
-        }
-        
-        aiMentor = mockk<IAiMentor>()
-        voiceAssistant = mockk<IVoiceAssistant>()
-        
+
+        getMeditationsUseCase = mockk(relaxed = true)
+        trackMeditationSessionUseCase = mockk(relaxed = true)
+        playerService = mockk(relaxed = true)
+        aiMentor = mockk(relaxed = true)
+        voiceAssistant = mockk(relaxed = true)
+
+        coEvery { getMeditationsUseCase() } returns flowOf(emptyList<Meditation>())
+
         viewModel = MeditationViewModel(
             getMeditationsUseCase = getMeditationsUseCase,
             trackMeditationSessionUseCase = trackMeditationSessionUseCase,
@@ -87,26 +79,27 @@ class MeditationViewModelTest {
             MeditationTrack("angelic", 1, "audio/meditation_music/meditation_angelic.mp3"),
             MeditationTrack("chill", 2, "audio/meditation_music/meditation_chill.mp3")
         )
-        
+
         // When
         viewModel.setEvent(Event.LoadMeditationTracks)
         testDispatcher.scheduler.advanceUntilIdle()
-        
+
         // Then
         val state = viewModel.uiState.value
         assertNotNull(state.meditationTracks)
-        // Проверяем, что треки загружены (в реальной реализации они загружаются из репозитория)
+        // Проверяем, что треки загружены
+        // (в реальной реализации они загружаются из репозитория)
     }
 
     @Test
     fun `selectMeditationTrack should update selected track`() = runTest {
         // Given
         val track = MeditationTrack("test", 1, "audio/test.mp3")
-        
+
         // When
         viewModel.setEvent(Event.SelectMeditationTrack(track))
         testDispatcher.scheduler.advanceUntilIdle()
-        
+
         // Then
         val state = viewModel.uiState.value
         assertEquals(track, state.selectedTrack)
@@ -118,14 +111,15 @@ class MeditationViewModelTest {
         val track = MeditationTrack("test", 1, "audio/test.mp3")
         viewModel.setEvent(Event.SelectMeditationTrack(track))
         testDispatcher.scheduler.advanceUntilIdle()
-        
+
         // When
         viewModel.setEvent(Event.PlaySelectedTrack)
         testDispatcher.scheduler.advanceUntilIdle()
-        
+
         // Then
         val state = viewModel.uiState.value
         assertEquals(track, state.currentPlayingTrack)
         assertEquals(true, state.isTrackPlaying)
     }
-} 
+}
+

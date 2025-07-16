@@ -1,4 +1,4 @@
-package com.example.spybrain.data.repository
+﻿package com.example.spybrain.data.repository
 
 import com.example.spybrain.domain.model.Profile
 import com.example.spybrain.domain.repository.ProfileRepository
@@ -11,6 +11,10 @@ import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Реализация репозитория профиля пользователя.
+ * Сохраняет и предоставляет профиль через DAO.
+ */
 @Singleton
 class ProfileRepositoryImpl @Inject constructor(
     private val dao: UserProfileDao
@@ -32,4 +36,4 @@ class ProfileRepositoryImpl @Inject constructor(
     override suspend fun saveProfile(profile: Profile) {
         dao.upsert(profile.toEntity())
     }
-} 
+}

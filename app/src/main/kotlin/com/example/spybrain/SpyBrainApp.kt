@@ -1,4 +1,4 @@
-package com.example.spybrain
+﻿package com.example.spybrain
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
@@ -9,10 +9,10 @@ import com.example.spybrain.BuildConfig
 class SpyBrainApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        
-        // Инициализация Timber для логирования
+
+        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Timber РґР»СЏ Р»РѕРіРёСЂРѕРІР°РЅРёСЏ
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
     }
-} 
+}

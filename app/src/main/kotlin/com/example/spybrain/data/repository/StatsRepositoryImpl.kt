@@ -1,4 +1,4 @@
-package com.example.spybrain.data.repository
+﻿package com.example.spybrain.data.repository
 
 import com.example.spybrain.domain.model.Session
 import com.example.spybrain.domain.model.Stats
@@ -17,12 +17,20 @@ import com.example.spybrain.data.model.toDomain
 import com.example.spybrain.data.model.toEntity
 import com.example.spybrain.data.model.BreathingSessionEntity
 
+/**
+ * Р РµР°Р»РёР·Р°С†РёСЏ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ СЃС‚Р°С‚РёСЃС‚РёРєРё.
+ * @constructor Р’РЅРµРґСЂСЏРµС‚ DAO РґР»СЏ РјРµРґРёС‚Р°С†РёР№ Рё РґС‹С…Р°РЅРёСЏ.
+ */
 @Singleton
 class StatsRepositoryImpl @Inject constructor(
     private val meditationDao: MeditationSessionDao,
     private val breathingDao: BreathingSessionDao
 ) : StatsRepository {
 
+    /**
+     * РџРѕР»СѓС‡РёС‚СЊ РѕР±С‰СѓСЋ СЃС‚Р°С‚РёСЃС‚РёРєСѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+     * @return Flow СЃ РѕР±СЉРµРєС‚РѕРј Stats.
+     */
     override fun getOverallStats(): Flow<Stats> =
         combine(
             meditationDao.getAllSessions(),
@@ -40,6 +48,10 @@ class StatsRepositoryImpl @Inject constructor(
             )
         }
 
+    /**
+     * РџРѕР»СѓС‡РёС‚СЊ РёСЃС‚РѕСЂРёСЋ СЃРµСЃСЃРёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+     * @return Flow СЃРѕ СЃРїРёСЃРєРѕРј СЃРµСЃСЃРёР№.
+     */
     override fun getSessionHistory(): Flow<List<Session>> =
         meditationDao.getAllSessions().map { list ->
             list.map { it.toDomain() }
@@ -52,9 +64,7 @@ class StatsRepositoryImpl @Inject constructor(
                     patternName = entity.patternName,
                     durationSeconds = entity.durationSeconds.toInt(),
                     completed = true,
-                    timestamp = Instant.ofEpochMilli(entity.timestamp)
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDateTime()
+                    timestamp = entity.timestamp
                 )
             }
         }
@@ -66,4 +76,4 @@ class StatsRepositoryImpl @Inject constructor(
     override suspend fun saveBreathingSession(session: BreathingSession) {
         breathingDao.insert(session.toEntity())
     }
-} 
+}

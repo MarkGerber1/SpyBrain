@@ -1,7 +1,13 @@
-package com.example.spybrain.domain.model
+﻿package com.example.spybrain.domain.model
 
+/**
+ * РџРµСЂРµС‡РёСЃР»РµРЅРёРµ С‚РµРј РѕС„РѕСЂРјР»РµРЅРёСЏ РїСЂРёР»РѕР¶РµРЅРёСЏ.
+ */
 enum class Theme {
-    SYSTEM,
+    /** РЎРІРµС‚Р»Р°СЏ С‚РµРјР°. */
     LIGHT,
-    DARK
-} 
+    /** РўС‘РјРЅР°СЏ С‚РµРјР°. */
+    DARK,
+    /** РЎРёСЃС‚РµРјРЅР°СЏ С‚РµРјР°. */
+    SYSTEM
+}

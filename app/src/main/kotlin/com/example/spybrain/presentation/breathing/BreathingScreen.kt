@@ -1,18 +1,37 @@
-package com.example.spybrain.presentation.breathing
-
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Slider
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,10 +57,30 @@ import androidx.compose.material.icons.filled.Stop
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.example.spybrain.util.VibrationUtil
 import androidx.compose.ui.res.stringResource
+import com.example.spybrain.R
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.spybrain.presentation.breathing.BreathingContract
+import com.example.spybrain.presentation.breathing.BreathingViewModel
+import androidx.compose.animation.animateContentSize
 
+/**
+ * Р­РєСЂР°РЅ РґС‹С…Р°С‚РµР»СЊРЅС‹С… РїСЂР°РєС‚РёРє.
+ * @param navController РљРѕРЅС‚СЂРѕР»Р»РµСЂ РЅР°РІРёРіР°С†РёРё.
+ * @param viewModel ViewModel РґР»СЏ СѓРїСЂР°РІР»РµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёРµРј СЌРєСЂР°РЅР°.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BreathingScreen(
+fun breathingScreen(
     navController: NavHostController,
     viewModel: BreathingViewModel = hiltViewModel()
 ) {
@@ -49,8 +88,8 @@ fun BreathingScreen(
     val context = LocalContext.current
     var activePattern by remember { mutableStateOf<BreathingPattern?>(null) }
     var selectedCategory by remember { mutableStateOf("all") }
-    
-    // Эффект для обработки уведомлений и ошибок
+
+    // Р­С„С„РµРєС‚ РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё СѓРІРµРґРѕРјР»РµРЅРёР№ Рё РѕС€РёР±РѕРє
     LaunchedEffect(key1 = viewModel) {
         viewModel.effect.collect { effect ->
             when (effect) {
@@ -59,11 +98,11 @@ fun BreathingScreen(
                     Toast.makeText(context, effect.error.toString(), Toast.LENGTH_SHORT).show()
                 }
                 is BreathingContract.Effect.Vibrate -> {
-                    // Вибрация при смене фазы дыхания
+                    // Р’РёР±СЂР°С†РёСЏ РїСЂРё СЃРјРµРЅРµ С„Р°Р·С‹ РґС‹С…Р°РЅРёСЏ
                     VibrationUtil.breathingVibration(context)
                 }
                 is BreathingContract.Effect.Speak -> {
-                    // Голосовая подсказка
+                    // Р“РѕР»РѕСЃРѕРІР°СЏ РїРѕРґСЃРєР°Р·РєР°
                     Toast.makeText(context, effect.text, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -73,14 +112,14 @@ fun BreathingScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Дыхательные практики") },
+                title = { Text("Р”С‹С…Р°С‚РµР»СЊРЅС‹Рµ РїСЂР°РєС‚РёРєРё") },
                 actions = {
-                    // Кнопка для создания собственного шаблона
-                    IconButton(onClick = { 
+                    // РљРЅРѕРїРєР° РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СЃРѕР±СЃС‚РІРµРЅРЅРѕРіРѕ С€Р°Р±Р»РѕРЅР°
+                    IconButton(onClick = {
                         VibrationUtil.shortVibration(context)
                         navController.navigate("pattern_builder")
                     }) {
-                        Icon(Icons.Default.Add, contentDescription = "Создать шаблон")
+                        Icon(Icons.Default.Add, contentDescription = "РЎРѕР·РґР°С‚СЊ С€Р°Р±Р»РѕРЅ")
                     }
                 }
             )
@@ -91,13 +130,13 @@ fun BreathingScreen(
                 CircularProgressIndicator()
             }
         } else if (state.currentPattern != null && state.currentPhase != BreathingContract.BreathingPhase.Idle) {
-            // Активная сессия дыхания
+            // РђРєС‚РёРІРЅР°СЏ СЃРµСЃСЃРёСЏ РґС‹С…Р°РЅРёСЏ
             ActiveBreathingSession(
                 state = state,
                 onStop = { viewModel.setEvent(BreathingContract.Event.StopPattern) }
             )
         } else {
-            // Список шаблонов с категориями
+            // РЎРїРёСЃРѕРє С€Р°Р±Р»РѕРЅРѕРІ СЃ РєР°С‚РµРіРѕСЂРёСЏРјРё
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -111,34 +150,34 @@ fun BreathingScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Нет доступных шаблонов дыхания",
+                            text = "РќРµС‚ РґРѕСЃС‚СѓРїРЅС‹С… С€Р°Р±Р»РѕРЅРѕРІ РґС‹С…Р°РЅРёСЏ",
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 } else {
-                    // Категории
-                    CategoryTabs(
+                    // РљР°С‚РµРіРѕСЂРёРё
+                    categoryTabs(
                         selectedCategory = selectedCategory,
                         onCategorySelected = { selectedCategory = it }
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
-                    // Фильтрованные паттерны
+
+                    // Р¤РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°С‚С‚РµСЂРЅС‹
                     val filteredPatterns = when (selectedCategory) {
-                        "relaxation" -> state.patterns.filter { 
-                            it.id in listOf("classic_meditation", "breathing_478", "sleep_breathing") 
+                        "relaxation" -> state.patterns.filter {
+                            it.id in listOf("classic_meditation", "breathing_478", "sleep_breathing")
                         }
-                        "energy" -> state.patterns.filter { 
-                            it.id in listOf("fire_breath", "energy_breathing", "lion_breath") 
+                        "energy" -> state.patterns.filter {
+                            it.id in listOf("fire_breath", "energy_breathing", "lion_breath")
                         }
-                        "focus" -> state.patterns.filter { 
-                            it.id in listOf("box_breathing", "focus_breathing", "creative_breathing") 
+                        "focus" -> state.patterns.filter {
+                            it.id in listOf("box_breathing", "focus_breathing", "creative_breathing")
                         }
                         else -> state.patterns
                     }
-                    
-                    PatternsList(
+
+                    breathingList(
                         patterns = filteredPatterns,
                         onPatternSelected = { pattern ->
                             VibrationUtil.achievementVibration(context)
@@ -152,27 +191,32 @@ fun BreathingScreen(
     }
 }
 
+/**
+ * Р’РєР»Р°РґРєРё РєР°С‚РµРіРѕСЂРёР№ РґС‹С…Р°С‚РµР»СЊРЅС‹С… РїР°С‚С‚РµСЂРЅРѕРІ.
+ * @param selectedCategory Р’С‹Р±СЂР°РЅРЅР°СЏ РєР°С‚РµРіРѕСЂРёСЏ.
+ * @param onCategorySelected РћР±СЂР°Р±РѕС‚С‡РёРє РІС‹Р±РѕСЂР° РєР°С‚РµРіРѕСЂРёРё.
+ */
 @Composable
-fun CategoryTabs(
+fun categoryTabs(
     selectedCategory: String,
     onCategorySelected: (String) -> Unit
 ) {
     val context = LocalContext.current
     val categories = listOf(
-        "all" to "Все",
-        "relaxation" to "Расслабление",
-        "energy" to "Энергия",
-        "focus" to "Концентрация"
+        "all" to "Р’СЃРµ",
+        "relaxation" to "Р Р°СЃСЃР»Р°Р±Р»РµРЅРёРµ",
+        "energy" to "Р­РЅРµСЂРіРёСЏ",
+        "focus" to "РљРѕРЅС†РµРЅС‚СЂР°С†РёСЏ"
     )
-    
+
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(categories) { (id, name) ->
             FilterChip(
-                onClick = { 
+                onClick = {
                     VibrationUtil.shortVibration(context)
-                    onCategorySelected(id) 
+                    onCategorySelected(id)
                 },
                 label = { Text(name) },
                 selected = selectedCategory == id,
@@ -182,8 +226,13 @@ fun CategoryTabs(
     }
 }
 
+/**
+ * РЎРїРёСЃРѕРє РґС‹С…Р°С‚РµР»СЊРЅС‹С… РїР°С‚С‚РµСЂРЅРѕРІ.
+ * @param patterns РЎРїРёСЃРѕРє РїР°С‚С‚РµСЂРЅРѕРІ.
+ * @param onPatternSelected РћР±СЂР°Р±РѕС‚С‡РёРє РІС‹Р±РѕСЂР° РїР°С‚С‚РµСЂРЅР°.
+ */
 @Composable
-fun PatternsList(
+fun breathingList(
     patterns: List<BreathingPattern>,
     onPatternSelected: (BreathingPattern) -> Unit
 ) {
@@ -191,13 +240,18 @@ fun PatternsList(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(patterns) { pattern ->
-            PatternCard(pattern = pattern, onClick = { onPatternSelected(pattern) })
+            breathingItem(pattern = pattern, onClick = { onPatternSelected(pattern) })
         }
     }
 }
 
+/**
+ * РљР°СЂС‚РѕС‡РєР° РґС‹С…Р°С‚РµР»СЊРЅРѕРіРѕ РїР°С‚С‚РµСЂРЅР°.
+ * @param pattern РџР°С‚С‚РµСЂРЅ РґС‹С…Р°РЅРёСЏ.
+ * @param onClick Callback РїСЂРё РЅР°Р¶Р°С‚РёРё.
+ */
 @Composable
-fun PatternCard(
+fun breathingItem(
     pattern: BreathingPattern,
     onClick: () -> Unit
 ) {
@@ -222,32 +276,36 @@ fun PatternCard(
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
-            
-            // Визуализация схемы дыхания
-            PatternPreview(pattern = pattern)
-            
+
+            // Р’РёР·СѓР°Р»РёР·Р°С†РёСЏ СЃС…РµРјС‹ РґС‹С…Р°РЅРёСЏ
+            breathingDetails(pattern = pattern)
+
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Вдох: ${pattern.inhaleSeconds}с • Задержка: ${pattern.holdAfterInhaleSeconds}с • " +
-                      "Выдох: ${pattern.exhaleSeconds}с • Задержка: ${pattern.holdAfterExhaleSeconds}с",
+                text = "Р’РґРѕС…: ${pattern.inhaleSeconds}СЃ вЂў Р—Р°РґРµСЂР¶РєР°: ${pattern.holdAfterInhaleSeconds}СЃ вЂў " +
+                      "Р’С‹РґРѕС…: ${pattern.exhaleSeconds}СЃ вЂў Р—Р°РґРµСЂР¶РєР°: ${pattern.holdAfterExhaleSeconds}СЃ",
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "Циклов: ${pattern.totalCycles}",
+                text = "Р¦РёРєР»РѕРІ: ${pattern.totalCycles}",
                 style = MaterialTheme.typography.bodySmall
             )
         }
     }
 }
 
+/**
+ * Р’РёР·СѓР°Р»РёР·Р°С†РёСЏ СЃС…РµРјС‹ РґС‹С…Р°С‚РµР»СЊРЅРѕРіРѕ РїР°С‚С‚РµСЂРЅР°.
+ * @param pattern РџР°С‚С‚РµСЂРЅ РґС‹С…Р°РЅРёСЏ.
+ */
 @Composable
-fun PatternPreview(pattern: BreathingPattern) {
-    val totalDuration = pattern.inhaleSeconds + pattern.holdAfterInhaleSeconds + 
+fun breathingDetails(pattern: BreathingPattern) {
+    val totalDuration = pattern.inhaleSeconds + pattern.holdAfterInhaleSeconds +
                          pattern.exhaleSeconds + pattern.holdAfterExhaleSeconds
-    
-    // Проверяем, что общая длительность больше 0, иначе используем fallback
+
+    // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РѕР±С‰Р°СЏ РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ Р±РѕР»СЊС€Рµ 0, РёРЅР°С‡Рµ РёСЃРїРѕР»СЊР·СѓРµРј fallback
     val safeTotalDuration = if (totalDuration > 0) totalDuration else 1
-    
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -289,6 +347,11 @@ fun PatternPreview(pattern: BreathingPattern) {
     }
 }
 
+/**
+ * РђРєС‚РёРІРЅР°СЏ СЃРµСЃСЃРёСЏ РґС‹С…Р°РЅРёСЏ.
+ * @param state РЎРѕСЃС‚РѕСЏРЅРёРµ СЌРєСЂР°РЅР° РґС‹С…Р°РЅРёСЏ.
+ * @param onStop Callback РґР»СЏ РѕСЃС‚Р°РЅРѕРІРєРё.
+ */
 @Composable
 fun ActiveBreathingSession(
     state: BreathingContract.State,
@@ -296,7 +359,7 @@ fun ActiveBreathingSession(
 ) {
     val pattern = state.currentPattern ?: return
     val progress = state.cycleProgress
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -304,7 +367,7 @@ fun ActiveBreathingSession(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // Верхняя часть с информацией о текущем шаблоне
+        // Р’РµСЂС…РЅСЏСЏ С‡Р°СЃС‚СЊ СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ С‚РµРєСѓС‰РµРј С€Р°Р±Р»РѕРЅРµ
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -325,14 +388,14 @@ fun ActiveBreathingSession(
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
-            
+
             Text(
-                text = "Цикл ${pattern.totalCycles - state.remainingCycles + 1} из ${pattern.totalCycles}",
+                text = "Р¦РёРєР» ${pattern.totalCycles - state.remainingCycles + 1} РёР· ${pattern.totalCycles}",
                 style = MaterialTheme.typography.bodyMedium
             )
         }
-        
-        // Анимация дыхания
+
+        // РђРЅРёРјР°С†РёСЏ РґС‹С…Р°РЅРёСЏ
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
@@ -342,8 +405,8 @@ fun ActiveBreathingSession(
                 progress = progress
             )
         }
-        
-        // Кнопки управления
+
+        // РљРЅРѕРїРєРё СѓРїСЂР°РІР»РµРЅРёСЏ
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -354,14 +417,19 @@ fun ActiveBreathingSession(
                 onClick = onStop,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Icon(Icons.Default.Stop, contentDescription = "Остановить")
+                Icon(Icons.Default.Stop, contentDescription = "РћСЃС‚Р°РЅРѕРІРёС‚СЊ")
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Остановить")
+                Text("РћСЃС‚Р°РЅРѕРІРёС‚СЊ")
             }
         }
     }
 }
 
+/**
+ * РђРЅРёРјРёСЂРѕРІР°РЅРЅС‹Р№ РєСЂСѓРі РґС‹С…Р°С‚РµР»СЊРЅРѕРіРѕ РїР°С‚С‚РµСЂРЅР°.
+ * @param phase Р¤Р°Р·Р° РґС‹С…Р°РЅРёСЏ.
+ * @param progress РџСЂРѕРіСЂРµСЃСЃ Р°РЅРёРјР°С†РёРё.
+ */
 @Composable
 fun AnimatedBreathCircle(
     phase: BreathingContract.BreathingPhase,
@@ -378,7 +446,7 @@ fun AnimatedBreathCircle(
         animationSpec = tween(300),
         label = "size"
     )
-    
+
     val color = when (phase) {
         BreathingContract.BreathingPhase.Inhale -> Color(0xFF81D4FA)
         BreathingContract.BreathingPhase.HoldAfterInhale -> Color(0xFF64B5F6)
@@ -386,12 +454,12 @@ fun AnimatedBreathCircle(
         BreathingContract.BreathingPhase.HoldAfterExhale -> Color(0xFF2196F3)
         BreathingContract.BreathingPhase.Idle -> Color(0xFF1976D2)
     }
-    
+
     Box(
         modifier = Modifier.size(300.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Фоновый круг
+        // Р¤РѕРЅРѕРІС‹Р№ РєСЂСѓРі
         Canvas(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -399,20 +467,20 @@ fun AnimatedBreathCircle(
             val centerY = size.height / 2
             val maxSize = minOf(size.width, size.height)
             val radius = (maxSize / 2 * 0.9).toFloat()
-            
-            // Внешний круг (контур)
+
+            // Р’РЅРµС€РЅРёР№ РєСЂСѓРі (РєРѕРЅС‚СѓСЂ)
             drawCircle(
                 color = color.copy(alpha = 0.3f),
                 radius = radius,
                 center = Offset(x = centerX, y = centerY),
                 style = Stroke(width = 8.dp.toPx())
             )
-            
-            // Прогресс
+
+            // РџСЂРѕРіСЂРµСЃСЃ
             val left = centerX - radius
             val top = centerY - radius
             val arcSize = radius * 2
-            
+
             drawArc(
                 color = color,
                 startAngle = -90f,
@@ -423,8 +491,8 @@ fun AnimatedBreathCircle(
                 style = Stroke(width = 8.dp.toPx(), cap = StrokeCap.Round)
             )
         }
-        
-        // Внутренний анимированный круг
+
+        // Р’РЅСѓС‚СЂРµРЅРЅРёР№ Р°РЅРёРјРёСЂРѕРІР°РЅРЅС‹Р№ РєСЂСѓРі
         Box(
             modifier = Modifier
                 .fillMaxSize(sizeMultiplier)
@@ -445,4 +513,4 @@ fun AnimatedBreathCircle(
             )
         }
     }
-} 
+}

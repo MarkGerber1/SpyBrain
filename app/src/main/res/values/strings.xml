@@ -317,6 +317,7 @@
     <string name="greeting_morning">Доброе утро</string>
     <string name="greeting_afternoon">Добрый день</string>
     <string name="greeting_evening">Добрый вечер</string>
+    <string name="greeting_day">Добрый день</string>
     <string name="greeting_night">Доброй ночи</string>
 
     <!-- Stats Messages -->
@@ -464,7 +465,6 @@
     <string name="hold_after_inhale">Задержка после вдоха</string>
     <string name="hold_after_exhale">Задержка после выдоха</string>
     <string name="cycle_of">Цикл %1$d из %2$d</string>
-    <string name="stop">Остановить</string>
     <string name="save_changes">Сохранить изменения</string>
     <string name="cancel">Отмена</string>
     <string name="breathing_params">Параметры дыхания</string>
@@ -473,10 +473,6 @@
     <string name="pause_seconds">Пауза (сек)</string>
     <string name="cycles_count">Количество циклов</string>
     <string name="saved_patterns">Сохранённые шаблоны</string>
-    <string name="greeting_night">Доброй ночи</string>
-    <string name="greeting_morning">Доброе утро</string>
-    <string name="greeting_day">Добрый день</string>
-    <string name="greeting_evening">Добрый вечер</string>
     <string name="motivation_1">Дыхание — твой путь к гармонии!</string>
     <string name="motivation_2">Медитация — ключ к внутреннему спокойствию</string>
     <string name="motivation_3">Каждый вдох — это новая возможность</string>
@@ -511,5 +507,8 @@
     <string name="toast_track_not_selected">Трек не выбран</string>
     <string name="toast_ambient_on">Фоновая музыка включена</string>
     <string name="toast_ambient_error">Ошибка запуска музыки: %1$s</string>
+
+    <string name="meditation">Медитация</string>
+    <string name="profile">Профиль</string>
 
 </resources> 

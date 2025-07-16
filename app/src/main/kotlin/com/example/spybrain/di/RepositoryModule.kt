@@ -1,4 +1,4 @@
-package com.example.spybrain.di
+﻿package com.example.spybrain.di
 
 import com.example.spybrain.data.repository.BreathingRepositoryImpl
 import com.example.spybrain.data.repository.MeditationRepositoryImpl
@@ -27,49 +27,78 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import dagger.hilt.android.qualifiers.ApplicationContext
 
-// NOTE: Этот модуль соответствует Clean Architecture — внедряет реализации через интерфейсы domain-слоя.
+/**
+ * DI-РјРѕРґСѓР»СЊ РґР»СЏ Р±РёРЅРґРёРЅРіР° СЂРµРїРѕР·РёС‚РѕСЂРёРµРІ.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryBindsModule {
 
+    /**
+     * Р‘РёРЅРґРёРЅРі SettingsRepository.
+     */
     @Binds
     @Singleton
     abstract fun bindSettingsRepository(impl: SettingsRepositoryImpl): SettingsRepository
 
+    /**
+     * Р‘РёРЅРґРёРЅРі ProfileRepository.
+     */
     @Binds
     @Singleton
     abstract fun bindProfileRepository(impl: ProfileRepositoryImpl): ProfileRepository
 
+    /**
+     * Р‘РёРЅРґРёРЅРі MeditationRepository.
+     */
     @Binds
     @Singleton
     abstract fun bindMeditationRepository(impl: MeditationRepositoryImpl): MeditationRepository
 
+    /**
+     * Р‘РёРЅРґРёРЅРі BreathingRepository.
+     */
     @Binds
     @Singleton
     abstract fun bindBreathingRepository(impl: BreathingRepositoryImpl): BreathingRepository
 
+    /**
+     * Р‘РёРЅРґРёРЅРі StatsRepository.
+     */
     @Binds
     @Singleton
     abstract fun bindStatsRepository(impl: StatsRepositoryImpl): StatsRepository
 
+    /**
+     * Р‘РёРЅРґРёРЅРі CustomBreathingPatternRepository.
+     */
     @Binds
     @Singleton
     abstract fun bindCustomBreathingPatternRepository(
         impl: CustomBreathingPatternRepositoryImpl
     ): CustomBreathingPatternRepository
 
+    /**
+     * Р‘РёРЅРґРёРЅРі MeditationProgramRepository.
+     */
     @Binds
     @Singleton
     abstract fun bindMeditationProgramRepository(
         impl: MeditationProgramRepositoryImpl
     ): com.example.spybrain.domain.repository.MeditationProgramRepository
 
+    /**
+     * Р‘РёРЅРґРёРЅРі AchievementsRepository.
+     */
     @Binds
     @Singleton
     abstract fun bindAchievementsRepository(
         impl: AchievementsRepositoryImpl
     ): AchievementsRepository
 
+    /**
+     * Р‘РёРЅРґРёРЅРі ReminderRepository.
+     */
     @Binds
     @Singleton
     abstract fun bindReminderRepository(
@@ -77,16 +106,26 @@ abstract class RepositoryBindsModule {
     ): ReminderRepository
 }
 
+/**
+ * DI-РјРѕРґСѓР»СЊ РґР»СЏ РїСЂРµРґРѕСЃС‚Р°РІР»РµРЅРёСЏ Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№ СЂРµРїРѕР·РёС‚РѕСЂРёРµРІ.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryProvidesModule {
 
+    /**
+     * РџСЂРѕРІР°Р№РґРµСЂ BreathingPatternRepository.
+     */
     @Provides
     @Singleton
     fun provideBreathingPatternRepository(@ApplicationContext context: android.content.Context): BreathingPatternRepository {
         return BreathingPatternRepository(context)
     }
 
+    /**
+     * РџСЂРµРґРѕСЃС‚Р°РІР»СЏРµС‚ СЂРµР°Р»РёР·Р°С†РёСЋ HeartRateRepository.
+     * @return Р­РєР·РµРјРїР»СЏСЂ HeartRateRepository.
+     */
     @Provides
     @Singleton
     fun provideHeartRateRepository(
@@ -95,4 +134,4 @@ object RepositoryProvidesModule {
     ): HeartRateRepository {
         return HeartRateRepository(heartRateDao, settingsDataStore)
     }
-} 
+}

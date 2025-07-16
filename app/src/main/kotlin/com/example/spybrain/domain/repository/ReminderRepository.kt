@@ -1,4 +1,4 @@
-package com.example.spybrain.domain.repository
+﻿package com.example.spybrain.domain.repository
 
 import com.example.spybrain.domain.model.Reminder
 import com.example.spybrain.domain.model.Schedule
@@ -6,69 +6,70 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 /**
- * Интерфейс репозитория для работы с напоминаниями и расписаниями
+ * РРЅС‚РµСЂС„РµР№СЃ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ РЅР°РїРѕРјРёРЅР°РЅРёР№.
  */
 interface ReminderRepository {
-    
+
     /**
-     * Получает список всех напоминаний
+     * РџРѕР»СѓС‡РёС‚СЊ СЃРїРёСЃРѕРє РЅР°РїРѕРјРёРЅР°РЅРёР№.
+     * @return РЎРїРёСЃРѕРє РЅР°РїРѕРјРёРЅР°РЅРёР№.
      */
     fun getAllReminders(): Flow<List<Reminder>>
-    
+
     /**
-     * Получает список всех расписаний
+     * РџРѕР»СѓС‡Р°РµС‚ СЃРїРёСЃРѕРє РІСЃРµС… СЂР°СЃРїРёСЃР°РЅРёР№.
      */
     fun getAllSchedules(): Flow<List<Schedule>>
-    
+
     /**
-     * Добавляет новое напоминание
-     * @param reminder Напоминание для добавления
+     * Р”РѕР±Р°РІРёС‚СЊ РЅР°РїРѕРјРёРЅР°РЅРёРµ.
+     * @param reminder РќРѕРІРѕРµ РЅР°РїРѕРјРёРЅР°РЅРёРµ.
      */
     suspend fun addReminder(reminder: Reminder)
-    
+
     /**
-     * Удаляет напоминание по ID
-     * @param id ID напоминания
+     * РЈРґР°Р»РёС‚СЊ РЅР°РїРѕРјРёРЅР°РЅРёРµ РїРѕ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+     * @param id РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РЅР°РїРѕРјРёРЅР°РЅРёСЏ.
      */
     suspend fun deleteReminder(id: String)
-    
+
     /**
-     * Получает напоминание по ID
-     * @param id ID напоминания
-     * @return Напоминание или null, если не найдено
+     * РџРѕР»СѓС‡Р°РµС‚ РЅР°РїРѕРјРёРЅР°РЅРёРµ РїРѕ ID.
+     * @param id ID РЅР°РїРѕРјРёРЅР°РЅРёСЏ.
+     * @return РќР°РїРѕРјРёРЅР°РЅРёРµ РёР»Рё null, РµСЃР»Рё РЅРµ РЅР°Р№РґРµРЅРѕ.
      */
     suspend fun getReminderById(id: String): Reminder?
-    
+
     /**
-     * Включает или отключает напоминание
-     * @param id ID напоминания
-     * @param enabled Новое состояние
+     * Р’РєР»СЋС‡Р°РµС‚ РёР»Рё РѕС‚РєР»СЋС‡Р°РµС‚ РЅР°РїРѕРјРёРЅР°РЅРёРµ.
+     * @param id ID РЅР°РїРѕРјРёРЅР°РЅРёСЏ.
+     * @param enabled РќРѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ.
      */
     suspend fun setReminderEnabled(id: String, enabled: Boolean)
-    
+
     /**
-     * Добавляет новое расписание
-     * @param schedule Расписание для добавления
+     * Р”РѕР±Р°РІР»СЏРµС‚ РЅРѕРІРѕРµ СЂР°СЃРїРёСЃР°РЅРёРµ.
+     * @param schedule Р Р°СЃРїРёСЃР°РЅРёРµ РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ.
      */
     suspend fun addSchedule(schedule: Schedule)
-    
+
     /**
-     * Удаляет расписание по ID
-     * @param id ID расписания
+     * РЈРґР°Р»СЏРµС‚ СЂР°СЃРїРёСЃР°РЅРёРµ РїРѕ ID.
+     * @param id ID СЂР°СЃРїРёСЃР°РЅРёСЏ.
      */
     suspend fun deleteSchedule(id: String)
-    
+
     /**
-     * Получает расписание по ID
-     * @param id ID расписания
-     * @return Расписание или null, если не найдено
+     * РџРѕР»СѓС‡Р°РµС‚ СЂР°СЃРїРёСЃР°РЅРёРµ РїРѕ ID.
+     * @param id ID СЂР°СЃРїРёСЃР°РЅРёСЏ.
+     * @return Р Р°СЃРїРёСЃР°РЅРёРµ РёР»Рё null, РµСЃР»Рё РЅРµ РЅР°Р№РґРµРЅРѕ.
      */
     suspend fun getScheduleById(id: String): Schedule?
-    
+
     /**
-     * Включает или отключает расписание
-     * @param id ID расписания
-     * @param enabled Новое состояние
+     * Р’РєР»СЋС‡Р°РµС‚ РёР»Рё РѕС‚РєР»СЋС‡Р°РµС‚ СЂР°СЃРїРёСЃР°РЅРёРµ.
+     * @param id ID СЂР°СЃРїРёСЃР°РЅРёСЏ.
+     * @param enabled РќРѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ.
      */
     suspend fun setScheduleEnabled(id: String, enabled: Boolean)
-} 
+}

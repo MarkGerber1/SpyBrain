@@ -1,4 +1,4 @@
-package com.example.spybrain.presentation.theme
+﻿package com.example.spybrain.presentation.theme
 
 import android.app.Activity
 import android.os.Build
@@ -27,6 +27,11 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40
 )
 
+/**
+ * @param darkTheme РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚С‘РјРЅСѓСЋ С‚РµРјСѓ.
+ * @param dynamicColor РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРёРЅР°РјРёС‡РµСЃРєРёРµ С†РІРµС‚Р°.
+ * @param content РљРѕРЅС‚РµРЅС‚ Compose.
+ */
 @Composable
 fun SpyBrainTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -55,4 +60,4 @@ fun SpyBrainTheme(
         typography = Typography,
         content = content
     )
-} 
+}

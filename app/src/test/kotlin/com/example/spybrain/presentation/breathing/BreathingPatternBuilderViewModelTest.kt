@@ -1,4 +1,4 @@
-package com.example.spybrain.presentation.breathing
+﻿package com.example.spybrain.presentation.breathing
 
 import app.cash.turbine.test
 import com.example.spybrain.domain.model.CustomBreathingPattern
@@ -19,6 +19,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import android.content.Context
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BreathingPatternBuilderViewModelTest {
@@ -26,6 +27,7 @@ class BreathingPatternBuilderViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    private val context = mockk<Context>(relaxed = true)
     private val getUseCase = mockk<GetCustomBreathingPatternsUseCase>()
     private val addUseCase = mockk<AddCustomBreathingPatternUseCase>(relaxed = true)
     private val deleteUseCase = mockk<DeleteCustomBreathingPatternUseCase>(relaxed = true)
@@ -35,7 +37,7 @@ class BreathingPatternBuilderViewModelTest {
     @Before
     fun setUp() = runTest {
         every { getUseCase() } returns flowOf(emptyList())
-        viewModel = BreathingPatternBuilderViewModel(getUseCase, addUseCase, deleteUseCase)
+        viewModel = BreathingPatternBuilderViewModel(context, getUseCase, addUseCase, deleteUseCase)
     }
 
     @Test
@@ -58,7 +60,7 @@ class BreathingPatternBuilderViewModelTest {
             viewModel.setEvent(Contract.Event.SavePattern)
             val effect = awaitItem() as Contract.Effect.ShowError
             val customError = effect.error as UiError.Custom
-            assertEquals("Введите название шаблона", customError.message)
+            assertEquals("Р’РІРµРґРёС‚Рµ РЅР°Р·РІР°РЅРёРµ С€Р°Р±Р»РѕРЅР°", customError.message)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -88,4 +90,5 @@ class BreathingPatternBuilderViewModelTest {
         }
         coVerify(exactly = 1) { addUseCase(any()) }
     }
-} 
+}
+

@@ -1,4 +1,4 @@
-package com.example.spybrain.test.utils
+﻿package com.example.spybrain.test.utils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,14 +13,15 @@ import org.junit.runner.Description
 class MainDispatcherRule(
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
 ) : TestWatcher() {
-    
+
     override fun starting(description: Description) {
         super.starting(description)
         Dispatchers.setMain(testDispatcher)
     }
-    
+
     override fun finished(description: Description) {
         super.finished(description)
         Dispatchers.resetMain()
     }
-} 
+}
+

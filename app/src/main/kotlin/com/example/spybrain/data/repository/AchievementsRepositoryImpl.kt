@@ -1,4 +1,4 @@
-package com.example.spybrain.data.repository
+﻿package com.example.spybrain.data.repository
 
 import com.example.spybrain.data.model.AchievementEntity
 import com.example.spybrain.data.model.toDomain
@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Р РµР°Р»РёР·Р°С†РёСЏ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ РґРѕСЃС‚РёР¶РµРЅРёР№. РЎРѕС…СЂР°РЅСЏРµС‚ Рё РїСЂРµРґРѕСЃС‚Р°РІР»СЏРµС‚ РґРѕСЃС‚РёР¶РµРЅРёСЏ С‡РµСЂРµР· DAO.
+ */
 @Singleton
 class AchievementsRepositoryImpl @Inject constructor(
     private val dao: AchievementDao
@@ -21,52 +24,70 @@ class AchievementsRepositoryImpl @Inject constructor(
         AchievementEntity(
             id = "first_practice",
             title = "Первая практика",
-            description = "Завершить первую дыхательную или медитационную сессию"
+            description = "Завершить первую дыхательную или медитационную сессию",
+            isUnlocked = false,
+            unlockedAt = null
         ),
         AchievementEntity(
             id = "three_days",
             title = "3 дня подряд",
-            description = "Запуск сессий в 3 разных дня без пропуска"
+            description = "Запуск сессий в 3 разных дня без пропуска",
+            isUnlocked = false,
+            unlockedAt = null
         ),
         AchievementEntity(
             id = "ten_breath",
             title = "10 дыхательных сессий",
-            description = "Завершено ≥ 10 дыхательных практик"
+            description = "Завершено ≥ 10 дыхательных практик",
+            isUnlocked = false,
+            unlockedAt = null
         ),
         AchievementEntity(
             id = "five_meditations",
             title = "5 медитаций",
-            description = "Завершено ≥ 5 медитационных сессий"
+            description = "Завершено ≥ 5 медитационных сессий",
+            isUnlocked = false,
+            unlockedAt = null
         ),
         AchievementEntity(
             id = "personalization",
             title = "Персонализация",
-            description = "Включены индивидуальные настройки"
+            description = "Включены индивидуальные настройки",
+            isUnlocked = false,
+            unlockedAt = null
         ),
         AchievementEntity(
             id = "voice_command",
             title = "Голосовая команда",
-            description = "Пользователь впервые использовал голосовую команду"
+            description = "Пользователь впервые использовал голосовую команду",
+            isUnlocked = false,
+            unlockedAt = null
         )
     )
 
+    override fun getAllAchievements(): List<Achievement> {
+        // Dummy implementation
+        return defaultAchievements.map { it.toDomain() }
+    }
+
+    override fun checkAchievements(userId: String): List<Achievement> {
+        // Dummy implementation
+        return defaultAchievements.map { it.toDomain() }
+    }
+
     override fun getAchievements(): Flow<List<Achievement>> = flow {
-        // Предварительная инициализация списка достижений
         val existing = dao.getAll().first()
         if (existing.isEmpty()) {
             defaultAchievements.forEach { dao.insert(it) }
         } else {
-            // Добавляем пропущенные дефолтные достижения
             defaultAchievements.filter { def -> existing.none { it.id == def.id } }
                 .forEach { dao.insert(it) }
         }
-        // Возвращаем поток со списком доменных моделей
         dao.getAll().map { list -> list.map { it.toDomain() } }
             .collect { emit(it) }
     }
 
     override suspend fun unlockAchievement(id: String, unlockedAt: Long) {
-        // Обновляем достижение: помечаем как разблокированное
         val def = defaultAchievements.find { it.id == id }
         val entity = AchievementEntity(
             id = id,
@@ -77,4 +98,4 @@ class AchievementsRepositoryImpl @Inject constructor(
         )
         dao.insert(entity)
     }
-} 
+}

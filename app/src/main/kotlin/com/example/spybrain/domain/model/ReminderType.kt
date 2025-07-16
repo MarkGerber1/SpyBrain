@@ -1,5 +1,11 @@
-package com.example.spybrain.domain.model
+﻿package com.example.spybrain.domain.model
 
+/**
+ * РџРµСЂРµС‡РёСЃР»РµРЅРёРµ С‚РёРїРѕРІ РЅР°РїРѕРјРёРЅР°РЅРёР№.
+ */
 enum class ReminderType {
-    ONCE, RECURRING
-} 
+    /** РћРґРЅРѕРєСЂР°С‚РЅРѕРµ РЅР°РїРѕРјРёРЅР°РЅРёРµ. */
+    ONCE,
+    /** РџРѕРІС‚РѕСЂСЏСЋС‰РµРµСЃСЏ РЅР°РїРѕРјРёРЅР°РЅРёРµ. */
+    RECURRING
+}

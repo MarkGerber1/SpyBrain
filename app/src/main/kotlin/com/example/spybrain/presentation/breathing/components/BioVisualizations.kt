@@ -1,5 +1,12 @@
 package com.example.spybrain.presentation.breathing.components
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -10,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -22,6 +28,11 @@ import kotlinx.coroutines.delay
 import kotlin.random.Random
 import androidx.compose.runtime.mutableStateListOf
 
+/**
+ * РђРЅРёРјР°С†РёСЏ СЃРµСЂРґС†РµР±РёРµРЅРёСЏ РґР»СЏ РІРёР·СѓР°Р»РёР·Р°С†РёРё BPM.
+ * @param bpm РљРѕР»РёС‡РµСЃС‚РІРѕ СѓРґР°СЂРѕРІ РІ РјРёРЅСѓС‚Сѓ.
+ * @param size Р Р°Р·РјРµСЂ РёРєРѕРЅРєРё.
+ */
 @Composable
 fun HeartBeatAnimation(
     bpm: Int,
@@ -53,6 +64,11 @@ fun HeartBeatAnimation(
     }
 }
 
+/**
+ * Р’РёР·СѓР°Р»РёР·Р°С†РёСЏ Р­РљР“-РіСЂР°С„РёРєР°.
+ * @param modifier РњРѕРґРёС„РёРєР°С‚РѕСЂ.
+ * @param pointCount РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РіСЂР°С„РёРєР°.
+ */
 @Composable
 fun EcgGraph(
     modifier: Modifier = Modifier,
@@ -80,4 +96,12 @@ fun EcgGraph(
             }
         }
     }
-} 
+}
+
+fun bioVisualization(/* параметры */) {
+    // ... existing code ...
+}
+
+fun bioChart(/* параметры */) {
+    // ... existing code ...
+}

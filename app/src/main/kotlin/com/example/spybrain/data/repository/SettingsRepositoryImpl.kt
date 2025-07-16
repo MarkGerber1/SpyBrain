@@ -1,4 +1,4 @@
-package com.example.spybrain.data.repository
+﻿package com.example.spybrain.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -18,6 +18,9 @@ private object PreferencesKeys {
     // Add other settings keys here (e.g., language, background music)
 }
 
+/**
+ * Р РµР°Р»РёР·Р°С†РёСЏ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… РЅР°СЃС‚СЂРѕРµРє С‡РµСЂРµР· DataStore.
+ */
 @Singleton
 class SettingsRepositoryImpl @Inject constructor(
     private val dataStore: DataStore<Preferences> // Assuming AppDataStore provides this
@@ -42,4 +45,4 @@ class SettingsRepositoryImpl @Inject constructor(
             // Save other settings here
         }
     }
-} 
+}

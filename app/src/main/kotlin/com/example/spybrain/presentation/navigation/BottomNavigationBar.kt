@@ -1,4 +1,4 @@
-package com.example.spybrain.presentation.navigation
+﻿package com.example.spybrain.presentation.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
@@ -23,9 +23,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.spybrain.R
 
+/**
+ * @param navController РљРѕРЅС‚СЂРѕР»Р»РµСЂ РЅР°РІРёРіР°С†РёРё.
+ */
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    // Создаем фиксированный список элементов навигации для гарантированного отображения
+    // Создаём фиксированный список элементов навигации для гарантированного отображения
     val items = listOf(
         Triple(Screen.Meditation.route, Icons.Default.SelfImprovement, R.string.bottom_nav_meditation),
         Triple(Screen.Breathing.route, Icons.Default.Air, R.string.bottom_nav_breathing),
@@ -33,20 +36,20 @@ fun BottomNavigationBar(navController: NavController) {
         Triple(Screen.HeartRate.route, Icons.Default.Favorite, R.string.bottom_nav_heart_rate),
         Triple(Screen.Settings.route, Icons.Default.Settings, R.string.bottom_nav_settings)
     )
-    
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    
+
     NavigationBar {
         items.forEach { (route, icon, labelResId) ->
             val selected = currentDestination?.hierarchy?.any { it.route == route } == true
             NavigationBarItem(
-                icon = { 
+                icon = {
                     Icon(
                         imageVector = icon,
                         contentDescription = stringResource(labelResId),
                         modifier = Modifier.size(24.dp)
-                    ) 
+                    )
                 },
                 label = { Text(stringResource(labelResId)) },
                 selected = selected,
@@ -68,4 +71,4 @@ fun BottomNavigationBar(navController: NavController) {
             )
         }
     }
-} 
+}

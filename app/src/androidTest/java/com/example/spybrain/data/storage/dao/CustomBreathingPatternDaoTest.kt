@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.spybrain.data.storage.AppDatabase
 import com.example.spybrain.data.model.CustomBreathingPatternEntity
+import com.example.spybrain.data.storage.AppDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -69,4 +69,4 @@ class CustomBreathingPatternDaoTest {
         val list = dao.getAllPatterns().first()
         Assert.assertTrue(list.isEmpty())
     }
-} 
+}

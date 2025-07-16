@@ -1,4 +1,4 @@
-package com.example.spybrain.presentation.meditation
+﻿package com.example.spybrain.presentation.meditation
 
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.domain.model.MeditationProgram
@@ -12,17 +12,29 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.spybrain.service.AiMentorService
 import javax.inject.Inject
-import com.example.spybrain.domain.error.ErrorHandler // FIXME билд-фикс 09.05.2025
+import com.example.spybrain.domain.error.ErrorHandler // FIXME Р±РёР»Рґ-С„РёРєСЃ 09.05.2025
 import com.example.spybrain.domain.service.IPlayerService
 import com.example.spybrain.domain.service.IAiMentor
 import com.example.spybrain.util.UiError
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import com.example.spybrain.presentation.meditation.MeditationLibraryContract
+import com.example.spybrain.presentation.base.UiEvent
+import com.example.spybrain.presentation.base.UiState
+import com.example.spybrain.presentation.base.UiEffect
 
 @HiltViewModel
 class MeditationLibraryViewModel @Inject constructor(
     private val getProgramsUseCase: GetMeditationProgramsUseCase,
-    private val playerService: IPlayerService, // TODO реализовано: внедрение через абстракцию
-    private val aiMentor: IAiMentor // TODO реализовано: внедрение через абстракцию
-) : BaseViewModel<MeditationLibraryContract.Event, MeditationLibraryContract.State, MeditationLibraryContract.Effect>() { // TODO: Добавить все необходимые юнит-тесты для ViewModel
+    private val playerService: IPlayerService, // TODO СЂРµР°Р»РёР·РѕРІР°РЅРѕ: РІРЅРµРґСЂРµРЅРёРµ С‡РµСЂРµР· Р°Р±СЃС‚СЂР°РєС†РёСЋ
+    private val aiMentor: IAiMentor // TODO СЂРµР°Р»РёР·РѕРІР°РЅРѕ: РІРЅРµРґСЂРµРЅРёРµ С‡РµСЂРµР· Р°Р±СЃС‚СЂР°РєС†РёСЋ
+) : BaseViewModel<
+    MeditationLibraryContract.Event,
+    MeditationLibraryContract.State,
+    MeditationLibraryContract.Effect
+>() { // TODO: Добавить все необходимые юнит-тесты д
 
     init {
         setEvent(MeditationLibraryContract.Event.LoadPrograms)
@@ -57,4 +69,4 @@ class MeditationLibraryViewModel @Inject constructor(
         playerService.release()
         super.onCleared()
     }
-} 
+}

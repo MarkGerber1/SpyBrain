@@ -1,4 +1,4 @@
-package com.example.spybrain.data.repository
+﻿package com.example.spybrain.data.repository
 
 import com.example.spybrain.domain.model.BreathingPattern
 import com.example.spybrain.domain.model.Session
@@ -15,7 +15,12 @@ import com.example.spybrain.data.storage.dao.BreathingSessionDao
 import com.example.spybrain.data.storage.dao.CustomBreathingPatternDao
 import com.example.spybrain.data.model.CustomBreathingPatternEntity
 import com.example.spybrain.domain.model.CustomBreathingPattern
+import com.example.spybrain.data.model.BreathingSessionEntity
 
+/**
+ * Р РµР°Р»РёР·Р°С†РёСЏ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ РґС‹С…Р°С‚РµР»СЊРЅС‹С… РїСЂР°РєС‚РёРє.
+ * @constructor Р’РЅРµРґСЂСЏРµС‚ DAO РґР»СЏ СЃРµСЃСЃРёР№ РґС‹С…Р°РЅРёСЏ Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… РїР°С‚С‚РµСЂРЅРѕРІ.
+ */
 @Singleton
 class BreathingRepositoryImpl @Inject constructor(
     private val dao: BreathingSessionDao,
@@ -23,7 +28,7 @@ class BreathingRepositoryImpl @Inject constructor(
 ) : BreathingRepository {
 
     override fun getBreathingPatterns(): Flow<List<BreathingPattern>> {
-        // Стандартные шаблоны
+        // РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ С€Р°Р±Р»РѕРЅС‹
         val dummyPatterns = listOf(
             BreathingPattern(
                 id = "br1",
@@ -59,12 +64,12 @@ class BreathingRepositoryImpl @Inject constructor(
                 totalCycles = 6
             )
         )
-        // Поток пользовательских шаблонов, мапим на BreathingPattern
+        // РџРѕС‚РѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… С€Р°Р±Р»РѕРЅРѕРІ, РјР°РїРёРј РЅР° BreathingPattern
         val customFlow = customDao.getAllPatterns().map { entities ->
             entities.map { entity ->
                 val cp = entity.toDomain()
                 BreathingPattern(
-                    id = cp.id,
+                    id = cp.id.toString(),
                     name = cp.name,
                     voicePrompt = cp.name,
                     description = cp.description.orEmpty(),
@@ -76,7 +81,7 @@ class BreathingRepositoryImpl @Inject constructor(
                 )
             }
         }
-        // Объединяем стандартные и пользовательские шаблоны
+        // РћР±СЉРµРґРёРЅСЏРµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ С€Р°Р±Р»РѕРЅС‹
         return flowOf(dummyPatterns).combine(customFlow) { default, custom -> default + custom }
     }
 
@@ -86,4 +91,4 @@ class BreathingRepositoryImpl @Inject constructor(
     override suspend fun trackBreathingSession(session: Session) {
         dao.insert(session.toBreathingEntity())
     }
-} 
+}

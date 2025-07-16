@@ -1,4 +1,4 @@
-package com.example.spybrain.service
+﻿package com.example.spybrain.service
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -20,7 +20,7 @@ import com.example.spybrain.domain.service.IPlayerService
 @AndroidEntryPoint
 class MeditationPlayerService : MediaSessionService(), IPlayerService {
 
-    // Инициализируем ExoPlayer как nullable и инициализируем в onCreate
+    // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј ExoPlayer РєР°Рє nullable Рё РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РІ onCreate
     private var exoPlayer: ExoPlayer? = null
 
     private lateinit var mediaSession: MediaSession
@@ -33,34 +33,34 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
 
     override fun onCreate() {
         super.onCreate()
-        
-        // Инициализируем ExoPlayer в onCreate, когда контекст точно доступен
+
+        // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј ExoPlayer РІ onCreate, РєРѕРіРґР° РєРѕРЅС‚РµРєСЃС‚ С‚РѕС‡РЅРѕ РґРѕСЃС‚СѓРїРµРЅ
         exoPlayer = ExoPlayer.Builder(applicationContext).build().also { player ->
             player.repeatMode = Player.REPEAT_MODE_OFF
             player.playWhenReady = false
             player.prepare()
         }
-        
-        // Создаем канал для уведомлений
+
+        // РЎРѕР·РґР°РµРј РєР°РЅР°Р» РґР»СЏ СѓРІРµРґРѕРјР»РµРЅРёР№
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Воспроизведение медитации",
+                "Р’РѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ РјРµРґРёС‚Р°С†РёРё",
                 NotificationManager.IMPORTANCE_LOW
             )
             getSystemService(NotificationManager::class.java)
                 .createNotificationChannel(channel)
         }
-        
-        // Инициализируем MediaSession
+
+        // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј MediaSession
         mediaSession = MediaSession.Builder(this, exoPlayer!!).build()
 
-        // Настраиваем уведомление
+        // РќР°СЃС‚СЂР°РёРІР°РµРј СѓРІРµРґРѕРјР»РµРЅРёРµ
         notificationManager = PlayerNotificationManager.Builder(
             this, NOTIF_ID, CHANNEL_ID
         ).setMediaDescriptionAdapter(object : PlayerNotificationManager.MediaDescriptionAdapter {
             override fun getCurrentContentTitle(player: Player): CharSequence =
-                player.currentMediaItem?.mediaMetadata?.title ?: "Медитация"
+                player.currentMediaItem?.mediaMetadata?.title ?: "РњРµРґРёС‚Р°С†РёСЏ"
 
             override fun createCurrentContentIntent(player: Player) = null
 
@@ -100,32 +100,32 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
     override fun play(url: String) {
         try {
             val player = exoPlayer ?: return
-            
-            // Проверяем URL на валидность
+
+            // РџСЂРѕРІРµСЂСЏРµРј URL РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ
             if (url.isEmpty() || url.isBlank()) {
-                throw IllegalArgumentException("URL пуст")
+                throw IllegalArgumentException("URL РїСѓСЃС‚")
             }
-            
-            // Обрабатываем различные форматы URL
+
+            // РћР±СЂР°Р±Р°С‚С‹РІР°РµРј СЂР°Р·Р»РёС‡РЅС‹Рµ С„РѕСЂРјР°С‚С‹ URL
             val finalUrl = when {
                 url.contains("example.com") -> {
-                    // Заменяем example.com на локальный ресурс
+                    // Р—Р°РјРµРЅСЏРµРј example.com РЅР° Р»РѕРєР°Р»СЊРЅС‹Р№ СЂРµСЃСѓСЂСЃ
                     "asset:///audio/mixkit-valley-sunset-127.mp3"
                 }
                 url.startsWith("file:///android_asset/") -> {
-                    // Конвертируем в формат asset:/// для ExoPlayer
+                    // РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј РІ С„РѕСЂРјР°С‚ asset:/// РґР»СЏ ExoPlayer
                     url.replace("file:///android_asset/", "asset:///")
                 }
                 url.startsWith("asset:///") -> {
-                    // Уже правильный формат
+                    // РЈР¶Рµ РїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚
                     url
                 }
                 url.startsWith("http://") || url.startsWith("https://") -> {
-                    // Внешние URL оставляем как есть
+                    // Р’РЅРµС€РЅРёРµ URL РѕСЃС‚Р°РІР»СЏРµРј РєР°Рє РµСЃС‚СЊ
                     url
                 }
                 else -> {
-                    // Предполагаем, что это имя файла в папке audio
+                    // РџСЂРµРґРїРѕР»Р°РіР°РµРј, С‡С‚Рѕ СЌС‚Рѕ РёРјСЏ С„Р°Р№Р»Р° РІ РїР°РїРєРµ audio
                     val assetFileName = if (url.startsWith("audio/")) {
                         url
                     } else {
@@ -134,62 +134,62 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
                     "asset:///$assetFileName"
                 }
             }
-            
+
             try {
                 val mediaItem = MediaItem.fromUri(finalUrl)
                 player.setMediaItem(mediaItem)
                 player.prepare()
                 player.play()
-                
-                android.util.Log.d("MeditationPlayerService", "Воспроизведение начато: $finalUrl")
+
+                android.util.Log.d("MeditationPlayerService", "Р’РѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ РЅР°С‡Р°С‚Рѕ: $finalUrl")
             } catch (innerEx: Exception) {
-                android.util.Log.e("MeditationPlayerService", 
-                    "Ошибка воспроизведения через ExoPlayer: ${innerEx.message}", innerEx)
-                
-                // Fallback: попробуем через прямой доступ к ассетам
+                android.util.Log.e("MeditationPlayerService",
+                    "РћС€РёР±РєР° РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ С‡РµСЂРµР· ExoPlayer: ${innerEx.message}", innerEx)
+
+                // Fallback: РїРѕРїСЂРѕР±СѓРµРј С‡РµСЂРµР· РїСЂСЏРјРѕР№ РґРѕСЃС‚СѓРї Рє Р°СЃСЃРµС‚Р°Рј
                 try {
                     val assetFileName = when {
                         finalUrl.startsWith("asset:///") -> finalUrl.removePrefix("asset:///")
                         finalUrl.startsWith("file:///android_asset/") -> finalUrl.removePrefix("file:///android_asset/")
                         else -> "audio/mixkit-valley-sunset-127.mp3"
                     }
-                    
-                    // Проверяем существование файла
+
+                    // РџСЂРѕРІРµСЂСЏРµРј СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёРµ С„Р°Р№Р»Р°
                     try {
-                        applicationContext.assets.open(assetFileName).use { 
-                            android.util.Log.d("MeditationPlayerService", "Файл найден: $assetFileName")
+                        applicationContext.assets.open(assetFileName).use {
+                            android.util.Log.d("MeditationPlayerService", "Р¤Р°Р№Р» РЅР°Р№РґРµРЅ: $assetFileName")
                         }
                     } catch (fileEx: Exception) {
-                        android.util.Log.e("MeditationPlayerService", 
-                            "Файл не найден: $assetFileName", fileEx)
+                        android.util.Log.e("MeditationPlayerService",
+                            "Р¤Р°Р№Р» РЅРµ РЅР°Р№РґРµРЅ: $assetFileName", fileEx)
                         throw fileEx
                     }
-                    
-                    // Используем правильный формат для ассетов
+
+                    // РСЃРїРѕР»СЊР·СѓРµРј РїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚ РґР»СЏ Р°СЃСЃРµС‚РѕРІ
                     val assetMediaItem = MediaItem.fromUri("asset:///$assetFileName")
                     player.setMediaItem(assetMediaItem)
                     player.prepare()
                     player.play()
-                    
-                    android.util.Log.d("MeditationPlayerService", "Воспроизведение через fallback: asset:///$assetFileName")
+
+                    android.util.Log.d("MeditationPlayerService", "Р’РѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ С‡РµСЂРµР· fallback: asset:///$assetFileName")
                 } catch (assetEx: Exception) {
-                    android.util.Log.e("MeditationPlayerService", 
-                        "Ошибка доступа к ассету: ${assetEx.message}", assetEx)
+                    android.util.Log.e("MeditationPlayerService",
+                        "РћС€РёР±РєР° РґРѕСЃС‚СѓРїР° Рє Р°СЃСЃРµС‚Сѓ: ${assetEx.message}", assetEx)
                     throw assetEx
                 }
             }
         } catch (e: Exception) {
-            // Логируем ошибку, но не крашим приложение
-            android.util.Log.e("MeditationPlayerService", "Ошибка воспроизведения: ${e.message}", e)
-            
-            // Можно послать уведомление через системный сервис
+            // Р›РѕРіРёСЂСѓРµРј РѕС€РёР±РєСѓ, РЅРѕ РЅРµ РєСЂР°С€РёРј РїСЂРёР»РѕР¶РµРЅРёРµ
+            android.util.Log.e("MeditationPlayerService", "РћС€РёР±РєР° РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ: ${e.message}", e)
+
+            // РњРѕР¶РЅРѕ РїРѕСЃР»Р°С‚СЊ СѓРІРµРґРѕРјР»РµРЅРёРµ С‡РµСЂРµР· СЃРёСЃС‚РµРјРЅС‹Р№ СЃРµСЂРІРёСЃ
             try {
                 val context = this@MeditationPlayerService
-                android.widget.Toast.makeText(context, 
-                    "Не удалось воспроизвести медитацию: ${e.message}", 
+                android.widget.Toast.makeText(context,
+                    "РќРµ СѓРґР°Р»РѕСЃСЊ РІРѕСЃРїСЂРѕРёР·РІРµСЃС‚Рё РјРµРґРёС‚Р°С†РёСЋ: ${e.message}",
                     android.widget.Toast.LENGTH_SHORT).show()
             } catch (toastError: Exception) {
-                // Игнорируем ошибки создания Toast
+                // РРіРЅРѕСЂРёСЂСѓРµРј РѕС€РёР±РєРё СЃРѕР·РґР°РЅРёСЏ Toast
             }
         }
     }
@@ -215,4 +215,4 @@ class MeditationPlayerService : MediaSessionService(), IPlayerService {
     override fun getDuration(): Long = exoPlayer?.duration ?: 0L
     override fun seekTo(positionMs: Long) { exoPlayer?.seekTo(positionMs) }
 }
-// NOTE реализовано по аудиту: IPlayerService адаптер 
+// NOTE СЂРµР°Р»РёР·РѕРІР°РЅРѕ РїРѕ Р°СѓРґРёС‚Сѓ: IPlayerService Р°РґР°РїС‚РµСЂ

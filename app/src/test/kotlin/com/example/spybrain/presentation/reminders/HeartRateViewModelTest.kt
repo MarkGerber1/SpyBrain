@@ -1,14 +1,20 @@
-package com.example.spybrain.presentation.reminders
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import io.mockk.slot
+import io.mockk.just
+import io.mockk.Runs
+﻿package com.example.spybrain.presentation.reminders
 
 import android.content.Context
 import com.example.spybrain.data.repository.HeartRateRepository
 import com.example.spybrain.presentation.reminders.HeartRateContract
-import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -32,10 +38,10 @@ class HeartRateViewModelTest {
     fun setup() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        
+
         coEvery { heartRateRepository.getMeasurementHistory() } returns emptyList()
         coEvery { heartRateRepository.getMotivationalPoints() } returns 0
-        
+
         viewModel = HeartRateViewModel(context, heartRateRepository)
     }
 
@@ -47,7 +53,7 @@ class HeartRateViewModelTest {
     @Test
     fun `initial state should be correct`() = runTest {
         val initialState = viewModel.uiState.value
-        
+
         assertEquals(0, initialState.currentHeartRate)
         assertFalse(initialState.isMeasuring)
         assertTrue(initialState.measurementHistory.isEmpty())
@@ -58,39 +64,39 @@ class HeartRateViewModelTest {
     @Test
     fun `startMeasurement should set isMeasuring to true`() = runTest {
         viewModel.setEvent(HeartRateContract.Event.StartMeasurement)
-        
+
         testDispatcher.scheduler.advanceUntilIdle()
-        
+
         assertTrue(viewModel.uiState.value.isMeasuring)
     }
 
     @Test
     fun `stopMeasurement should set isMeasuring to false`() = runTest {
-        // Сначала запускаем измерение
+        // РЎРЅР°С‡Р°Р»Р° Р·Р°РїСѓСЃРєР°РµРј РёР·РјРµСЂРµРЅРёРµ
         viewModel.setEvent(HeartRateContract.Event.StartMeasurement)
         testDispatcher.scheduler.advanceUntilIdle()
-        
-        // Затем останавливаем
+
+        // Р—Р°С‚РµРј РѕСЃС‚Р°РЅР°РІР»РёРІР°РµРј
         viewModel.setEvent(HeartRateContract.Event.StopMeasurement)
         testDispatcher.scheduler.advanceUntilIdle()
-        
+
         assertFalse(viewModel.uiState.value.isMeasuring)
     }
 
     @Test
     fun `measurementCompleted should save measurement and add motivational point`() = runTest {
         val testHeartRate = 75
-        
+
         coEvery { heartRateRepository.saveMeasurement(testHeartRate) } just Runs
         coEvery { heartRateRepository.addMotivationalPoint() } returns 1
         coEvery { heartRateRepository.getMeasurementHistory() } returns listOf(testHeartRate)
-        
+
         viewModel.setEvent(HeartRateContract.Event.MeasurementCompleted(testHeartRate))
-        
+
         testDispatcher.scheduler.advanceUntilIdle()
-        
-        verify { heartRateRepository.saveMeasurement(testHeartRate) }
-        verify { heartRateRepository.addMotivationalPoint() }
+
+        coVerify { heartRateRepository.saveMeasurement(testHeartRate) }
+        coVerify { heartRateRepository.addMotivationalPoint() }
         assertEquals(testHeartRate, viewModel.uiState.value.currentHeartRate)
         assertEquals(1, viewModel.uiState.value.motivationalPoints)
         assertFalse(viewModel.uiState.value.isMeasuring)
@@ -99,11 +105,11 @@ class HeartRateViewModelTest {
     @Test
     fun `addMotivationalPoint should increment points and show unlock notification at threshold`() = runTest {
         coEvery { heartRateRepository.addMotivationalPoint() } returns 10
-        
+
         viewModel.setEvent(HeartRateContract.Event.AddMotivationalPoint)
-        
+
         testDispatcher.scheduler.advanceUntilIdle()
-        
+
         assertEquals(10, viewModel.uiState.value.motivationalPoints)
         assertTrue(viewModel.uiState.value.showNewExerciseUnlocked)
     }
@@ -111,9 +117,10 @@ class HeartRateViewModelTest {
     @Test
     fun `error event should set error state`() = runTest {
         val errorMessage = "Test error message"
-        
+
         viewModel.setEvent(HeartRateContract.Event.Error(errorMessage))
-        
+
         assertEquals(errorMessage, viewModel.uiState.value.error)
     }
-} 
+}
+

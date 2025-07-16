@@ -1,9 +1,14 @@
-package com.example.spybrain.data.repository
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import io.mockk.slot
+import io.mockk.just
+import io.mockk.Runs
+﻿package com.example.spybrain.data.repository
 
 import com.example.spybrain.data.datastore.SettingsDataStore
 import com.example.spybrain.data.storage.dao.HeartRateDao
 import com.example.spybrain.data.storage.model.HeartRateMeasurement
-import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -45,8 +50,8 @@ class HeartRateRepositoryTest {
         val result = repository.getMeasurementHistory()
 
         assertEquals(20, result.size)
-        assertEquals(85, result.first()) // Последнее измерение (25 + 60)
-        assertEquals(61, result.last()) // Первое измерение из последних 20 (6 + 60)
+        assertEquals(85, result.first()) // РџРѕСЃР»РµРґРЅРµРµ РёР·РјРµСЂРµРЅРёРµ (25 + 60)
+        assertEquals(61, result.last()) // РџРµСЂРІРѕРµ РёР·РјРµСЂРµРЅРёРµ РёР· РїРѕСЃР»РµРґРЅРёС… 20 (6 + 60)
     }
 
     @Test
@@ -103,4 +108,5 @@ class HeartRateRepositoryTest {
 
         coVerify { heartRateDao.deleteAllMeasurements() }
     }
-} 
+}
+

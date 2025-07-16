@@ -1,4 +1,4 @@
-package com.example.spybrain.presentation.achievements
+﻿package com.example.spybrain.presentation.achievements
 
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.domain.model.AchievementType
@@ -8,16 +8,27 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import com.example.spybrain.presentation.achievements.AchievementsContract
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import com.example.spybrain.domain.error.ErrorHandler // FIXME Р±РёР»Рґ-С„РёРєСЃ 09.05.2025
 import javax.inject.Inject
-import com.example.spybrain.domain.error.ErrorHandler // FIXME билд-фикс 09.05.2025
+import com.example.spybrain.presentation.base.BaseContract.UiEvent
+import com.example.spybrain.presentation.base.BaseContract.UiState
+import com.example.spybrain.presentation.base.BaseContract.UiEffect
 
+/**
+ * @constructor Р’РЅРµРґСЂРµРЅРёРµ Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№ С‡РµСЂРµР· Hilt.
+ * @param getAchievementsUseCase UseCase РїРѕР»СѓС‡РµРЅРёСЏ РґРѕСЃС‚РёР¶РµРЅРёР№.
+ */
 @HiltViewModel
 class AchievementsViewModel @Inject constructor(
     private val getAchievementsUseCase: GetAchievementsUseCase
 ) : BaseViewModel<AchievementsContract.Event, AchievementsContract.State, AchievementsContract.Effect>() {
 
-    // FIXME: Отсутствует UI экран для отображения достижений. Необходимо реализовать Composable Screen для Achievements.
+    // FIXME: Отсутствует UI экран для отображения достижений.
+    // Необходимо реализовать Composable Screen для Achievements.
 
     init {
         setEvent(AchievementsContract.Event.LoadAchievements)
@@ -36,7 +47,7 @@ class AchievementsViewModel @Inject constructor(
     private fun selectTab(type: AchievementType) {
         setState { copy(selectedTab = type) }
     }
-    
+
     private fun showAchievementDetails(achievement: com.example.spybrain.domain.model.Achievement) {
         setEffect { AchievementsContract.Effect.ShowAchievementDetails(achievement) }
     }
@@ -44,19 +55,20 @@ class AchievementsViewModel @Inject constructor(
     private fun loadAchievements() {
         viewModelScope.launch {
             getAchievementsUseCase()
-                .onStart { 
-                    setState { copy(error = null, isLoading = true) }
+                .onStart {
+                    setState { copy(isLoading = true) }
                 }
-                .catch { e -> 
+                .catch { e ->
                     setEffect { AchievementsContract.Effect.ShowError(ErrorHandler.mapToUiError(ErrorHandler.handle(e))) }
                     setState { copy(isLoading = false) }
                 }
-                .collect { list -> 
-                    setState { 
+                .collect { list ->
+                    setState {
                         copy(
                             achievements = list,
                             isLoading = false,
-                            // Заглушка для UserLevel и totalPoints, в реальном приложении должны загружаться из репозитория
+                            // Заглушка для UserLevel и totalPoints,
+                            // в реальном приложении должны загружаться из репозитория
                             totalPoints = list.filter { it.isUnlocked }.sumOf { it.points },
                             userLevel = AchievementsContract.UserLevel(
                                 level = calculateLevel(list),
@@ -64,13 +76,13 @@ class AchievementsViewModel @Inject constructor(
                                 requiredPoints = 100,
                                 progress = 0.5f
                             )
-                        ) 
+                        )
                     }
                 }
         }
     }
-    
-    // Временная функция для вычисления уровня на основе достижений
+
+    // Р’СЂРµРјРµРЅРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёСЏ СѓСЂРѕРІРЅСЏ РЅР° РѕСЃРЅРѕРІРµ РґРѕСЃС‚РёР¶РµРЅРёР№
     private fun calculateLevel(achievements: List<com.example.spybrain.domain.model.Achievement>): Int {
         val points = achievements.filter { it.isUnlocked }.sumOf { it.points }
         return when {
@@ -81,4 +93,4 @@ class AchievementsViewModel @Inject constructor(
             else -> 5
         }
     }
-} 
+}

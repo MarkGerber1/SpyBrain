@@ -1,3 +1,3 @@
-package com.example.spybrain.domain.usecase.settings
+﻿package com.example.spybrain.domain.usecase.settings
 
-// Directory for settings use cases 
+// Directory for settings use cases

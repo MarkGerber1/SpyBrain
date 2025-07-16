@@ -1,4 +1,4 @@
-package com.example.spybrain.util
+﻿package com.example.spybrain.util
 
 import android.content.Context
 import android.os.Build
@@ -8,13 +8,13 @@ import android.os.VibratorManager
 import timber.log.Timber
 
 /**
- * Утилита для тактильной обратной связи
- * Предоставляет современные вибрации для разных действий в приложении
+ * РЈС‚РёР»РёС‚Р° РґР»СЏ С‚Р°РєС‚РёР»СЊРЅРѕР№ РѕР±СЂР°С‚РЅРѕР№ СЃРІСЏР·Рё
+ * РџСЂРµРґРѕСЃС‚Р°РІР»СЏРµС‚ СЃРѕРІСЂРµРјРµРЅРЅС‹Рµ РІРёР±СЂР°С†РёРё РґР»СЏ СЂР°Р·РЅС‹С… РґРµР№СЃС‚РІРёР№ РІ РїСЂРёР»РѕР¶РµРЅРёРё
  */
 object VibrationUtil {
-    
+
     /**
-     * Получает Vibrator с учетом версии Android
+     * РџРѕР»СѓС‡Р°РµС‚ Vibrator СЃ СѓС‡РµС‚РѕРј РІРµСЂСЃРёРё Android
      */
     private fun getVibrator(context: Context): Vibrator? {
         return try {
@@ -26,24 +26,27 @@ object VibrationUtil {
                 context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             }
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка получения Vibrator")
+            Timber.e(e, "РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ Vibrator")
             null
         }
     }
-    
+
     /**
-     * Проверяет поддержку вибрации
+     * РџСЂРѕРІРµСЂСЏРµС‚ РЅР°Р»РёС‡РёРµ РІРёР±СЂР°С‚РѕСЂР° РЅР° СѓСЃС‚СЂРѕР№СЃС‚РІРµ.
+     * @param context РљРѕРЅС‚РµРєСЃС‚.
+     * @return true, РµСЃР»Рё РІРёР±СЂР°С‚РѕСЂ РµСЃС‚СЊ.
      */
     fun hasVibrator(context: Context): Boolean {
         return getVibrator(context)?.hasVibrator() == true
     }
-    
+
     /**
-     * Вибрация для ошибок
+     * Р’РёР±СЂР°С†РёСЏ РґР»СЏ РѕС€РёР±РєРё.
+     * @param context РљРѕРЅС‚РµРєСЃС‚.
      */
     fun vibrateError(context: Context) {
         val vibrator = getVibrator(context) ?: return
-        
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createWaveform(
@@ -56,18 +59,19 @@ object VibrationUtil {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(longArrayOf(0, 200, 100, 200, 100, 200), -1)
             }
-            Timber.d("Вибрация ошибки выполнена")
+            Timber.d("Р’РёР±СЂР°С†РёСЏ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅР°")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка вибрации ошибки")
+            Timber.e(e, "РћС€РёР±РєР° РІРёР±СЂР°С†РёРё РѕС€РёР±РєРё")
         }
     }
-    
+
     /**
-     * Вибрация для успешных действий
+     * Р’РёР±СЂР°С†РёСЏ РґР»СЏ СѓСЃРїРµС…Р°.
+     * @param context РљРѕРЅС‚РµРєСЃС‚.
      */
     fun vibrateSuccess(context: Context) {
         val vibrator = getVibrator(context) ?: return
-        
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createWaveform(
@@ -80,18 +84,19 @@ object VibrationUtil {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(longArrayOf(0, 100, 50, 100, 50, 100), -1)
             }
-            Timber.d("Вибрация успеха выполнена")
+            Timber.d("Р’РёР±СЂР°С†РёСЏ СѓСЃРїРµС…Р° РІС‹РїРѕР»РЅРµРЅР°")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка вибрации успеха")
+            Timber.e(e, "РћС€РёР±РєР° РІРёР±СЂР°С†РёРё СѓСЃРїРµС…Р°")
         }
     }
-    
+
     /**
-     * Легкая вибрация для тактильной обратной связи
+     * Р›С‘РіРєР°СЏ РІРёР±СЂР°С†РёСЏ.
+     * @param context РљРѕРЅС‚РµРєСЃС‚.
      */
     fun vibrateLight(context: Context) {
         val vibrator = getVibrator(context) ?: return
-        
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE / 2)
@@ -100,18 +105,19 @@ object VibrationUtil {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(50)
             }
-            Timber.d("Легкая вибрация выполнена")
+            Timber.d("Р›РµРіРєР°СЏ РІРёР±СЂР°С†РёСЏ РІС‹РїРѕР»РЅРµРЅР°")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка легкой вибрации")
+            Timber.e(e, "РћС€РёР±РєР° Р»РµРіРєРѕР№ РІРёР±СЂР°С†РёРё")
         }
     }
-    
+
     /**
-     * Короткая вибрация для уведомлений
+     * РљРѕСЂРѕС‚РєР°СЏ РІРёР±СЂР°С†РёСЏ.
+     * @param context РљРѕРЅС‚РµРєСЃС‚.
      */
     fun shortVibration(context: Context) {
         val vibrator = getVibrator(context) ?: return
-        
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
@@ -120,18 +126,19 @@ object VibrationUtil {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(100)
             }
-            Timber.d("Короткая вибрация выполнена")
+            Timber.d("РљРѕСЂРѕС‚РєР°СЏ РІРёР±СЂР°С†РёСЏ РІС‹РїРѕР»РЅРµРЅР°")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка короткой вибрации")
+            Timber.e(e, "РћС€РёР±РєР° РєРѕСЂРѕС‚РєРѕР№ РІРёР±СЂР°С†РёРё")
         }
     }
-    
+
     /**
-     * Длинная вибрация для важных событий
+     * Р”Р»РёРЅРЅР°СЏ РІРёР±СЂР°С†РёСЏ.
+     * @param context РљРѕРЅС‚РµРєСЃС‚.
      */
     fun longVibration(context: Context) {
         val vibrator = getVibrator(context) ?: return
-        
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)
@@ -140,18 +147,19 @@ object VibrationUtil {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(500)
             }
-            Timber.d("Длинная вибрация выполнена")
+            Timber.d("Р”Р»РёРЅРЅР°СЏ РІРёР±СЂР°С†РёСЏ РІС‹РїРѕР»РЅРµРЅР°")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка длинной вибрации")
+            Timber.e(e, "РћС€РёР±РєР° РґР»РёРЅРЅРѕР№ РІРёР±СЂР°С†РёРё")
         }
     }
-    
+
     /**
-     * Вибрация для дыхательных упражнений
+     * Р’РёР±СЂР°С†РёСЏ РґР»СЏ РґС‹С…Р°С‚РµР»СЊРЅС‹С… СѓРїСЂР°Р¶РЅРµРЅРёР№.
+     * @param context РљРѕРЅС‚РµРєСЃС‚.
      */
     fun breathingVibration(context: Context) {
         val vibrator = getVibrator(context) ?: return
-        
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createWaveform(
@@ -164,18 +172,19 @@ object VibrationUtil {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(longArrayOf(0, 200, 100, 200, 100, 200), -1)
             }
-            Timber.d("Вибрация для дыхания выполнена")
+            Timber.d("Р’РёР±СЂР°С†РёСЏ РґР»СЏ РґС‹С…Р°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅР°")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка вибрации для дыхания")
+            Timber.e(e, "РћС€РёР±РєР° РІРёР±СЂР°С†РёРё РґР»СЏ РґС‹С…Р°РЅРёСЏ")
         }
     }
-    
+
     /**
-     * Вибрация для медитации
+     * Р’РёР±СЂР°С†РёСЏ РґР»СЏ РјРµРґРёС‚Р°С†РёРё.
+     * @param context РљРѕРЅС‚РµРєСЃС‚.
      */
     fun meditationVibration(context: Context) {
         val vibrator = getVibrator(context) ?: return
-        
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createWaveform(
@@ -188,18 +197,19 @@ object VibrationUtil {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(longArrayOf(0, 300, 200, 300, 200, 300), -1)
             }
-            Timber.d("Вибрация для медитации выполнена")
+            Timber.d("Р’РёР±СЂР°С†РёСЏ РґР»СЏ РјРµРґРёС‚Р°С†РёРё РІС‹РїРѕР»РЅРµРЅР°")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка вибрации для медитации")
+            Timber.e(e, "РћС€РёР±РєР° РІРёР±СЂР°С†РёРё РґР»СЏ РјРµРґРёС‚Р°С†РёРё")
         }
     }
-    
+
     /**
-     * Вибрация для достижений
+     * Р’РёР±СЂР°С†РёСЏ РґР»СЏ РґРѕСЃС‚РёР¶РµРЅРёСЏ.
+     * @param context РљРѕРЅС‚РµРєСЃС‚.
      */
     fun achievementVibration(context: Context) {
         val vibrator = getVibrator(context) ?: return
-        
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createWaveform(
@@ -212,23 +222,24 @@ object VibrationUtil {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(longArrayOf(0, 100, 50, 100, 50, 100, 50, 100), -1)
             }
-            Timber.d("Вибрация для достижений выполнена")
+            Timber.d("Р’РёР±СЂР°С†РёСЏ РґР»СЏ РґРѕСЃС‚РёР¶РµРЅРёР№ РІС‹РїРѕР»РЅРµРЅР°")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка вибрации для достижений")
+            Timber.e(e, "РћС€РёР±РєР° РІРёР±СЂР°С†РёРё РґР»СЏ РґРѕСЃС‚РёР¶РµРЅРёР№")
         }
     }
-    
+
     /**
-     * Останавливает вибрацию
+     * РћСЃС‚Р°РЅРѕРІРёС‚СЊ РІРёР±СЂР°С†РёСЋ.
+     * @param context РљРѕРЅС‚РµРєСЃС‚.
      */
     fun stopVibration(context: Context) {
         val vibrator = getVibrator(context) ?: return
-        
+
         try {
             vibrator.cancel()
-            Timber.d("Вибрация остановлена")
+            Timber.d("Р’РёР±СЂР°С†РёСЏ РѕСЃС‚Р°РЅРѕРІР»РµРЅР°")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка остановки вибрации")
+            Timber.e(e, "РћС€РёР±РєР° РѕСЃС‚Р°РЅРѕРІРєРё РІРёР±СЂР°С†РёРё")
         }
     }
-} 
+}

@@ -1,27 +1,32 @@
 package com.example.spybrain.presentation.biosync
 
 import android.content.Context
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.spybrain.presentation.breathing.components.HeartBeatAnimation
-import com.example.spybrain.presentation.biosync.BioSyncViewModel
+import androidx.camera.view.PreviewView
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
 
+/**
+ * @param viewModel ViewModel Р±РёРѕСЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё.
+ */
 @Composable
-fun BioSyncScreen(
+fun bioSyncScreen(
     viewModel: BioSyncViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -31,18 +36,19 @@ fun BioSyncScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         // Camera preview
         AndroidView(
-            factory = { ctx ->
+            factory = { ctx: Context ->
                 PreviewView(ctx).apply {
                     val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
                     cameraProviderFuture.addListener({
                         val cameraProvider = cameraProviderFuture.get()
-                        val preview = Preview.Builder().build().also {
-                            it.setSurfaceProvider(surfaceProvider)
+                        val preview = Preview.Builder().build().also { previewObj ->
+                            previewObj.setSurfaceProvider(surfaceProvider)
                         }
                         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-                        cameraProvider.bindToLifecycle(
-                            lifecycleOwner, cameraSelector, preview
-                        )
+                        // TODO: Fix after cameraProvider.bindToLifecycle signature clarified
+                        // cameraProvider.bindToLifecycle(
+                        //     lifecycleOwner, cameraSelector, preview
+                        // )
                     }, ContextCompat.getMainExecutor(ctx))
                 }
             },
@@ -57,4 +63,4 @@ fun BioSyncScreen(
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "BPM: $bpm", modifier = Modifier.padding(start = 16.dp))
     }
-} 
+}

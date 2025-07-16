@@ -1,0 +1,6 @@
+Configuration on demand is an incubating feature.
+Type-safe project accessors is an incubating feature.
+> Task :app:detekt UP-TO-DATE
+
+BUILD SUCCESSFUL in 1s
+1 actionable task: 1 up-to-date

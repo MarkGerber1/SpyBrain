@@ -1,4 +1,4 @@
-package com.example.spybrain.service
+﻿package com.example.spybrain.service
 
 import android.app.Service
 import android.content.Intent
@@ -14,4 +14,4 @@ class ReminderService : Service() {
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
-} 
+}

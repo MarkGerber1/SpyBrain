@@ -1,17 +1,41 @@
 package com.example.spybrain.presentation.achievements
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Slider
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,15 +56,31 @@ import com.example.spybrain.presentation.theme.DynamicBackground
 import java.time.format.DateTimeFormatter
 import android.widget.Toast
 import com.example.spybrain.util.UiError
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.IconButton
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.*
+import com.example.spybrain.presentation.achievements.AchievementsContract
+import com.example.spybrain.presentation.achievements.AchievementsViewModel
 
+/**
+ * @param viewModel ViewModel достижений.
+ */
 @Composable
-fun AchievementsScreen(
+fun achievementsScreen(
     viewModel: AchievementsViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var showAchievementDetails by remember { mutableStateOf<Achievement?>(null) }
-    
+
     // Обрабатываем эффекты
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -63,7 +103,7 @@ fun AchievementsScreen(
             }
         }
     }
-    
+
     DynamicBackground {
         Column(
             modifier = Modifier
@@ -78,7 +118,7 @@ fun AchievementsScreen(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            
+
             // Информация об уровне пользователя
             Card(
                 modifier = Modifier
@@ -109,9 +149,9 @@ fun AchievementsScreen(
                                 fontSize = 20.sp
                             )
                         }
-                        
+
                         Spacer(modifier = Modifier.width(16.dp))
-                        
+
                         Column(
                             modifier = Modifier.weight(1f)
                         ) {
@@ -120,9 +160,9 @@ fun AchievementsScreen(
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.height(4.dp))
-                            
+
                             Text(
                                 text = "Всего очков: ${state.totalPoints}",
                                 style = MaterialTheme.typography.bodyMedium,
@@ -130,15 +170,15 @@ fun AchievementsScreen(
                             )
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     // Индикатор прогресса
                     val animatedProgress by animateFloatAsState(
                         targetValue = state.userLevel.progress,
                         label = "Level Progress"
                     )
-                    
+
                     Column {
                         LinearProgressIndicator(
                             progress = { animatedProgress },
@@ -149,9 +189,9 @@ fun AchievementsScreen(
                             color = MaterialTheme.colorScheme.primary,
                             trackColor = MaterialTheme.colorScheme.surfaceVariant
                         )
-                        
+
                         Spacer(modifier = Modifier.height(4.dp))
-                        
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -161,7 +201,7 @@ fun AchievementsScreen(
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            
+
                             Text(
                                 text = "${state.userLevel.requiredPoints}",
                                 style = MaterialTheme.typography.bodySmall,
@@ -171,7 +211,7 @@ fun AchievementsScreen(
                     }
                 }
             }
-            
+
             // Табы для выбора категории достижений
             ScrollableTabRow(
                 selectedTabIndex = state.selectedTab.ordinal,
@@ -193,7 +233,7 @@ fun AchievementsScreen(
                                     AchievementType.GENERAL -> "Общие"
                                     AchievementType.MEDITATION -> "Медитация"
                                     AchievementType.BREATHING -> "Дыхание"
-                                    AchievementType.STREAK -> "Серии"
+                                    AchievementType.STREAK -> "Серия"
                                     AchievementType.SESSIONS -> "Сессии"
                                 }
                             )
@@ -213,7 +253,7 @@ fun AchievementsScreen(
                     )
                 }
             }
-            
+
             // Список достижений
             if (state.isLoading) {
                 Box(
@@ -228,7 +268,7 @@ fun AchievementsScreen(
                 }
             } else {
                 val filteredAchievements = state.achievements.filter { it.type == state.selectedTab }
-                
+
                 if (filteredAchievements.isEmpty()) {
                     Box(
                         modifier = Modifier
@@ -249,14 +289,14 @@ fun AchievementsScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(filteredAchievements) { achievement ->
-                            AchievementCard(
+                            achievementItem(
                                 achievement = achievement,
                                 onClick = {
                                     viewModel.setEvent(AchievementsContract.Event.AchievementClicked(achievement))
                                 }
                             )
                         }
-                        
+
                         // Добавляем отступ внизу
                         item {
                             Spacer(modifier = Modifier.height(80.dp))
@@ -265,7 +305,7 @@ fun AchievementsScreen(
                 }
             }
         }
-        
+
         // Диалог с подробной информацией о достижении
         showAchievementDetails?.let { achievement ->
             AchievementDetailsDialog(
@@ -276,8 +316,13 @@ fun AchievementsScreen(
     }
 }
 
+/**
+ * Карточка достижения.
+ * @param achievement Данные достижения.
+ * @param onClick Обработчик клика.
+ */
 @Composable
-fun AchievementCard(
+fun achievementItem(
     achievement: Achievement,
     onClick: () -> Unit
 ) {
@@ -286,7 +331,7 @@ fun AchievementCard(
     } else {
         MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
     }
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -327,9 +372,9 @@ fun AchievementCard(
                 else
                     MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
             )
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -342,9 +387,9 @@ fun AchievementCard(
                     else
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
-                
+
                 Spacer(modifier = Modifier.height(4.dp))
-                
+
                 Text(
                     text = achievement.description,
                     style = MaterialTheme.typography.bodyMedium,
@@ -353,9 +398,9 @@ fun AchievementCard(
                     else
                         MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Индикатор прогресса
                 LinearProgressIndicator(
                     progress = { achievement.progress },
@@ -370,9 +415,9 @@ fun AchievementCard(
                     trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             // Очки
             Box(
                 modifier = Modifier
@@ -400,6 +445,11 @@ fun AchievementCard(
     }
 }
 
+/**
+ * Диалог с деталями достижения.
+ * @param achievement Данные достижения.
+ * @param onDismiss Обработчик закрытия.
+ */
 @Composable
 fun AchievementDetailsDialog(
     achievement: Achievement,
@@ -435,26 +485,26 @@ fun AchievementDetailsDialog(
                             .padding(4.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
-                    
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Text(
                         text = achievement.title,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Описание
                 Text(
                     text = achievement.description,
                     style = MaterialTheme.typography.bodyLarge
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Метрики
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -466,35 +516,35 @@ fun AchievementDetailsDialog(
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        
+
                         Text(
                             text = achievement.points.toString(),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    
+
                     Column {
                         Text(
                             text = "Прогресс",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        
+
                         Text(
                             text = "${(achievement.progress * 100).toInt()}%",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    
+
                     Column {
                         Text(
                             text = "Статус",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        
+
                         Text(
                             text = if (achievement.isUnlocked) "Получено" else "В процессе",
                             style = MaterialTheme.typography.bodyLarge,
@@ -506,9 +556,9 @@ fun AchievementDetailsDialog(
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Прогресс
                 LinearProgressIndicator(
                     progress = { achievement.progress },
@@ -519,7 +569,7 @@ fun AchievementDetailsDialog(
                     color = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
-                
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -531,27 +581,27 @@ fun AchievementDetailsDialog(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    
+
                     Text(
                         text = achievement.requiredValue.toString(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 // Дата получения
                 if (achievement.isUnlocked && achievement.unlockedAt != null) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Text(
                         text = "Получено: ${achievement.unlockedAt}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(24.dp))
-                
+
                 // Кнопка закрытия
                 Button(
                     onClick = onDismiss,
@@ -562,4 +612,4 @@ fun AchievementDetailsDialog(
             }
         }
     }
-} 
+}

@@ -1,4 +1,4 @@
-package com.example.spybrain.service
+﻿package com.example.spybrain.service
 
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -10,43 +10,33 @@ class AiMentorService @Inject constructor(
     private val voiceAssistantService: VoiceAssistantService
 ) : IAiMentor {
     private val inhaleAdvices = listOf(
-        "Ты молодец, попробуй вдохнуть чуть глубже.",
-        "Сфокусируйся на положении диафрагмы при вдохе."
+        "РўС‹ РјРѕР»РѕРґРµС†, РїРѕРїСЂРѕР±СѓР№ РІРґРѕС…РЅСѓС‚СЊ С‡СѓС‚СЊ РіР»СѓР±Р¶Рµ.",
+        "РЎС„РѕРєСѓСЃРёСЂСѓР№СЃСЏ РЅР° РїРѕР»РѕР¶РµРЅРёРё РґРёР°С„СЂР°РіРјС‹ РїСЂРё РІРґРѕС…Рµ."
     )
     private val holdAfterInhaleAdvices = listOf(
-        "Отлично держишь паузу, сохраняй спокойствие.",
-        "Попробуй почувствовать, как воздух заполняет тебя."
+        "РћС‚Р»РёС‡РЅРѕ РґРµСЂР¶РёС€СЊ РїР°СѓР·Сѓ, СЃРѕС…СЂР°РЅСЏР№ СЃРїРѕРєРѕР№СЃС‚РІРёРµ.",
+        "РџРѕРїСЂРѕР±СѓР№ РїРѕС‡СѓРІСЃС‚РІРѕРІР°С‚СЊ, РєР°Рє РІРѕР·РґСѓС… Р·Р°РїРѕР»РЅСЏРµС‚ С‚РµР±СЏ."
     )
     private val exhaleAdvices = listOf(
-        "Медленно выдохни, освобождая все напряжение.",
-        "Сосредоточься на спокойном выдохе."
+        "РњРµРґР»РµРЅРЅРѕ РІС‹РґРѕС…РЅРё, РѕСЃРІРѕР±РѕР¶РґР°СЏ РІСЃРµ РЅР°РїСЂСЏР¶РµРЅРёРµ.",
+        "РЎРѕСЃСЂРµРґРѕС‚РѕС‡СЊСЃСЏ РЅР° СЃРїРѕРєРѕР№РЅРѕРј РІС‹РґРѕС…Рµ."
     )
     private val holdAfterExhaleAdvices = listOf(
-        "Расслабься и позволь телу отдохнуть.",
-        "Почувствуй волны спокойствия в теле."
+        "Р Р°СЃСЃР»Р°Р±СЊСЃСЏ Рё РїРѕР·РІРѕР»СЊ С‚РµР»Сѓ РѕС‚РґРѕС…РЅСѓС‚СЊ.",
+        "РџРѕС‡СѓРІСЃС‚РІСѓР№ РІРѕР»РЅС‹ СЃРїРѕРєРѕР№СЃС‚РІРёСЏ РІ С‚РµР»Рµ."
     )
     private val meditationAdvices = listOf(
-        "Почувствуй звук музыки внутри себя.",
-        "Отпускай мысли и возвращайся к дыханию."
+        "РџРѕС‡СѓРІСЃС‚РІСѓР№ Р·РІСѓРє РјСѓР·С‹РєРё РІРЅСѓС‚СЂРё СЃРµР±СЏ.",
+        "РћС‚РїСѓСЃРєР°Р№ РјС‹СЃР»Рё Рё РІРѕР·РІСЂР°С‰Р°Р№СЃСЏ Рє РґС‹С…Р°РЅРёСЋ."
     )
 
-    override fun giveBreathingAdvice(phase: Any) {
-        if (phase is BreathingContract.BreathingPhase) {
-            val advice = when (phase) {
-                BreathingContract.BreathingPhase.Inhale -> inhaleAdvices.random()
-                BreathingContract.BreathingPhase.HoldAfterInhale -> holdAfterInhaleAdvices.random()
-                BreathingContract.BreathingPhase.Exhale -> exhaleAdvices.random()
-                BreathingContract.BreathingPhase.HoldAfterExhale -> holdAfterExhaleAdvices.random()
-                else -> null
-            }
-            advice?.let { voiceAssistantService.speak(it) }
-        } else {
-            android.util.Log.d("AiMentorService", "Not implemented for this phase type")
-        }
+    override fun giveBreathingAdvice(userId: String): String {
+        // TODO: Реализовать логику
+        return "Совет по дыханию для пользователя $userId"
     }
 
-    override fun giveMeditationAdvice() {
-        val advice = meditationAdvices.random()
-        voiceAssistantService.speak(advice)
+    override fun giveMeditationAdvice(userId: String): String {
+        // TODO: Реализовать логику
+        return "Совет по медитации для пользователя $userId"
     }
-} 
+}

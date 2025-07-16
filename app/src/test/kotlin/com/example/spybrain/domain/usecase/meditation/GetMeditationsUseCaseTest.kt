@@ -1,4 +1,4 @@
-package com.example.spybrain.domain.usecase.meditation
+﻿package com.example.spybrain.domain.usecase.meditation
 
 import android.content.Context
 import app.cash.turbine.test
@@ -51,16 +51,16 @@ class GetMeditationsUseCaseTest {
         val expectedMeditations = listOf(
             Meditation(
                 id = "1",
-                title = "Вечерний покой",
-                description = "Расслабляющая медитация для глубокого сна",
+                title = "Р’РµС‡РµСЂРЅРёР№ РїРѕРєРѕР№",
+                description = "Р Р°СЃСЃР»Р°Р±Р»СЏСЋС‰Р°СЏ РјРµРґРёС‚Р°С†РёСЏ РґР»СЏ РіР»СѓР±РѕРєРѕРіРѕ СЃРЅР°",
                 durationMinutes = 10,
                 audioUrl = "audio/sleep.mp3",
                 category = "sleep"
             ),
             Meditation(
                 id = "2",
-                title = "Утренняя свежесть",
-                description = "Энергичная медитация для начала дня",
+                title = "РЈС‚СЂРµРЅРЅСЏСЏ СЃРІРµР¶РµСЃС‚СЊ",
+                description = "Р­РЅРµСЂРіРёС‡РЅР°СЏ РјРµРґРёС‚Р°С†РёСЏ РґР»СЏ РЅР°С‡Р°Р»Р° РґРЅСЏ",
                 durationMinutes = 5,
                 audioUrl = "audio/morning.mp3",
                 category = "morning"
@@ -92,4 +92,5 @@ class GetMeditationsUseCaseTest {
             assertEquals(exception, error)
         }
     }
-} 
+}
+

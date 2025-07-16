@@ -1,15 +1,21 @@
-package com.example.spybrain.domain.model
+﻿package com.example.spybrain.domain.model
 
 import androidx.annotation.DrawableRes
 
 /**
- * Модель тематической медитационной программы.
+ * Р”РѕРјРµРЅРЅР°СЏ РјРѕРґРµР»СЊ РїСЂРѕРіСЂР°РјРјС‹ РјРµРґРёС‚Р°С†РёРё.
  */
 data class MeditationProgram(
+    /** РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїСЂРѕРіСЂР°РјРјС‹. */
     val id: String,
+    /** РќР°Р·РІР°РЅРёРµ РїСЂРѕРіСЂР°РјРјС‹. */
     val title: String,
-    val description: String,
-    val audioUrl: String,
-    @DrawableRes val backgroundResId: Int,
-    @DrawableRes val iconResId: Int
-) 
+    /** РћРїРёСЃР°РЅРёРµ РїСЂРѕРіСЂР°РјРјС‹. */
+    val description: String?,
+    /** URL Р°СѓРґРёРѕС„Р°Р№Р»Р°. */
+    val audioUrl: String?,
+    /** Р РµСЃСѓСЂСЃ С„РѕРЅР°. */
+    val backgroundResId: Int?,
+    /** Р РµСЃСѓСЂСЃ РёРєРѕРЅРєРё. */
+    val iconResId: Int?
+)

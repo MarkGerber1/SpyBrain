@@ -1,4 +1,4 @@
-package com.example.spybrain.data.repository
+﻿package com.example.spybrain.data.repository
 
 import android.content.Context
 import com.example.spybrain.R
@@ -6,11 +6,19 @@ import com.example.spybrain.domain.model.BreathingPattern
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Репозиторий для работы с дыхательными паттернами.
+ * Предоставляет стандартные шаблоны дыхания.
+ */
 @Singleton
 class BreathingPatternRepository @Inject constructor(
     private val context: Context
 ) {
-    
+
+    /**
+     * Получить все паттерны дыхания.
+     * @return Список паттернов.
+     */
     fun getAllPatterns(): List<BreathingPattern> = listOf(
         // Спокойное дыхание
         BreathingPattern(
@@ -24,7 +32,7 @@ class BreathingPatternRepository @Inject constructor(
             holdAfterExhaleSeconds = 0,
             totalCycles = 10
         ),
-        
+
         // Квадратное дыхание
         BreathingPattern(
             id = "box_breathing",
@@ -37,7 +45,7 @@ class BreathingPatternRepository @Inject constructor(
             holdAfterExhaleSeconds = 4,
             totalCycles = 8
         ),
-        
+
         // Дыхание для сна
         BreathingPattern(
             id = "breathing_478",
@@ -50,8 +58,8 @@ class BreathingPatternRepository @Inject constructor(
             holdAfterExhaleSeconds = 0,
             totalCycles = 6
         ),
-        
-        // Сила льва
+
+        // Сила животного
         BreathingPattern(
             id = "lion_breath",
             name = context.getString(R.string.breathing_pattern_lion),
@@ -63,8 +71,8 @@ class BreathingPatternRepository @Inject constructor(
             holdAfterExhaleSeconds = 0,
             totalCycles = 5
         ),
-        
-        // Жужжание пчелы
+
+        // Южанин желтый
         BreathingPattern(
             id = "bee_breath",
             name = context.getString(R.string.breathing_pattern_bee),
@@ -76,7 +84,7 @@ class BreathingPatternRepository @Inject constructor(
             holdAfterExhaleSeconds = 0,
             totalCycles = 7
         ),
-        
+
         // Огненное дыхание
         BreathingPattern(
             id = "fire_breath",
@@ -89,7 +97,7 @@ class BreathingPatternRepository @Inject constructor(
             holdAfterExhaleSeconds = 0,
             totalCycles = 20
         ),
-        
+
         // Вечернее дыхание
         BreathingPattern(
             id = "sleep_breathing",
@@ -102,8 +110,8 @@ class BreathingPatternRepository @Inject constructor(
             holdAfterExhaleSeconds = 1,
             totalCycles = 10
         ),
-        
-        // Ясность ума
+
+        // Ясносостая энергия
         BreathingPattern(
             id = "focus_breathing",
             name = context.getString(R.string.breathing_pattern_clarity),
@@ -115,8 +123,8 @@ class BreathingPatternRepository @Inject constructor(
             holdAfterExhaleSeconds = 3,
             totalCycles = 12
         ),
-        
-        // Утренняя энергия
+
+        // Утренец энергия
         BreathingPattern(
             id = "energy_breathing",
             name = context.getString(R.string.breathing_pattern_morning),
@@ -128,7 +136,7 @@ class BreathingPatternRepository @Inject constructor(
             holdAfterExhaleSeconds = 2,
             totalCycles = 8
         ),
-        
+
         // Творческий поток
         BreathingPattern(
             id = "creative_breathing",
@@ -142,11 +150,21 @@ class BreathingPatternRepository @Inject constructor(
             totalCycles = 6
         )
     )
-    
+
+    /**
+     * Получить паттерн по идентификатору.
+     * @param id Идентификатор паттерна.
+     * @return Паттерн дыхания или null.
+     */
     fun getPatternById(id: String): BreathingPattern? {
         return getAllPatterns().find { it.id == id }
     }
-    
+
+    /**
+     * Получить паттерны по категории.
+     * @param category Категория.
+     * @return Список паттернов.
+     */
     fun getPatternsByCategory(category: String): List<BreathingPattern> {
         return when (category) {
             "relaxation" -> listOf(
@@ -167,4 +185,4 @@ class BreathingPatternRepository @Inject constructor(
             else -> getAllPatterns()
         }
     }
-} 
+}

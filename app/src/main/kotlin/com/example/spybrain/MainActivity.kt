@@ -1,4 +1,4 @@
-package com.example.spybrain
+﻿package com.example.spybrain
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import com.example.spybrain.presentation.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Р“Р»Р°РІРЅР°СЏ activity РїСЂРёР»РѕР¶РµРЅРёСЏ SpyBrain.
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,4 +28,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-} 
+}

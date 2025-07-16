@@ -1,4 +1,4 @@
-package com.example.spybrain.presentation.breathing
+﻿package com.example.spybrain.presentation.breathing
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
@@ -27,7 +27,24 @@ import com.example.spybrain.util.UiError
 import com.example.spybrain.domain.error.ErrorHandler
 import timber.log.Timber
 import java.util.Date
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import com.example.spybrain.presentation.breathing.BreathingContract
+import com.example.spybrain.presentation.base.UiEvent
+import com.example.spybrain.presentation.base.UiState
+import com.example.spybrain.presentation.base.UiEffect
 
+/**
+ * ViewModel РґР»СЏ СѓРїСЂР°РІР»РµРЅРёСЏ Р»РѕРіРёРєРѕР№ РґС‹С…Р°С‚РµР»СЊРЅС‹С… РїСЂР°РєС‚РёРє.
+ * @param breathingPatternRepository Р РµРїРѕР·РёС‚РѕСЂРёР№ РїР°С‚С‚РµСЂРЅРѕРІ РґС‹С…Р°РЅРёСЏ.
+ * @param breathingRepository Р РµРїРѕР·РёС‚РѕСЂРёР№ РґС‹С…Р°С‚РµР»СЊРЅС‹С… СЃРµСЃСЃРёР№.
+ * @param trackBreathingSessionUseCase UseCase РґР»СЏ РѕС‚СЃР»РµР¶РёРІР°РЅРёСЏ СЃРµСЃСЃРёРё РґС‹С…Р°РЅРёСЏ.
+ * @param saveSessionUseCase UseCase РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ СЃРµСЃСЃРёРё.
+ * @param voiceAssistant Р“РѕР»РѕСЃРѕРІРѕР№ Р°СЃСЃРёСЃС‚РµРЅС‚.
+ * @param context РљРѕРЅС‚РµРєСЃС‚ РїСЂРёР»РѕР¶РµРЅРёСЏ.
+ */
 @HiltViewModel
 class BreathingViewModel @Inject constructor(
     private val breathingPatternRepository: BreathingPatternRepository,
@@ -39,7 +56,7 @@ class BreathingViewModel @Inject constructor(
 ) : BaseViewModel<BreathingContract.Event, BreathingContract.State, BreathingContract.Effect>() {
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
-        Timber.e(exception, "Необработанная ошибка в корутине дыхания")
+        Timber.e(exception, "РќРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅР°СЏ РѕС€РёР±РєР° РІ РєРѕСЂСѓС‚РёРЅРµ РґС‹С…Р°РЅРёСЏ")
         val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(exception))
         setEffect { BreathingContract.Effect.ShowError(uiError) }
     }
@@ -51,8 +68,16 @@ class BreathingViewModel @Inject constructor(
         loadPatterns()
     }
 
+    /**
+     * РЎРѕР·РґР°С‘С‚ РЅР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ СЌРєСЂР°РЅР° РґС‹С…Р°РЅРёСЏ.
+     * @return РќР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ.
+     */
     override fun createInitialState(): BreathingContract.State = BreathingContract.State()
 
+    /**
+     * РћР±СЂР°Р±Р°С‚С‹РІР°РµС‚ СЃРѕР±С‹С‚РёРµ UI.
+     * @param event РЎРѕР±С‹С‚РёРµ UI.
+     */
     override fun handleEvent(event: BreathingContract.Event) {
         when (event) {
             is BreathingContract.Event.LoadPatterns -> {
@@ -76,14 +101,16 @@ class BreathingViewModel @Inject constructor(
                 val command = event.text.lowercase(Locale.getDefault())
                 when {
                     command.contains(context.getString(R.string.voice_command_stop)) || command.contains("stop") -> stopPattern()
-                    command.contains(context.getString(R.string.voice_command_start)) || command.contains("start") || command.contains(context.getString(R.string.voice_command_inhale)) -> {
+                    command.contains(context.getString(R.string.voice_command_start)) ||
+                        command.contains("start") ||
+                        command.contains(context.getString(R.string.voice_command_inhale)) -> {
                         uiState.value.patterns.firstOrNull()?.let { startPattern(it) }
                             ?: setEffect { BreathingContract.Effect.ShowError(UiError.Custom(context.getString(R.string.pattern_builder_no_patterns))) }
                     }
                     else -> setEffect { BreathingContract.Effect.Speak(context.getString(R.string.voice_command_not_recognized)) }
                 }
             } catch (e: Exception) {
-                Timber.e(e, "Ошибка при обработке голосовой команды")
+                Timber.e(e, "РћС€РёР±РєР° РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ РіРѕР»РѕСЃРѕРІРѕР№ РєРѕРјР°РЅРґС‹")
                 val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
                 setEffect { BreathingContract.Effect.ShowError(uiError) }
             }
@@ -93,17 +120,17 @@ class BreathingViewModel @Inject constructor(
     private fun loadPatterns() {
         viewModelScope.launch(coroutineExceptionHandler) {
             try {
-                setState { copy(isLoading = true, error = null) }
-                
+                setState { copy(isLoading = true) }
+
                 val patterns = breathingPatternRepository.getAllPatterns()
                 setState { copy(isLoading = false, patterns = patterns) }
-                
+
                 Timber.d("Loaded ${patterns.size} breathing patterns")
-                
+
             } catch (e: Exception) {
-                Timber.e(e, "Критическая ошибка при загрузке паттернов")
+                Timber.e(e, "РљСЂРёС‚РёС‡РµСЃРєР°СЏ РѕС€РёР±РєР° РїСЂРё Р·Р°РіСЂСѓР·РєРµ РїР°С‚С‚РµСЂРЅРѕРІ")
                 val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
-                setState { copy(isLoading = false, error = uiError) }
+                setState { copy(isLoading = false) }
                 setEffect { BreathingContract.Effect.ShowError(uiError) }
             }
         }
@@ -120,20 +147,20 @@ class BreathingViewModel @Inject constructor(
                     currentPhase = BreathingContract.BreathingPhase.Idle
                 )
             }
-            
-            // Голосовое сопровождение старта
+
+            // Р“РѕР»РѕСЃРѕРІРѕРµ СЃРѕРїСЂРѕРІРѕР¶РґРµРЅРёРµ СЃС‚Р°СЂС‚Р°
             if (voiceAssistant.isReady()) {
                 voiceAssistant.speakStart()
                 voiceAssistant.speakBreathingPrompt(pattern.voicePrompt)
             } else {
                 setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_start_inhale)) }
             }
-            
+
             breathingJob = viewModelScope.launch(coroutineExceptionHandler + SupervisorJob()) {
                 runBreathingCycle(pattern)
             }
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка при запуске паттерна дыхания")
+            Timber.e(e, "РћС€РёР±РєР° РїСЂРё Р·Р°РїСѓСЃРєРµ РїР°С‚С‚РµСЂРЅР° РґС‹С…Р°РЅРёСЏ")
             val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
             setEffect { BreathingContract.Effect.ShowError(uiError) }
         }
@@ -144,16 +171,16 @@ class BreathingViewModel @Inject constructor(
         try {
             while (currentJob.isActive && uiState.value.remainingCycles > 0) {
                 val currentCycle = pattern.totalCycles - uiState.value.remainingCycles + 1
-                
+
                 // Inhale
                 if (voiceAssistant.isReady()) {
                     voiceAssistant.speakInhale()
                 } else {
                     setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_phase_inhale)) }
                 }
-                
+
                 if (!runPhase(BreathingContract.BreathingPhase.Inhale, pattern.inhaleSeconds, currentJob)) break
-                
+
                 // Hold After Inhale
                 if (pattern.holdAfterInhaleSeconds > 0) {
                     if (voiceAssistant.isReady()) {
@@ -163,7 +190,7 @@ class BreathingViewModel @Inject constructor(
                     }
                     if (!runPhase(BreathingContract.BreathingPhase.HoldAfterInhale, pattern.holdAfterInhaleSeconds, currentJob)) break
                 }
-                
+
                 // Exhale
                 if (voiceAssistant.isReady()) {
                     voiceAssistant.speakExhale()
@@ -171,7 +198,7 @@ class BreathingViewModel @Inject constructor(
                     setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_phase_exhale)) }
                 }
                 if (!runPhase(BreathingContract.BreathingPhase.Exhale, pattern.exhaleSeconds, currentJob)) break
-                
+
                 // Hold After Exhale
                 if (pattern.holdAfterExhaleSeconds > 0) {
                     if (voiceAssistant.isReady()) {
@@ -183,27 +210,27 @@ class BreathingViewModel @Inject constructor(
                 }
 
                 setState { copy(remainingCycles = remainingCycles - 1) }
-                
-                // Мотивация каждые 3 цикла
+
+                // РњРѕС‚РёРІР°С†РёСЏ РєР°Р¶РґС‹Рµ 3 С†РёРєР»Р°
                 if (currentCycle % 3 == 0 && voiceAssistant.isReady()) {
                     voiceAssistant.speakMotivation()
                 }
             }
-            
+
             // Cycle finished or stopped
             if (currentJob.isActive) {
                 trackSessionEnd(pattern.id, System.currentTimeMillis() - sessionStartTime)
-                
+
                 if (voiceAssistant.isReady()) {
                     voiceAssistant.speakComplete()
                 } else {
                     setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_complete_message)) }
                 }
-                
+
                 stopPatternInternal()
             }
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка в цикле дыхания")
+            Timber.e(e, "РћС€РёР±РєР° РІ С†РёРєР»Рµ РґС‹С…Р°РЅРёСЏ")
             val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
             setEffect { BreathingContract.Effect.ShowError(uiError) }
             stopPatternInternal()
@@ -212,7 +239,7 @@ class BreathingViewModel @Inject constructor(
 
     private suspend fun runPhase(phase: BreathingContract.BreathingPhase, durationSeconds: Int, job: Job): Boolean {
         if (durationSeconds <= 0) return true
-        
+
         try {
             setState { copy(currentPhase = phase, cycleProgress = 0f) }
             setEffect { BreathingContract.Effect.Vibrate }
@@ -227,7 +254,7 @@ class BreathingViewModel @Inject constructor(
             setState { copy(cycleProgress = 1f) }
             return job.isActive
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка в фазе дыхания: $phase")
+            Timber.e(e, "РћС€РёР±РєР° РІ С„Р°Р·Рµ РґС‹С…Р°РЅРёСЏ: $phase")
             return false
         }
     }
@@ -244,7 +271,7 @@ class BreathingViewModel @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка при остановке паттерна")
+            Timber.e(e, "РћС€РёР±РєР° РїСЂРё РѕСЃС‚Р°РЅРѕРІРєРµ РїР°С‚С‚РµСЂРЅР°")
             val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
             setEffect { BreathingContract.Effect.ShowError(uiError) }
         }
@@ -254,17 +281,17 @@ class BreathingViewModel @Inject constructor(
         try {
             breathingJob?.cancel()
             breathingJob = null
-            setState { 
+            setState {
                 copy(
-                    currentPattern = null, 
-                    currentPhase = BreathingContract.BreathingPhase.Idle, 
-                    remainingCycles = 0, 
+                    currentPattern = null,
+                    currentPhase = BreathingContract.BreathingPhase.Idle,
+                    remainingCycles = 0,
                     cycleProgress = 0f
-                ) 
+                )
             }
             sessionStartTime = 0
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка при внутренней остановке паттерна")
+            Timber.e(e, "РћС€РёР±РєР° РїСЂРё РІРЅСѓС‚СЂРµРЅРЅРµР№ РѕСЃС‚Р°РЅРѕРІРєРµ РїР°С‚С‚РµСЂРЅР°")
         }
     }
 
@@ -282,7 +309,7 @@ class BreathingViewModel @Inject constructor(
                 breathingRepository.trackBreathingSession(session)
                 Timber.d("Session tracked: $patternId, duration: ${durationMillis}ms")
             } catch (e: Exception) {
-                Timber.e(e, "Ошибка при отслеживании сессии дыхания")
+                Timber.e(e, "РћС€РёР±РєР° РїСЂРё РѕС‚СЃР»РµР¶РёРІР°РЅРёРё СЃРµСЃСЃРёРё РґС‹С…Р°РЅРёСЏ")
             }
         }
     }
@@ -293,12 +320,23 @@ class BreathingViewModel @Inject constructor(
             voiceAssistant.release()
             Timber.d("BreathingViewModel cleared")
         } catch (e: Exception) {
-            Timber.e(e, "Ошибка при очистке BreathingViewModel")
+            Timber.e(e, "РћС€РёР±РєР° РїСЂРё РѕС‡РёСЃС‚РєРµ BreathingViewModel")
         }
         super.onCleared()
     }
 
-    // Метод для анализа уровня пульса
+    /**
+     * РЈСЂРѕРІРµРЅСЊ РїСѓР»СЊСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+     */
+    enum class BpmLevel {
+        LOW, NORMAL, ELEVATED, HIGH
+    }
+
+    /**
+     * РђРЅР°Р»РёР·РёСЂСѓРµС‚ СѓСЂРѕРІРµРЅСЊ РїСѓР»СЊСЃР°.
+     * @param bpm Р—РЅР°С‡РµРЅРёРµ РїСѓР»СЊСЃР°.
+     * @return РЈСЂРѕРІРµРЅСЊ РїСѓР»СЊСЃР°.
+     */
     fun analyzeBpm(bpm: Int): BpmLevel = when {
         bpm < 55 -> BpmLevel.LOW
         bpm < 70 -> BpmLevel.NORMAL
@@ -306,17 +344,18 @@ class BreathingViewModel @Inject constructor(
         else -> BpmLevel.HIGH
     }
 
-    enum class BpmLevel {
-        LOW, NORMAL, ELEVATED, HIGH
+    /**
+     * РћР±СЂР°Р±Р°С‚С‹РІР°РµС‚ РіРѕР»РѕСЃРѕРІСѓСЋ РєРѕРјР°РЅРґСѓ.
+     * @param command РљРѕРјР°РЅРґР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+     */
+    fun processVoiceCommand(command: String) {
+        setEvent(BreathingContract.Event.VoiceCommand(command))
     }
 
-    // Метод для обработки голосовой команды
-    fun processVoiceCommand(command: String) {
-         setEvent(BreathingContract.Event.VoiceCommand(command))
-    }
-    
-    // Метод для запуска прослушивания голосовой команды (передается в UI)
+    /**
+     * Р—Р°РїСѓСЃРєР°РµС‚ РїСЂРѕСЃР»СѓС€РёРІР°РЅРёРµ РіРѕР»РѕСЃРѕРІРѕР№ РєРѕРјР°РЅРґС‹.
+     */
     fun startListeningVoice() {
-        setEffect { BreathingContract.Effect.ShowError(UiError.Custom("Голосовой ввод пока не реализован")) }
+        setEffect { BreathingContract.Effect.ShowError(UiError.Custom("Р“РѕР»РѕСЃРѕРІРѕР№ РІРІРѕРґ РїРѕРєР° РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅ")) }
     }
-} 
+}

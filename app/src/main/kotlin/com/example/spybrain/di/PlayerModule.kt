@@ -1,4 +1,4 @@
-package com.example.spybrain.di
+﻿package com.example.spybrain.di
 
 import android.content.Context
 import androidx.media3.common.AudioAttributes
@@ -13,10 +13,16 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * DI-РјРѕРґСѓР»СЊ РґР»СЏ РїСЂРµРґРѕСЃС‚Р°РІР»РµРЅРёСЏ Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№ РїР»РµРµСЂР°.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object PlayerModule {
 
+    /**
+     * РџСЂРµРґРѕСЃС‚Р°РІР»СЏРµС‚ ExoPlayer.
+     */
     @Provides
     @Singleton
     fun provideExoPlayer(@ApplicationContext context: Context): ExoPlayer {
@@ -32,9 +38,12 @@ object PlayerModule {
         }
     }
 
+    /**
+     * РџСЂРµРґРѕСЃС‚Р°РІР»СЏРµС‚ PlayerService.
+     */
     @Provides
     @Singleton
     fun providePlayerService(
         @ApplicationContext context: Context
     ): IPlayerService = MeditationPlayerService()
-} 
+}

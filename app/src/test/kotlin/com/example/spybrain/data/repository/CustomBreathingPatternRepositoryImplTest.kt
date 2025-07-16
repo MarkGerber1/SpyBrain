@@ -1,4 +1,4 @@
-package com.example.spybrain.data.repository
+﻿package com.example.spybrain.data.repository
 
 import com.example.spybrain.data.model.CustomBreathingPatternEntity
 import com.example.spybrain.data.storage.dao.CustomBreathingPatternDao
@@ -84,4 +84,5 @@ class CustomBreathingPatternRepositoryImplTest {
 
         coVerify(exactly = 1) { dao.deletePattern(pattern.toEntity()) }
     }
-} 
+}
+

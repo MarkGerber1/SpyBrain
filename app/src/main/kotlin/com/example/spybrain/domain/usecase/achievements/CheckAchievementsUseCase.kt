@@ -1,23 +1,31 @@
-package com.example.spybrain.domain.usecase.achievements
+﻿package com.example.spybrain.domain.usecase.achievements
 
 import com.example.spybrain.domain.model.Achievement
 import com.example.spybrain.domain.model.Stats
 import javax.inject.Inject
 
+/**
+ * UseCase РґР»СЏ РїСЂРѕРІРµСЂРєРё РґРѕСЃС‚РёР¶РµРЅРёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+ */
 class CheckAchievementsUseCase @Inject constructor() {
-    
+
+    /**
+     * РџСЂРѕРІРµСЂСЏРµС‚ РґРѕСЃС‚РёР¶РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+     * @param userId РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+     * @return РЎРїРёСЃРѕРє РЅРѕРІС‹С… РґРѕСЃС‚РёР¶РµРЅРёР№.
+     */
     operator fun invoke(stats: Stats): List<Achievement> {
         val achievements = mutableListOf<Achievement>()
-        
+
         val totalSessions = stats.completedMeditationSessions + stats.completedBreathingSessions
-        
-        // Достижения за количество сессий
+
+        // Р”РѕСЃС‚РёР¶РµРЅРёСЏ Р·Р° РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРµСЃСЃРёР№
         when {
             totalSessions >= 1 -> achievements.add(
                 Achievement(
                     id = "first_session",
-                    title = "Первый шаг",
-                    description = "Завершите свою первую сессию",
+                    title = "РџРµСЂРІС‹Р№ С€Р°Рі",
+                    description = "Р—Р°РІРµСЂС€РёС‚Рµ СЃРІРѕСЋ РїРµСЂРІСѓСЋ СЃРµСЃСЃРёСЋ",
                     iconResId = 0,
                     points = 10
                 )
@@ -25,8 +33,8 @@ class CheckAchievementsUseCase @Inject constructor() {
             totalSessions >= 5 -> achievements.add(
                 Achievement(
                     id = "beginner",
-                    title = "Начинающий",
-                    description = "Завершите 5 сессий",
+                    title = "РќР°С‡РёРЅР°СЋС‰РёР№",
+                    description = "Р—Р°РІРµСЂС€РёС‚Рµ 5 СЃРµСЃСЃРёР№",
                     iconResId = 0,
                     points = 25
                 )
@@ -34,8 +42,8 @@ class CheckAchievementsUseCase @Inject constructor() {
             totalSessions >= 10 -> achievements.add(
                 Achievement(
                     id = "dedicated",
-                    title = "Преданный",
-                    description = "Завершите 10 сессий",
+                    title = "РџСЂРµРґР°РЅРЅС‹Р№",
+                    description = "Р—Р°РІРµСЂС€РёС‚Рµ 10 СЃРµСЃСЃРёР№",
                     iconResId = 0,
                     points = 50
                 )
@@ -43,8 +51,8 @@ class CheckAchievementsUseCase @Inject constructor() {
             totalSessions >= 25 -> achievements.add(
                 Achievement(
                     id = "experienced",
-                    title = "Опытный",
-                    description = "Завершите 25 сессий",
+                    title = "РћРїС‹С‚РЅС‹Р№",
+                    description = "Р—Р°РІРµСЂС€РёС‚Рµ 25 СЃРµСЃСЃРёР№",
                     iconResId = 0,
                     points = 100
                 )
@@ -52,8 +60,8 @@ class CheckAchievementsUseCase @Inject constructor() {
             totalSessions >= 50 -> achievements.add(
                 Achievement(
                     id = "master",
-                    title = "Мастер",
-                    description = "Завершите 50 сессий",
+                    title = "РњР°СЃС‚РµСЂ",
+                    description = "Р—Р°РІРµСЂС€РёС‚Рµ 50 СЃРµСЃСЃРёР№",
                     iconResId = 0,
                     points = 200
                 )
@@ -61,22 +69,22 @@ class CheckAchievementsUseCase @Inject constructor() {
             totalSessions >= 100 -> achievements.add(
                 Achievement(
                     id = "legend",
-                    title = "Легенда",
-                    description = "Завершите 100 сессий",
+                    title = "Р›РµРіРµРЅРґР°",
+                    description = "Р—Р°РІРµСЂС€РёС‚Рµ 100 СЃРµСЃСЃРёР№",
                     iconResId = 0,
                     points = 500
                 )
             )
         }
-        
-        // Достижения за время медитации
+
+        // Р”РѕСЃС‚РёР¶РµРЅРёСЏ Р·Р° РІСЂРµРјСЏ РјРµРґРёС‚Р°С†РёРё
         val totalMinutes = (stats.totalMeditationTimeSeconds + stats.totalBreathingTimeSeconds) / 60
         when {
             totalMinutes >= 60 -> achievements.add(
                 Achievement(
                     id = "hour_meditation",
-                    title = "Час спокойствия",
-                    description = "Медитируйте в общей сложности 1 час",
+                    title = "Р§Р°СЃ СЃРїРѕРєРѕР№СЃС‚РІРёСЏ",
+                    description = "РњРµРґРёС‚РёСЂСѓР№С‚Рµ РІ РѕР±С‰РµР№ СЃР»РѕР¶РЅРѕСЃС‚Рё 1 С‡Р°СЃ",
                     iconResId = 0,
                     points = 30
                 )
@@ -84,8 +92,8 @@ class CheckAchievementsUseCase @Inject constructor() {
             totalMinutes >= 300 -> achievements.add(
                 Achievement(
                     id = "five_hours",
-                    title = "5 часов осознанности",
-                    description = "Медитируйте в общей сложности 5 часов",
+                    title = "5 С‡Р°СЃРѕРІ РѕСЃРѕР·РЅР°РЅРЅРѕСЃС‚Рё",
+                    description = "РњРµРґРёС‚РёСЂСѓР№С‚Рµ РІ РѕР±С‰РµР№ СЃР»РѕР¶РЅРѕСЃС‚Рё 5 С‡Р°СЃРѕРІ",
                     iconResId = 0,
                     points = 150
                 )
@@ -93,22 +101,22 @@ class CheckAchievementsUseCase @Inject constructor() {
             totalMinutes >= 600 -> achievements.add(
                 Achievement(
                     id = "ten_hours",
-                    title = "10 часов мудрости",
-                    description = "Медитируйте в общей сложности 10 часов",
+                    title = "10 С‡Р°СЃРѕРІ РјСѓРґСЂРѕСЃС‚Рё",
+                    description = "РњРµРґРёС‚РёСЂСѓР№С‚Рµ РІ РѕР±С‰РµР№ СЃР»РѕР¶РЅРѕСЃС‚Рё 10 С‡Р°СЃРѕРІ",
                     iconResId = 0,
                     points = 300
                 )
             )
         }
-        
-        // Достижения за серию дней
+
+        // Р”РѕСЃС‚РёР¶РµРЅРёСЏ Р·Р° СЃРµСЂРёСЋ РґРЅРµР№
         val currentStreak = stats.currentStreakDays
         when {
             currentStreak >= 3 -> achievements.add(
                 Achievement(
                     id = "three_day_streak",
-                    title = "Трехдневная серия",
-                    description = "Медитируйте 3 дня подряд",
+                    title = "РўСЂРµС…РґРЅРµРІРЅР°СЏ СЃРµСЂРёСЏ",
+                    description = "РњРµРґРёС‚РёСЂСѓР№С‚Рµ 3 РґРЅСЏ РїРѕРґСЂСЏРґ",
                     iconResId = 0,
                     points = 20
                 )
@@ -116,8 +124,8 @@ class CheckAchievementsUseCase @Inject constructor() {
             currentStreak >= 7 -> achievements.add(
                 Achievement(
                     id = "week_streak",
-                    title = "Недельная серия",
-                    description = "Медитируйте 7 дней подряд",
+                    title = "РќРµРґРµР»СЊРЅР°СЏ СЃРµСЂРёСЏ",
+                    description = "РњРµРґРёС‚РёСЂСѓР№С‚Рµ 7 РґРЅРµР№ РїРѕРґСЂСЏРґ",
                     iconResId = 0,
                     points = 50
                 )
@@ -125,14 +133,14 @@ class CheckAchievementsUseCase @Inject constructor() {
             currentStreak >= 30 -> achievements.add(
                 Achievement(
                     id = "month_streak",
-                    title = "Месячная серия",
-                    description = "Медитируйте 30 дней подряд",
+                    title = "РњРµСЃСЏС‡РЅР°СЏ СЃРµСЂРёСЏ",
+                    description = "РњРµРґРёС‚РёСЂСѓР№С‚Рµ 30 РґРЅРµР№ РїРѕРґСЂСЏРґ",
                     iconResId = 0,
                     points = 200
                 )
             )
         }
-        
+
         return achievements
     }
-} 
+}

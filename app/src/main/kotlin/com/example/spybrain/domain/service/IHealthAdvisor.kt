@@ -1,7 +1,14 @@
-package com.example.spybrain.domain.service
+﻿package com.example.spybrain.domain.service
 
-// TODO реализовано: Абстракция для сервиса советов по здоровью
+/**
+ * РРЅС‚РµСЂС„РµР№СЃ СЃРѕРІРµС‚РЅРёРєР° РїРѕ Р·РґРѕСЂРѕРІСЊСЋ.
+ */
 interface IHealthAdvisor {
-    fun getAdvices(phase: Any, bpm: Int): List<String>
+    /**
+     * РџРѕР»СѓС‡РёС‚СЊ СЃРѕРІРµС‚С‹ РїРѕ Р·РґРѕСЂРѕРІСЊСЋ.
+     * @param userId РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+     * @return РЎРїРёСЃРѕРє СЃРѕРІРµС‚РѕРІ.
+     */
+    fun getAdvices(userId: String): List<String>
 }
-// NOTE реализовано по аудиту: IHealthAdvisor для DI и ViewModel 
+// NOTE СЂРµР°Р»РёР·РѕРІР°РЅРѕ РїРѕ Р°СѓРґРёС‚Сѓ: IHealthAdvisor РґР»СЏ DI Рё ViewModel

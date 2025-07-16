@@ -1,15 +1,19 @@
-package com.example.spybrain.data.repository
+﻿package com.example.spybrain.data.repository
 
 import com.example.spybrain.R
 import com.example.spybrain.domain.model.Achievement
 import com.example.spybrain.domain.model.AchievementType
 
 /**
- * Предопределенные достижения для приложения
+ * Предопределённые достижения приложения.
+ * Содержит список всех достижений и методы расчёта очков и уровней.
  */
 object PredefinedAchievements {
-    
-    val ALL_ACHIEVEMENTS = listOf(
+
+    /**
+     * Список всех достижений.
+     */
+    val ALL_ACHIEVEMENTS: List<Achievement> = listOf(
         // Достижения за медитацию
         Achievement(
             id = "meditation_beginner",
@@ -59,7 +63,7 @@ object PredefinedAchievements {
             requiredValue = 1000,
             unlockedAt = null
         ),
-        
+
         // Достижения за дыхательные практики
         Achievement(
             id = "breathing_beginner",
@@ -75,7 +79,7 @@ object PredefinedAchievements {
         ),
         Achievement(
             id = "breathing_intermediate",
-            title = "Дыхательный контроль",
+            title = "Дыхательный концовок",
             description = "Проведите 60 минут в дыхательных практиках",
             iconResId = R.drawable.ic_achievement_breathing_intermediate,
             type = AchievementType.BREATHING,
@@ -97,8 +101,8 @@ object PredefinedAchievements {
             requiredValue = 300,
             unlockedAt = null
         ),
-        
-        // Достижения за серии последовательных дней
+
+        // Достижения за серии подряд идущих дней
         Achievement(
             id = "streak_week",
             title = "Первая неделя",
@@ -113,7 +117,7 @@ object PredefinedAchievements {
         ),
         Achievement(
             id = "streak_month",
-            title = "Месяц постоянства",
+            title = "Месяц подряд",
             description = "Поддерживайте практику 30 дней подряд",
             iconResId = R.drawable.ic_achievement_streak_month,
             type = AchievementType.STREAK,
@@ -125,7 +129,7 @@ object PredefinedAchievements {
         ),
         Achievement(
             id = "streak_season",
-            title = "Сезон осознанности",
+            title = "Сезон осонанности",
             description = "Поддерживайте практику 90 дней подряд",
             iconResId = R.drawable.ic_achievement_streak_season,
             type = AchievementType.STREAK,
@@ -135,7 +139,7 @@ object PredefinedAchievements {
             requiredValue = 90,
             unlockedAt = null
         ),
-        
+
         // Общие достижения
         Achievement(
             id = "sessions_5",
@@ -163,7 +167,7 @@ object PredefinedAchievements {
         ),
         Achievement(
             id = "sessions_100",
-            title = "Путь осознанности",
+            title = "Пусть осонанности",
             description = "Завершите 100 сессий",
             iconResId = R.drawable.ic_achievement_sessions_100,
             type = AchievementType.GENERAL,
@@ -174,11 +178,11 @@ object PredefinedAchievements {
             unlockedAt = null
         )
     )
-    
+
     /**
-     * Рассчитывает необходимое количество очков для указанного уровня
-     * @param level Уровень пользователя
-     * @return Необходимое количество очков
+     * Рассчитывает необходимое количество очков для указанного уровня.
+     * @param level Уровень пользователя.
+     * @return Необходимое количество очков.
      */
     fun getPointsForLevel(level: Int): Int {
         return when {
@@ -190,11 +194,11 @@ object PredefinedAchievements {
             else -> 6150 + (level - 30) * 400
         }
     }
-    
+
     /**
-     * Рассчитывает уровень на основе очков
-     * @param points Количество очков
-     * @return Уровень пользователя
+     * Рассчитывает уровень на основе очков.
+     * @param points Количество очков.
+     * @return Уровень пользователя.
      */
     fun getLevelForPoints(points: Int): Int {
         return when {
@@ -231,4 +235,4 @@ object PredefinedAchievements {
             else -> 30 + (points - 6150) / 400 + 1
         }
     }
-} 
+}

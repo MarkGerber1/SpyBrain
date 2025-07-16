@@ -1,17 +1,30 @@
-package com.example.spybrain.presentation.meditation
-
-import android.content.Intent
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Slider
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Alignment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.Canvas
@@ -21,8 +34,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +68,35 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import com.example.spybrain.data.repository.MeditationRepositoryImpl.MeditationTrack
 import timber.log.Timber
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.foundation.layout.heightIn
+import com.example.spybrain.presentation.meditation.MeditationViewModel
+import com.example.spybrain.presentation.meditation.MeditationContract
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.*
+import android.content.Intent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,13 +107,13 @@ fun MeditationScreen(
     val settings by settingsViewModel.uiState.collectAsState()
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val voiceService = remember { 
-        // Создаем простую версию без settingsDataStore для UI
+    val voiceService = remember {
+        // РЎРѕР·РґР°РµРј РїСЂРѕСЃС‚СѓСЋ РІРµСЂСЃРёСЋ Р±РµР· settingsDataStore РґР»СЏ UI
         VoiceAssistantService(context, null)
     }
     val player = viewModel.player
 
-    // DisposableEffect для очистки ресурсов при размонтировании композабла
+    // DisposableEffect РґР»СЏ РѕС‡РёСЃС‚РєРё СЂРµСЃСѓСЂСЃРѕРІ РїСЂРё СЂР°Р·РјРѕРЅС‚РёСЂРѕРІР°РЅРёРё РєРѕРјРїРѕР·Р°Р±Р»Р°
     DisposableEffect(Unit) {
         onDispose {
             viewModel.cleanupResources()
@@ -90,7 +130,7 @@ fun MeditationScreen(
                 }
                 context.startService(intent)
             } catch (e: Exception) {
-                Toast.makeText(context, "Не удалось запустить фоновую музыку", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РїСѓСЃС‚РёС‚СЊ С„РѕРЅРѕРІСѓСЋ РјСѓР·С‹РєСѓ", Toast.LENGTH_SHORT).show()
             }
         } else {
             try {
@@ -99,12 +139,12 @@ fun MeditationScreen(
                 }
                 context.startService(intent)
             } catch (e: Exception) {
-                // Игнорируем ошибки при остановке
+                // РРіРЅРѕСЂРёСЂСѓРµРј РѕС€РёР±РєРё РїСЂРё РѕСЃС‚Р°РЅРѕРІРєРµ
             }
         }
     }
 
-    // Обработка эффектов от ViewModel, включая голосовые подсказки
+    // РћР±СЂР°Р±РѕС‚РєР° СЌС„С„РµРєС‚РѕРІ РѕС‚ ViewModel, РІРєР»СЋС‡Р°СЏ РіРѕР»РѕСЃРѕРІС‹Рµ РїРѕРґСЃРєР°Р·РєРё
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect { effect ->
             when(effect) {
@@ -116,17 +156,17 @@ fun MeditationScreen(
                         try {
                             voiceService.speak(effect.text)
                         } catch (e: Exception) {
-                            Toast.makeText(context, "Ошибка голосовой подсказки", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "РћС€РёР±РєР° РіРѕР»РѕСЃРѕРІРѕР№ РїРѕРґСЃРєР°Р·РєРё", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
                 is MeditationContract.Effect.TrackStarted -> {
-                    // Можно добавить уведомление о начале трека
-                    Timber.d("Трек начат: ${effect.track.id}")
+                    // РњРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ СѓРІРµРґРѕРјР»РµРЅРёРµ Рѕ РЅР°С‡Р°Р»Рµ С‚СЂРµРєР°
+                    Timber.d("РўСЂРµРє РЅР°С‡Р°С‚: ${effect.track.id}")
                 }
                 is MeditationContract.Effect.TrackCompleted -> {
-                    // Можно добавить уведомление о завершении трека
-                    Timber.d("Трек завершен: ${effect.track.id}")
+                    // РњРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ СѓРІРµРґРѕРјР»РµРЅРёРµ Рѕ Р·Р°РІРµСЂС€РµРЅРёРё С‚СЂРµРєР°
+                    Timber.d("РўСЂРµРє Р·Р°РІРµСЂС€РµРЅ: ${effect.track.id}")
                 }
             }
         }
@@ -135,15 +175,15 @@ fun MeditationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Медитация") }
+                title = { Text("РњРµРґРёС‚Р°С†РёСЏ") }
             )
         }
     ) { paddingValues ->
-        // Заменяем Crossfade на простой Box с key для пересоздания при смене темы
+        // Р—Р°РјРµРЅСЏРµРј Crossfade РЅР° РїСЂРѕСЃС‚РѕР№ Box СЃ key РґР»СЏ РїРµСЂРµСЃРѕР·РґР°РЅРёСЏ РїСЂРё СЃРјРµРЅРµ С‚РµРјС‹
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             val theme = settings.theme
-            
-            // Определяем ресурсы фона и иконки без использования remember
+
+            // РћРїСЂРµРґРµР»СЏРµРј СЂРµСЃСѓСЂСЃС‹ С„РѕРЅР° Рё РёРєРѕРЅРєРё Р±РµР· РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ remember
             val bgPainter = when (theme) {
                 "water" -> painterResource(id = R.drawable.bg_water)
                 "space" -> painterResource(id = R.drawable.bg_space)
@@ -151,7 +191,7 @@ fun MeditationScreen(
                 "air" -> painterResource(id = R.drawable.bg_air)
                 else -> painterResource(id = R.drawable.bg_nature)
             }
-            
+
             val themeIcon = when (theme) {
                 "water" -> painterResource(id = R.drawable.ic_water)
                 "space" -> painterResource(id = R.drawable.ic_space)
@@ -159,22 +199,22 @@ fun MeditationScreen(
                 "air" -> painterResource(id = R.drawable.ic_air)
                 else -> painterResource(id = R.drawable.ic_nature)
             }
-            
+
             Image(
                 painter = bgPainter,
                 contentDescription = stringResource(id = R.string.meditation_background_image_description),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.matchParentSize()
             )
-            
-            // Полупрозрачный оверлей для лучшей читаемости
+
+            // РџРѕР»СѓРїСЂРѕР·СЂР°С‡РЅС‹Р№ РѕРІРµСЂР»РµР№ РґР»СЏ Р»СѓС‡С€РµР№ С‡РёС‚Р°РµРјРѕСЃС‚Рё
             Box(
                 modifier = Modifier
                     .matchParentSize()
                     .background(Color.Black.copy(alpha = 0.3f))
             )
-            
-            // Иконка темы
+
+            // РРєРѕРЅРєР° С‚РµРјС‹
             Icon(
                 painter = themeIcon,
                 contentDescription = theme,
@@ -184,7 +224,7 @@ fun MeditationScreen(
                     .padding(top = 16.dp),
                 tint = Color.Unspecified
             )
-            
+
             when {
                 state.isLoading -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -192,23 +232,23 @@ fun MeditationScreen(
                     }
                 }
                 state.currentPlaying == null -> {
-                    // Показываем выбор между медитациями и треками
+                    // РџРѕРєР°Р·С‹РІР°РµРј РІС‹Р±РѕСЂ РјРµР¶РґСѓ РјРµРґРёС‚Р°С†РёСЏРјРё Рё С‚СЂРµРєР°РјРё
                     var selectedMode by remember { mutableStateOf("meditations") }
-                    
+
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Переключатель режимов
+                        // РџРµСЂРµРєР»СЋС‡Р°С‚РµР»СЊ СЂРµР¶РёРјРѕРІ
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 16.dp),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            // Кнопка "Медитации"
+                            // РљРЅРѕРїРєР° "РњРµРґРёС‚Р°С†РёРё"
                             Card(
                                 modifier = Modifier
                                     .weight(1f)
@@ -234,8 +274,8 @@ fun MeditationScreen(
                                     modifier = Modifier.padding(16.dp)
                                 )
                             }
-                            
-                            // Кнопка "Треки"
+
+                            // РљРЅРѕРїРєР° "РўСЂРµРєРё"
                             Card(
                                 modifier = Modifier
                                     .weight(1f)
@@ -262,8 +302,8 @@ fun MeditationScreen(
                                 )
                             }
                         }
-                        
-                        // Контент в зависимости от выбранного режима
+
+                        // РљРѕРЅС‚РµРЅС‚ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РІС‹Р±СЂР°РЅРЅРѕРіРѕ СЂРµР¶РёРјР°
                         when (selectedMode) {
                             "meditations" -> MeditationList(viewModel, settings.voiceHintsEnabled)
                             "tracks" -> MeditationTrackPlayer(viewModel)
@@ -282,7 +322,7 @@ fun MeditationList(
     voiceHintsEnabled: Boolean
 ) {
     val state by viewModel.uiState.collectAsState()
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -301,13 +341,13 @@ fun MeditationList(
             )
         ) {
             Text(
-                text = "Выберите медитацию",
+                text = "Р’С‹Р±РµСЂРёС‚Рµ РјРµРґРёС‚Р°С†РёСЋ",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
-        
+
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -332,9 +372,9 @@ fun MeditationList(
                             .fillMaxWidth()
                             .clickable {
                                 viewModel.setEvent(MeditationContract.Event.PlayMeditation(meditation))
-                                
+
                                 if (voiceHintsEnabled) {
-                                    viewModel.setEvent(MeditationContract.Event.VoiceCommand("начать медитацию ${meditation.title}"))
+                                    viewModel.setEvent(MeditationContract.Event.VoiceCommand("РЅР°С‡Р°С‚СЊ РјРµРґРёС‚Р°С†РёСЋ ${meditation.title}"))
                                 }
                             },
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -382,8 +422,8 @@ fun MeditationPlayerUI(
     var position by remember { mutableStateOf(0L) }
     var duration by remember { mutableStateOf(0L) }
     var isPlaying by remember { mutableStateOf(true) }
-    
-    // Обновляем позицию проигрывания
+
+    // РћР±РЅРѕРІР»СЏРµРј РїРѕР·РёС†РёСЋ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ
     LaunchedEffect(player) {
         while (true) {
             position = player.getCurrentPosition()
@@ -392,7 +432,7 @@ fun MeditationPlayerUI(
             delay(500L)
         }
     }
-    
+
     AnimatedVisibility(
         visible = true,
         enter = fadeIn(animationSpec = tween(1000)) + slideInVertically(
@@ -411,7 +451,7 @@ fun MeditationPlayerUI(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Заголовок медитации
+            // Р—Р°РіРѕР»РѕРІРѕРє РјРµРґРёС‚Р°С†РёРё
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn(animationSpec = tween(1500)) + slideInVertically(
@@ -429,9 +469,9 @@ fun MeditationPlayerUI(
                         color = Color.White,
                         textAlign = TextAlign.Center
                     )
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     Text(
                         text = meditation.description,
                         style = MaterialTheme.typography.bodyMedium,
@@ -441,8 +481,8 @@ fun MeditationPlayerUI(
                     )
                 }
             }
-            
-            // Визуализация медитации
+
+            // Р’РёР·СѓР°Р»РёР·Р°С†РёСЏ РјРµРґРёС‚Р°С†РёРё
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn(animationSpec = tween(2000)) + slideInVertically(
@@ -452,8 +492,8 @@ fun MeditationPlayerUI(
             ) {
                 MeditationCircle(isPlaying = isPlaying)
             }
-            
-            // Прогресс и контроллеры
+
+            // РџСЂРѕРіСЂРµСЃСЃ Рё РєРѕРЅС‚СЂРѕР»Р»РµСЂС‹
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn(animationSpec = tween(2500)) + slideInVertically(
@@ -465,7 +505,7 @@ fun MeditationPlayerUI(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Время
+                    // Р’СЂРµРјСЏ
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -481,38 +521,38 @@ fun MeditationPlayerUI(
                             color = Color.White
                         )
                     }
-                    
-                    // Прогресс-бар
+
+                    // РџСЂРѕРіСЂРµСЃСЃ-Р±Р°СЂ
                     Slider(
                         value = if (duration > 0) position / duration.toFloat() else 0f,
                         onValueChange = { frac -> player.seekTo((duration * frac).toLong()) },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    
-                    // Кнопки управления
+
+                    // РљРЅРѕРїРё СѓРїСЂР°РІР»РµРЅРёСЏ
                     Row(
                         modifier = Modifier.padding(bottom = 24.dp),
                         horizontalArrangement = Arrangement.spacedBy(32.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Левая кнопка - Стоп
+                        // Р›РµРІР°СЏ РєРЅРѕРїРєР° - РЎС‚РѕРї
                         StopButton { viewModel.setEvent(MeditationContract.Event.StopMeditation) }
-                        
-                        // Центральная кнопка - Играть/Пауза
+
+                        // Р¦РµРЅС‚СЂР°Р»СЊРЅР°СЏ РєРЅРѕРїРєР° - РРіСЂР°С‚СЊ/РџР°СѓР·Р°
                         PlayPauseButton(
                             isPlaying = isPlaying,
                             onPlayPause = {
                                 if (isPlaying) {
                                     viewModel.setEvent(MeditationContract.Event.PauseMeditation)
                                 } else {
-                                    uiState.currentPlaying?.let { 
-                                        viewModel.setEvent(MeditationContract.Event.PlayMeditation(it)) 
+                                    uiState.currentPlaying?.let {
+                                        viewModel.setEvent(MeditationContract.Event.PlayMeditation(it))
                                     }
                                 }
                             }
                         )
-                        
-                        // Правая кнопка - Ещё
+
+                        // РџСЂР°РІР°СЏ РєРЅРѕРїРєР° - Р•С‰С‘
                         ExtraButton()
                     }
                 }
@@ -523,9 +563,9 @@ fun MeditationPlayerUI(
 
 @Composable
 fun MeditationCircle(isPlaying: Boolean) {
-    // Анимация пульсации
+    // РђРЅРёРјР°С†РёСЏ РїСѓР»СЊСЃР°С†РёРё
     val infiniteTransition = rememberInfiniteTransition(label = "pulseTransition")
-    val animationValue by infiniteTransition.animateFloat(
+    val animationValue by infiniteTransition.animateFloatAsState(
         initialValue = 0.7f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
@@ -534,21 +574,21 @@ fun MeditationCircle(isPlaying: Boolean) {
         ),
         label = "pulseAnimation"
     )
-    
+
     val size = if (isPlaying) animationValue else 0.7f
     val color = MaterialTheme.colorScheme.primary
-    
+
     Box(
         modifier = Modifier.size(250.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Градиентный круг
+        // Р“СЂР°РґРёРµРЅС‚РЅС‹Р№ РєСЂСѓРі
         Canvas(modifier = Modifier.matchParentSize()) {
             val centerX = this.size.width / 2f
             val centerY = this.size.height / 2f
             val radius = (this.size.width.coerceAtMost(this.size.height) / 2f) * size
-            
-            // Градиентное заполнение
+
+            // Р“СЂР°РґРёРµРЅС‚РЅРѕРµ Р·Р°РїРѕР»РЅРµРЅРёРµ
             drawCircle(
                 brush = Brush.radialGradient(
                     colors = listOf(
@@ -561,8 +601,8 @@ fun MeditationCircle(isPlaying: Boolean) {
                 radius = radius,
                 center = Offset(centerX, centerY)
             )
-            
-            // Контур
+
+            // РљРѕРЅС‚СѓСЂ
             drawCircle(
                 color = color,
                 radius = radius,
@@ -604,9 +644,9 @@ fun PlayPauseButton(isPlaying: Boolean, onPlayPause: () -> Unit) {
     ) {
         Icon(
             imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-            contentDescription = if (isPlaying) 
+            contentDescription = if (isPlaying)
                 stringResource(id = R.string.meditation_pause)
-            else 
+            else
                 stringResource(id = R.string.meditation_play),
             tint = Color.White,
             modifier = Modifier.size(40.dp)
@@ -621,19 +661,19 @@ fun ExtraButton() {
             .size(56.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-            .clickable { /* Дополнительное действие */ },
+            .clickable { /* Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРµ РґРµР№СЃС‚РІРёРµ */ },
         contentAlignment = Alignment.Center
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_nature),
-            contentDescription = "Дополнительное действие",
+            contentDescription = "Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРµ РґРµР№СЃС‚РІРёРµ",
             tint = Color.White,
             modifier = Modifier.size(30.dp)
         )
     }
 }
 
-// Форматирование времени в формат MM:SS
+// Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ РІСЂРµРјРµРЅРё РІ С„РѕСЂРјР°С‚ MM:SS
 private fun formatDuration(durationMs: Long): String {
     val totalSeconds = durationMs / 1000
     val minutes = totalSeconds / 60
@@ -648,14 +688,14 @@ fun MeditationTrackPlayer(
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    
+
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Заголовок секции
+        // Р—Р°РіРѕР»РѕРІРѕРє СЃРµРєС†РёРё
         Text(
             text = stringResource(id = R.string.meditation_tracks_title),
             style = MaterialTheme.typography.headlineSmall,
@@ -663,8 +703,8 @@ fun MeditationTrackPlayer(
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        
-        // Список треков
+
+        // РЎРїРёСЃРѕРє С‚СЂРµРєРѕРІ
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -680,8 +720,8 @@ fun MeditationTrackPlayer(
                 )
             }
         }
-        
-        // Элементы управления воспроизведением
+
+        // Р­Р»РµРјРµРЅС‚С‹ СѓРїСЂР°РІР»РµРЅРёСЏ РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµРј
         if (state.selectedTrack != null) {
             Spacer(modifier = Modifier.height(16.dp))
             TrackPlayerControls(
@@ -690,7 +730,7 @@ fun MeditationTrackPlayer(
                 progress = state.trackProgress,
                 duration = state.trackDuration,
                 currentPosition = state.currentPosition,
-                onPlayPause = { 
+                onPlayPause = {
                     viewModel.handleEvent(MeditationContract.Event.PlaySelectedTrack)
                 },
                 onNext = { viewModel.handleEvent(MeditationContract.Event.NextTrack) },
@@ -714,13 +754,13 @@ fun MeditationTrackItem(
         animationSpec = tween(300),
         label = "track_alpha"
     )
-    
+
     val animatedScale by animateFloatAsState(
         targetValue = if (isSelected) 1.02f else 1f,
         animationSpec = tween(300),
         label = "track_scale"
     )
-    
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -748,7 +788,7 @@ fun MeditationTrackItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Иконка трека
+            // РРєРѕРЅРєР° С‚СЂРµРєР°
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -759,9 +799,9 @@ fun MeditationTrackItem(
                 contentAlignment = Alignment.Center
             ) {
                 if (isPlaying) {
-                    // Анимированная иконка воспроизведения
+                    // РђРЅРёРјРёСЂРѕРІР°РЅРЅР°СЏ РёРєРѕРЅРєР° РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ
                     val infiniteTransition = rememberInfiniteTransition(label = "playing_animation")
-                    val scale by infiniteTransition.animateFloat(
+                    val scale by infiniteTransition.animateFloatAsState(
                         initialValue = 0.8f,
                         targetValue = 1.2f,
                         animationSpec = infiniteRepeatable(
@@ -770,7 +810,7 @@ fun MeditationTrackItem(
                         ),
                         label = "playing_scale"
                     )
-                    
+
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = stringResource(id = R.string.playing),
@@ -788,10 +828,10 @@ fun MeditationTrackItem(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
-            // Информация о треке
+
+            // РРЅС„РѕСЂРјР°С†РёСЏ Рѕ С‚СЂРµРєРµ
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -801,15 +841,15 @@ fun MeditationTrackItem(
                     color = Color.White,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                 )
-                
+
                 Text(
                     text = stringResource(id = R.string.meditation_track_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.7f)
                 )
             }
-            
-            // Индикатор выбора
+
+            // РРЅРґРёРєР°С‚РѕСЂ РІС‹Р±РѕСЂР°
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
@@ -849,7 +889,7 @@ fun TrackPlayerControls(
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Название текущего трека
+            // РќР°Р·РІР°РЅРёРµ С‚РµРєСѓС‰РµРіРѕ С‚СЂРµРєР°
             Text(
                 text = stringResource(id = track.titleRes),
                 style = MaterialTheme.typography.titleLarge,
@@ -857,8 +897,8 @@ fun TrackPlayerControls(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            
-            // Прогресс-бар
+
+            // РџСЂРѕРіСЂРµСЃСЃ-Р±Р°СЂ
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -875,7 +915,7 @@ fun TrackPlayerControls(
                         inactiveTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                     )
                 )
-                
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -885,7 +925,7 @@ fun TrackPlayerControls(
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.7f)
                     )
-                    
+
                     Text(
                         text = formatDuration(duration),
                         style = MaterialTheme.typography.bodySmall,
@@ -893,16 +933,16 @@ fun TrackPlayerControls(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
-            // Кнопки управления
+
+            // РљРЅРѕРїРё СѓРїСЂР°РІР»РµРЅРёСЏ
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Кнопка "Предыдущий"
+                // РљРЅРѕРїРєР° "РџСЂРµРґС‹РґСѓС‰РёР№"
                 IconButton(
                     onClick = onPrevious,
                     modifier = Modifier
@@ -919,8 +959,8 @@ fun TrackPlayerControls(
                         modifier = Modifier.rotate(180f)
                     )
                 }
-                
-                // Кнопка Play/Pause
+
+                // РљРЅРѕРїРєР° Play/Pause
                 IconButton(
                     onClick = onPlayPause,
                     modifier = Modifier
@@ -937,8 +977,8 @@ fun TrackPlayerControls(
                         modifier = Modifier.size(32.dp)
                     )
                 }
-                
-                // Кнопка "Следующий"
+
+                // РљРЅРѕРїРєР° "РЎР»РµРґСѓСЋС‰РёР№"
                 IconButton(
                     onClick = onNext,
                     modifier = Modifier
@@ -957,4 +997,4 @@ fun TrackPlayerControls(
             }
         }
     }
-} 
+}

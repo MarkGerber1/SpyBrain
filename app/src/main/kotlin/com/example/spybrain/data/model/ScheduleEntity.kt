@@ -1,4 +1,4 @@
-package com.example.spybrain.data.model
+﻿package com.example.spybrain.data.model
 
 import androidx.room.Entity
 import androidx.room.Ignore
@@ -9,56 +9,80 @@ import com.example.spybrain.domain.model.ScheduleType
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * РЎСѓС‰РЅРѕСЃС‚СЊ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЂР°СЃРїРёСЃР°РЅРёР№.
+ * @property id РЈРЅРёРєР°Р»СЊРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ.
+ * @property title РќР°Р·РІР°РЅРёРµ СЂР°СЃРїРёСЃР°РЅРёСЏ.
+ * @property description РћРїРёСЃР°РЅРёРµ СЂР°СЃРїРёСЃР°РЅРёСЏ.
+ * @property startTimeStr Р’СЂРµРјСЏ РЅР°С‡Р°Р»Р° (СЃС‚СЂРѕРєР°).
+ * @property endTimeStr Р’СЂРµРјСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ (СЃС‚СЂРѕРєР°).
+ * @property typeStr РўРёРї СЂР°СЃРїРёСЃР°РЅРёСЏ (СЃС‚СЂРѕРєР°).
+ * @property daysOfWeek Р”РЅРё РЅРµРґРµР»Рё (Р±РёС‚РѕРІР°СЏ РјР°СЃРєР°).
+ * @property isEnabled Р’РєР»СЋС‡РµРЅРѕ Р»Рё СЂР°СЃРїРёСЃР°РЅРёРµ.
+ * @property notificationEnabled Р’РєР»СЋС‡РµРЅС‹ Р»Рё СѓРІРµРґРѕРјР»РµРЅРёСЏ.
+ * @property itemId РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃРІСЏР·Р°РЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°.
+ * @property reminders РЎРїРёСЃРѕРє РЅР°РїРѕРјРёРЅР°РЅРёР№ РґР»СЏ СЂР°СЃРїРёСЃР°РЅРёСЏ.
+ */
 @Entity(tableName = "schedules")
 data class ScheduleEntity(
+    /** РЈРЅРёРєР°Р»СЊРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ. */
     @PrimaryKey val id: String,
+    /** РќР°Р·РІР°РЅРёРµ СЂР°СЃРїРёСЃР°РЅРёСЏ. */
     val title: String,
-    val description: String = "",
-    val startTimeStr: String,
-    val endTimeStr: String,
-    val typeStr: String,
-    val daysOfWeek: Int, // Битовая маска дней недели: 1 = Пн, 2 = Вт, 4 = Ср, и т.д.
+    /** РћРїРёСЃР°РЅРёРµ СЂР°СЃРїРёСЃР°РЅРёСЏ. */
+    val description: String? = null,
+    /** Р’СЂРµРјСЏ РЅР°С‡Р°Р»Р° (РјР»РЅСЋСЋ СЃРµРєСѓРЅРґ). */
+    val startTime: Long,
+    /** Р’СЂРµРјСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ (РјР»РЅСЋСЋ СЃРµРєСѓРЅРґ). */
+    val endTime: Long,
+    /** РўРёРї СЂР°СЃРїРёСЃР°РЅРёСЏ (СЃС‚СЂРѕРєР°). */
+    val type: String,
+    /** Р”РЅРё РЅРµРґРµР»Рё (Р±РёС‚РѕРІР°СЏ РјР°СЃРєР°). */
+    val daysOfWeek: String, // сериализованный список (например, "1,2,3")
+    /** Р’РєР»СЋС‡РµРЅРѕ Р»Рё СЂР°СЃРїРёСЃР°РЅРёРµ. */
     val isEnabled: Boolean = true,
+    /** Р’РєР»СЋС‡РµРЅС‹ Р»Рё СѓРІРµРґРѕРјР»РµРЅРёСЏ. */
     val notificationEnabled: Boolean = true,
-    val itemId: String? = null // ID связанного элемента (медитации, дыхательного упражнения)
+    /** РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃРІСЏР·Р°РЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°. */
+    val itemId: String? = null // ID СЃРІСЏР·Р°РЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° (РјРµРґРёС‚Р°С†РёРё, РґС‹С…Р°С‚РµР»СЊРЅРѕРіРѕ СѓРїСЂР°Р¶РЅРµРЅРёСЏ)
 ) {
+    /** РЎРїРёСЃРѕРє РЅР°РїРѕРјРёРЅР°РЅРёР№ РґР»СЏ СЂР°СЃРїРёСЃР°РЅРёСЏ. */
     @Ignore
     var reminders: List<Reminder> = emptyList()
-    
+
     /**
-     * Преобразование в доменную модель
+     * РџСЂРµРѕР±СЂР°Р·СѓРµС‚ ScheduleEntity РІ РґРѕРјРµРЅРЅСѓСЋ РјРѕРґРµР»СЊ.
+     * @return Р”РѕРјРµРЅРЅР°СЏ РјРѕРґРµР»СЊ Schedule.
      */
     fun toDomain(): Schedule {
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
         return Schedule(
             id = id,
             title = title,
             description = description,
-            startTime = LocalTime.parse(startTimeStr, formatter),
-            endTime = LocalTime.parse(endTimeStr, formatter),
-            type = ScheduleType.valueOf(typeStr),
-            daysOfWeek = daysOfWeek,
+            startTime = startTime,
+            endTime = endTime,
+            type = ScheduleType.valueOf(type),
+            daysOfWeek = daysOfWeek.split(",").mapNotNull { it.toIntOrNull() },
             isEnabled = isEnabled,
             notificationEnabled = notificationEnabled,
             itemId = itemId,
             reminders = reminders
         )
     }
-    
+
     companion object {
         /**
-         * Создание из доменной модели
+         * Создание из доменной модели.
          */
         fun fromDomain(schedule: Schedule): ScheduleEntity {
-            val formatter = DateTimeFormatter.ofPattern("HH:mm")
             return ScheduleEntity(
                 id = schedule.id,
                 title = schedule.title,
                 description = schedule.description,
-                startTimeStr = schedule.startTime.format(formatter),
-                endTimeStr = schedule.endTime.format(formatter),
-                typeStr = schedule.type.name,
-                daysOfWeek = schedule.daysOfWeek,
+                startTime = schedule.startTime,
+                endTime = schedule.endTime,
+                type = schedule.type.name,
+                daysOfWeek = schedule.daysOfWeek.joinToString(","),
                 isEnabled = schedule.isEnabled,
                 notificationEnabled = schedule.notificationEnabled,
                 itemId = schedule.itemId
@@ -70,22 +94,7 @@ data class ScheduleEntity(
 }
 
 /**
- * Функция расширения для преобразования Schedule в ScheduleEntity
+ * РџСЂРµРѕР±СЂР°Р·СѓРµС‚ Schedule РІ ScheduleEntity.
+ * @return РЎСѓС‰РЅРѕСЃС‚СЊ Р±Р°Р·С‹ РґР°РЅРЅС‹С….
  */
-fun Schedule.toEntity(): ScheduleEntity {
-    val formatter = DateTimeFormatter.ofPattern("HH:mm")
-    return ScheduleEntity(
-        id = id,
-        title = title,
-        description = description,
-        startTimeStr = startTime.format(formatter),
-        endTimeStr = endTime.format(formatter),
-        typeStr = type.name,
-        daysOfWeek = daysOfWeek,
-        isEnabled = isEnabled,
-        notificationEnabled = notificationEnabled,
-        itemId = itemId
-    ).apply {
-        reminders = this@toEntity.reminders
-    }
-} 
+fun Schedule.toEntity(): ScheduleEntity = ScheduleEntity.fromDomain(this)

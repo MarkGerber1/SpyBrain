@@ -1,4 +1,4 @@
-package com.example.spybrain.presentation.navigation
+﻿package com.example.spybrain.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -18,13 +18,17 @@ import com.example.spybrain.presentation.reminders.HeartRateScreen
 import com.example.spybrain.presentation.settings.SettingsScreen
 import com.example.spybrain.presentation.stats.StatsScreen
 import com.example.spybrain.presentation.splash.SplashScreen
+import com.example.spybrain.presentation.achievements.AchievementsScreen
 
+/**
+ * @param navController РљРѕРЅС‚СЂРѕР»Р»РµСЂ РЅР°РІРёРіР°С†РёРё.
+ */
 @Composable
 fun NavGraph(navController: NavHostController) {
     NavHost(navController, startDestination = Screen.Meditation.route) {
 
-        composable(Screen.Splash.route) { 
-            SplashScreen(navController) 
+        composable(Screen.Splash.route) {
+            SplashScreen(navController)
         }
 
         composable(Screen.Meditation.route) {
@@ -38,7 +42,7 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Stats.route) {
             StatsScreen()
         }
-        
+
         composable(Screen.HeartRate.route) {
             HeartRateScreen(navController)
         }
@@ -50,7 +54,7 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.MeditationLibrary.route) {
             MeditationLibraryScreen()
         }
-        
+
         composable(Screen.PatternBuilder.route) {
             BreathingPatternBuilderScreen(navController)
         }
@@ -72,10 +76,10 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.BioSync.route) {
             BioSyncScreen()
         }
-        
+
         composable(Screen.Achievements.route) {
-            // TODO: Добавить экран достижений
-            com.example.spybrain.presentation.achievements.AchievementsScreen()
+            // TODO: Р”РѕР±Р°РІРёС‚СЊ СЌРєСЂР°РЅ РґРѕСЃС‚РёР¶РµРЅРёР№
+            AchievementsScreen()
         }
     }
-} 
+}
