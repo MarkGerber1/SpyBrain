@@ -111,4 +111,4 @@ app/src/main/kotlin/com/example/spybrain/
 // TODO: Проверить и протестировать все миграции (MIGRATION_1_2, MIGRATION_2_3) 
 
 ## 🛰 Сервисы приложения
-// TODO: Документировать назначение и взаимодействие всех сервисов (HealthAdvisorService, MeditationPlayerService, BackgroundMusicService, MeditationPlayerReceiver и др.) 
+// TODO: Документировать назначение и взаимодействие всех сервисов (HealthAdvisorService, MeditationPlayerService, BackgroundMusicService, MeditationPlayerReceiver и др.) # SpyBrain
