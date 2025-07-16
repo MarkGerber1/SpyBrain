@@ -272,7 +272,7 @@ fun breathingItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = pattern.description,
+                text = pattern.description ?: "",
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(8.dp))

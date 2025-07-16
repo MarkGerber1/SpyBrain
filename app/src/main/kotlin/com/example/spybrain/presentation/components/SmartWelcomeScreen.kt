@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Alignment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -52,6 +51,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Alignment
 
 /**
  * Р­РЅСЂР°РЅ СўРјРЅРѕРіРѕ РїСЂРёРІРµС‚СЃС‚РІРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
@@ -95,7 +95,7 @@ fun SmartWelcomeScreen(
                 .fillMaxSize()
                 .padding(24.dp),
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(greeting, style = MaterialTheme.typography.headlineLarge, color = Color.White)
             Spacer(modifier = Modifier.height(24.dp))
