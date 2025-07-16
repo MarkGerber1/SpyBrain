@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.achievements
+package com.example.spybrain.presentation.achievements
 
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.domain.model.AchievementType
@@ -14,12 +14,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.example.spybrain.domain.error.ErrorHandler // FIXME Р±РёР»Рґ-С„РёРєСЃ 09.05.2025
 import javax.inject.Inject
-import com.example.spybrain.presentation.base.BaseContract.UiEvent
-import com.example.spybrain.presentation.base.BaseContract.UiState
-import com.example.spybrain.presentation.base.BaseContract.UiEffect
 
 /**
- * @constructor Р’РЅРµРґСЂРµРЅРёРµ Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№ С‡РµСЂРµР· Hilt.
+ * @constructor Р'РЅРµРґСЂРµРЅРёРµ Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№ С‡РµСЂРµР· Hilt.
  * @param getAchievementsUseCase UseCase РїРѕР»СѓС‡РµРЅРёСЏ РґРѕСЃС‚РёР¶РµРЅРёР№.
  */
 @HiltViewModel
