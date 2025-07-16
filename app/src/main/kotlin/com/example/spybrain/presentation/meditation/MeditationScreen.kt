@@ -1,3 +1,5 @@
+package com.example.spybrain.presentation.meditation
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,7 +23,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Alignment
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -75,6 +77,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -383,7 +386,7 @@ fun MeditationList(
                             Text(text = meditation.title, style = MaterialTheme.typography.titleMedium)
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                text = meditation.description,
+                                text = meditation.description ?: "",
                                 style = MaterialTheme.typography.bodyMedium,
                                 maxLines = 2
                             )
@@ -398,7 +401,7 @@ fun MeditationList(
                                     style = MaterialTheme.typography.bodySmall
                                 )
                                 Text(
-                                    text = meditation.category,
+                                    text = meditation.category ?: "",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -473,7 +476,7 @@ fun MeditationPlayerUI(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = meditation.description,
+                        text = meditation.description ?: "",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.8f),
                         textAlign = TextAlign.Center,
@@ -565,7 +568,7 @@ fun MeditationPlayerUI(
 fun MeditationCircle(isPlaying: Boolean) {
     // РђРЅРёРјР°С†РёСЏ РїСѓР»СЊСЃР°С†РёРё
     val infiniteTransition = rememberInfiniteTransition(label = "pulseTransition")
-    val animationValue by infiniteTransition.animateFloatAsState(
+    val animationValue by infiniteTransition.animateFloat(
         initialValue = 0.7f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
@@ -801,7 +804,7 @@ fun MeditationTrackItem(
                 if (isPlaying) {
                     // РђРЅРёРјРёСЂРѕРІР°РЅРЅР°СЏ РёРєРѕРЅРєР° РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ
                     val infiniteTransition = rememberInfiniteTransition(label = "playing_animation")
-                    val scale by infiniteTransition.animateFloatAsState(
+                    val scale by infiniteTransition.animateFloat(
                         initialValue = 0.8f,
                         targetValue = 1.2f,
                         animationSpec = infiniteRepeatable(
