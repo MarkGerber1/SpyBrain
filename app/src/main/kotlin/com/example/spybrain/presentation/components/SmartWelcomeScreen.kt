@@ -23,9 +23,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Alignment
+import androidx.compose.foundation.layout.Alignment as LayoutAlignment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -51,7 +52,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.size
-import androidx.compose.ui.Alignment
 
 /**
  * Р­РЅСЂР°РЅ СўРјРЅРѕРіРѕ РїСЂРёРІРµС‚СЃС‚РІРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
@@ -75,7 +75,7 @@ fun SmartWelcomeScreen(
         }
     }
 
-    // РћРїСЂРµРґРµР»СЏРµРј РІСЂРµРјСЏ СЃСўС‚РѕРє
+    // РћРїСЂРµРґРµР»СЏРµРј РІСЂРµРјСЏ СЃС‚РѕРє
     val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
     val (greeting, bgRes) = when (hour) {
         in 5..11 -> "Р”РѕР±СЂРѕРµ СўС‚СЂРѕ!" to com.example.spybrain.R.drawable.bg_water
@@ -95,7 +95,7 @@ fun SmartWelcomeScreen(
                 .fillMaxSize()
                 .padding(24.dp),
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = LayoutAlignment.CenterHorizontally
         ) {
             Text(greeting, style = MaterialTheme.typography.headlineLarge, color = Color.White)
             Spacer(modifier = Modifier.height(24.dp))
