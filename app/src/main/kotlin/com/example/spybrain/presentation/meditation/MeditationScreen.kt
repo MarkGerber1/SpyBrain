@@ -1,3 +1,5 @@
+package com.example.spybrain.presentation.meditation
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -75,6 +77,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -565,7 +568,7 @@ fun MeditationPlayerUI(
 fun MeditationCircle(isPlaying: Boolean) {
     // РђРЅРёРјР°С†РёСЏ РїСѓР»СЊСЃР°С†РёРё
     val infiniteTransition = rememberInfiniteTransition(label = "pulseTransition")
-    val animationValue by infiniteTransition.animateFloatAsState(
+    val animationValue by infiniteTransition.animateFloat(
         initialValue = 0.7f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
@@ -801,7 +804,7 @@ fun MeditationTrackItem(
                 if (isPlaying) {
                     // РђРЅРёРјРёСЂРѕРІР°РЅРЅР°СЏ РёРєРѕРЅРєР° РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ
                     val infiniteTransition = rememberInfiniteTransition(label = "playing_animation")
-                    val scale by infiniteTransition.animateFloatAsState(
+                    val scale by infiniteTransition.animateFloat(
                         initialValue = 0.8f,
                         targetValue = 1.2f,
                         animationSpec = infiniteRepeatable(
