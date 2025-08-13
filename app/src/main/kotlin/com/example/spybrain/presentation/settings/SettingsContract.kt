@@ -15,6 +15,7 @@ object SettingsContract {
         val theme: String = "water",
         val ambientEnabled: Boolean = false,
         val ambientTrack: String = "",
+            val ambientVolume: Float = 0.5f,
         val heartbeatEnabled: Boolean = false,
         val voiceEnabled: Boolean = false,
         val voiceHintsEnabled: Boolean = false,
@@ -38,6 +39,7 @@ object SettingsContract {
         /**
          */
         data class AmbientTrackSelected(val trackId: String) : Event()
+        data class AmbientVolumeChanged(val volume: Float) : Event()
         /**
          */
         data class HeartbeatToggled(val enabled: Boolean) : Event()

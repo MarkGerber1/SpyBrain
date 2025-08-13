@@ -58,82 +58,82 @@ class MeditationRepositoryImpl @Inject constructor(
 
     private fun getLocalizedMeditationInfo(fileName: String): Triple<String, String, String> {
         return when (fileName.lowercase()) {
-            "sleep", "СЃРѕРЅ", "РІРµС‡РµСЂРЅРёР№-РїРѕРєРѕР№" -> Triple(
+            "sleep", "сон", "вечерний-покой" -> Triple(
                 context.getString(R.string.meditation_sleep),
                 context.getString(R.string.meditation_sleep_desc),
                 context.getString(R.string.category_sleep)
             )
-            "morning", "СѓС‚СЂРѕ", "СѓС‚СЂРµРЅРЅСЏСЏ-СЃРІРµР¶РµСЃС‚СЊ" -> Triple(
+            "morning", "утро", "утренняя-свежесть" -> Triple(
                 context.getString(R.string.meditation_morning),
                 context.getString(R.string.meditation_morning_desc),
                 context.getString(R.string.category_focus)
             )
-            "stress", "СЃС‚СЂРµСЃСЃ", "СЃРЅСЏС‚РёРµ-СЃС‚СЂРµСЃСЃР°" -> Triple(
+            "stress", "стресс", "снятие-стресса" -> Triple(
                 context.getString(R.string.meditation_stress_relief),
                 context.getString(R.string.meditation_stress_relief_desc),
                 context.getString(R.string.category_anxiety)
             )
-            "anxiety", "С‚СЂРµРІРѕР¶РЅРѕСЃС‚СЊ", "СЃРїРѕРєРѕР№СЃС‚РІРёРµ-РґСѓС€Рё" -> Triple(
+            "anxiety", "тревожность", "спокойствие-души" -> Triple(
                 context.getString(R.string.meditation_anxiety),
                 context.getString(R.string.meditation_anxiety_desc),
                 context.getString(R.string.category_anxiety)
             )
-            "focus", "РєРѕРЅС†РµРЅС‚СЂР°С†РёСЏ", "РєРѕРЅС†РµРЅС‚СЂР°С†РёСЏ-РІРЅРёРјР°РЅРёСЏ" -> Triple(
+            "focus", "концентрация", "концентрация-внимания" -> Triple(
                 context.getString(R.string.meditation_focus),
                 context.getString(R.string.meditation_focus_desc),
                 context.getString(R.string.category_focus)
             )
-            "mindfulness", "РѕСЃРѕР·РЅР°РЅРЅРѕСЃС‚СЊ", "РѕСЃРЅРѕРІС‹-РѕСЃРѕР·РЅР°РЅРЅРѕСЃС‚Рё" -> Triple(
+            "mindfulness", "осознанность", "основы-осознанности" -> Triple(
                 context.getString(R.string.meditation_mindfulness_basics),
                 context.getString(R.string.meditation_mindfulness_basics_desc),
                 context.getString(R.string.category_mindfulness)
             )
-            "breathing", "РґС‹С…Р°РЅРёРµ", "РіР»СѓР±РѕРєРѕРµ-РґС‹С…Р°РЅРёРµ" -> Triple(
+            "breathing", "дыхание", "глубокое-дыхание" -> Triple(
                 context.getString(R.string.meditation_deep_breathing),
                 context.getString(R.string.meditation_deep_breathing_desc),
                 context.getString(R.string.category_focus)
             )
-            "body_scan", "СЃРєР°РЅРёСЂРѕРІР°РЅРёРµ-С‚РµР»Р°" -> Triple(
+            "body_scan", "сканирование-тела" -> Triple(
                 context.getString(R.string.meditation_body_scan),
                 context.getString(R.string.meditation_body_scan_desc),
                 context.getString(R.string.category_mindfulness)
             )
-            "loving_kindness", "Р»СЋР±СЏС‰Р°СЏ-РґРѕР±СЂРѕС‚Р°" -> Triple(
+            "loving_kindness", "любящая-доброта" -> Triple(
                 context.getString(R.string.meditation_loving_kindness),
                 context.getString(R.string.meditation_loving_kindness_desc),
                 context.getString(R.string.category_mindfulness)
             )
-            "walking", "С…РѕРґСЊР±Р°", "С…РѕРґСЏС‡Р°СЏ-РјРµРґРёС‚Р°С†РёСЏ" -> Triple(
+            "walking", "ходьба", "ходячая-медитация" -> Triple(
                 context.getString(R.string.meditation_walking),
                 context.getString(R.string.meditation_walking_desc),
                 context.getString(R.string.category_mindfulness)
             )
-            "gratitude", "Р±Р»Р°РіРѕРґР°СЂРЅРѕСЃС‚СЊ" -> Triple(
+            "gratitude", "благодарность" -> Triple(
                 context.getString(R.string.meditation_gratitude),
                 context.getString(R.string.meditation_gratitude_desc),
                 context.getString(R.string.category_mindfulness)
             )
-            "compassion", "СЃРѕСЃС‚СЂР°РґР°РЅРёРµ" -> Triple(
+            "compassion", "сострадание" -> Triple(
                 context.getString(R.string.meditation_compassion),
                 context.getString(R.string.meditation_compassion_desc),
                 context.getString(R.string.category_mindfulness)
             )
-            "zen", "РґР·РµРЅ" -> Triple(
+            "zen", "дзен" -> Triple(
                 context.getString(R.string.meditation_zen),
                 context.getString(R.string.meditation_zen_desc),
                 context.getString(R.string.category_focus)
             )
-            "vipassana", "РІРёРїР°СЃСЃР°РЅР°" -> Triple(
+            "vipassana", "випассана" -> Triple(
                 context.getString(R.string.meditation_vipassana),
                 context.getString(R.string.meditation_vipassana_desc),
                 context.getString(R.string.category_mindfulness)
             )
-            "transcendental", "С‚СЂР°РЅСЃС†РµРЅРґРµРЅС‚Р°Р»СЊРЅР°СЏ" -> Triple(
+            "transcendental", "трансцендентальная" -> Triple(
                 context.getString(R.string.meditation_transcendental),
                 context.getString(R.string.meditation_transcendental_desc),
                 context.getString(R.string.category_focus)
             )
-            "evening", "РІРµС‡РµСЂ", "РІРµС‡РµСЂРЅСЏСЏ-РјРµРґРёС‚Р°С†РёСЏ" -> Triple(
+            "evening", "вечер", "вечерняя-медитация" -> Triple(
                 context.getString(R.string.meditation_evening),
                 context.getString(R.string.meditation_evening_desc),
                 context.getString(R.string.category_sleep)
@@ -143,7 +143,7 @@ class MeditationRepositoryImpl @Inject constructor(
                 val title = fileName.replace('-', ' ').replace('_', ' ')
                     .split(' ')
                     .joinToString(" ") { it.replaceFirstChar { ch -> ch.uppercase() } }
-                Triple(title, "РґРёС‚Р°С†РёСЏ РґР»СЏ СЂР°СЃСЃР»Р°Р±Р»РµРЅРёСЏ", "РћР±С‰РёРµ")
+                Triple(title, context.getString(R.string.meditation_track_description), context.getString(R.string.categories))
             }
         }
     }

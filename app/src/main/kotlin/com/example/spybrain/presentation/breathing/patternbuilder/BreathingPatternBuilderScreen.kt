@@ -88,6 +88,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.expandVertically
+import androidx.compose.material.icons.filled.Build
 
 /**
  * Р­РЅР°РЅ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° РґС‹С…Р°С‚РµР»СЊРЅС‹С… РїР°С‚С‚РµСЂРЅРѕРІ.

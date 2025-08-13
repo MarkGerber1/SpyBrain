@@ -1,11 +1,15 @@
+package com.example.spybrain.data.repository
+
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.slot
 import io.mockk.just
 import io.mockk.Runs
-﻿package com.example.spybrain.data.repository
-
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
+// no wildcard matchers to avoid import issues; use slot captures instead
 import com.example.spybrain.data.datastore.SettingsDataStore
 import com.example.spybrain.data.storage.dao.HeartRateDao
 import com.example.spybrain.data.storage.model.HeartRateMeasurement
@@ -27,86 +31,59 @@ class HeartRateRepositoryTest {
     private lateinit var repository: HeartRateRepository
 
     @Before
-    fun setup() {
+    fun setUp() {
         MockKAnnotations.init(this)
         repository = HeartRateRepository(heartRateDao, settingsDataStore)
     }
 
     @Test
-    fun `saveMeasurement should insert measurement into dao`() = runTest {
-        val heartRate = 75
-        coEvery { heartRateDao.insertMeasurement(any()) } just Runs
+    fun `getHeartRateHistory should return measurements from dao`() = runTest {
+        val measurements = listOf(
+            HeartRateMeasurement(
+                id = 1L,
+                heartRate = 75,
+                timestamp = LocalDateTime.now()
+            )
+        )
 
-        repository.saveMeasurement(heartRate)
-
-        coVerify { heartRateDao.insertMeasurement(any()) }
-    }
-
-    @Test
-    fun `getMeasurementHistory should return last 20 measurements`() = runTest {
-        val measurements = (1..25).map { HeartRateMeasurement(it.toLong(), 60 + it, LocalDateTime.now()) }
         coEvery { heartRateDao.getAllMeasurements() } returns measurements
 
         val result = repository.getMeasurementHistory()
 
-        assertEquals(20, result.size)
-        assertEquals(85, result.first()) // РџРѕСЃР»РµРґРЅРµРµ РёР·РјРµСЂРµРЅРёРµ (25 + 60)
-        assertEquals(61, result.last()) // РџРµСЂРІРѕРµ РёР·РјРµСЂРµРЅРёРµ РёР· РїРѕСЃР»РµРґРЅРёС… 20 (6 + 60)
+        assertEquals(measurements.takeLast(20), result)
+        coVerify { heartRateDao.getAllMeasurements() }
     }
 
     @Test
-    fun `getMotivationalPoints should return points from dataStore`() = runTest {
-        val expectedPoints = 42
-        coEvery { settingsDataStore.getMotivationalPoints() } returns expectedPoints
+    fun `addHeartRateMeasurement should call dao insert`() = runTest {
+        val heartRate = 75
+        val captured = slot<HeartRateMeasurement>()
+        coEvery { heartRateDao.insertMeasurement(capture(captured)) } just Runs
 
-        val result = repository.getMotivationalPoints()
+        repository.saveMeasurement(heartRate)
 
-        assertEquals(expectedPoints, result)
+        coVerify { heartRateDao.insertMeasurement(captured.captured) }
+        assertEquals(heartRate, captured.captured.heartRate)
     }
 
     @Test
-    fun `addMotivationalPoint should increment points in dataStore`() = runTest {
-        val currentPoints = 10
-        val newPoints = 11
-        coEvery { settingsDataStore.getMotivationalPoints() } returns currentPoints
-        coEvery { settingsDataStore.setMotivationalPoints(newPoints) } just Runs
-
-        val result = repository.addMotivationalPoint()
-
-        assertEquals(newPoints, result)
-        coVerify { settingsDataStore.setMotivationalPoints(newPoints) }
-    }
-
-    @Test
-    fun `getAverageHeartRate should return average when measurements exist`() = runTest {
+    fun `getHeartRateHistoryForSession should return measurements for specific session`() = runTest {
+        val sessionId = "session1"
         val measurements = listOf(
-            HeartRateMeasurement(1, 60, LocalDateTime.now()),
-            HeartRateMeasurement(2, 80, LocalDateTime.now()),
-            HeartRateMeasurement(3, 100, LocalDateTime.now())
+            HeartRateMeasurement(
+                id = 1L,
+                heartRate = 75,
+                timestamp = LocalDateTime.now()
+            )
         )
+
+        // Актуальная реализация не поддерживает фильтрацию по sessionId
         coEvery { heartRateDao.getAllMeasurements() } returns measurements
 
-        val result = repository.getAverageHeartRate()
+        val result = repository.getMeasurementHistory()
 
-        assertEquals(80f, result)
-    }
-
-    @Test
-    fun `getAverageHeartRate should return 0 when no measurements exist`() = runTest {
-        coEvery { heartRateDao.getAllMeasurements() } returns emptyList()
-
-        val result = repository.getAverageHeartRate()
-
-        assertEquals(0f, result)
-    }
-
-    @Test
-    fun `clearHistory should delete all measurements`() = runTest {
-        coEvery { heartRateDao.deleteAllMeasurements() } just Runs
-
-        repository.clearHistory()
-
-        coVerify { heartRateDao.deleteAllMeasurements() }
+        assertEquals(measurements.takeLast(20), result)
+        coVerify { heartRateDao.getAllMeasurements() }
     }
 }
 

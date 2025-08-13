@@ -32,6 +32,7 @@ import com.example.spybrain.presentation.meditation.MeditationContract.Effect.Sp
 import timber.log.Timber
 import com.example.spybrain.data.repository.MeditationRepositoryImpl.MeditationTrack
 import com.example.spybrain.R
+import com.example.spybrain.BuildConfig
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.compose.runtime.State
@@ -105,6 +106,8 @@ class MeditationViewModel @Inject constructor(
             is MeditationContract.Event.NextTrack -> nextTrack()
             is MeditationContract.Event.PreviousTrack -> previousTrack()
             is MeditationContract.Event.SeekToPosition -> seekToPosition(event.position)
+            is MeditationContract.Event.SetGuidedMode -> setGuidedMode(event.enabled)
+            is MeditationContract.Event.BackPressed -> handleBack()
         }
     }
 
@@ -137,46 +140,48 @@ class MeditationViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             try {
                 // Р—Р°РіСЂСѓР¶Р°РµРј С‚СЂРµРєРё РёР· СЂРµРїРѕР·РёС‚РѕСЂРёСЏ
+                val pkg = BuildConfig.APPLICATION_ID
+                val androidRes = { name: String -> "android.resource://$pkg/raw/$name" }
                 val tracks = listOf(
                     MeditationTrack(
                         "angelic",
                         R.string.meditation_track_angelic,
-                        "audio/meditation_music/meditation_angelic.mp3"
+                        androidRes("meditation_angelic")
                     ),
                     MeditationTrack(
                         "chill",
                         R.string.meditation_track_chill,
-                        "audio/meditation_music/meditation_chill.mp3"
+                        androidRes("meditation_chill")
                     ),
                     MeditationTrack(
                         "dreaming",
                         R.string.meditation_track_dreaming,
-                        "audio/meditation_music/meditation_dreaming.mp3"
+                        androidRes("meditation_dreaming")
                     ),
                     MeditationTrack(
                         "forest_spirit",
                         R.string.meditation_track_forest_spirit,
-                        "audio/meditation_music/meditation_forest_spirit.mp3"
+                        androidRes("meditation_forest_spirit")
                     ),
                     MeditationTrack(
                         "night_sky",
                         R.string.meditation_track_night_sky,
-                        "audio/meditation_music/meditation_night_sky.mp3"
+                        androidRes("meditation_night_sky")
                     ),
                     MeditationTrack(
                         "relaxation",
                         R.string.meditation_track_relaxation,
-                        "audio/meditation_music/meditation_relaxation.mp3"
+                        androidRes("meditation_relaxation")
                     ),
                     MeditationTrack(
                         "spiritual",
                         R.string.meditation_track_spiritual,
-                        "audio/meditation_music/meditation_spiritual.mp3"
+                        androidRes("meditation_spiritual")
                     ),
                     MeditationTrack(
                         "valley_sunset",
                         R.string.meditation_track_valley_sunset,
-                        "audio/meditation_music/meditation_valley_sunset.mp3"
+                        androidRes("meditation_valley_sunset")
                     )
                 )
 
@@ -220,7 +225,7 @@ class MeditationViewModel @Inject constructor(
                     if (!playerService.isPlaying()) {
                         setEffect {
                             MeditationContract.Effect.ShowError(
-                                UiError.Custom("Не удалось начать воспроизведение трека")
+                                UiError.Custom(message = "Не удалось начать воспроизведение трека")
                             )
                         }
                         return@launch
@@ -320,19 +325,19 @@ class MeditationViewModel @Inject constructor(
 
         try {
             // РџСЂРѕРІРµСЂСЏРµРј URL РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ
-            if (meditation.audioUrl.isBlank()) {
-                setEffect { MeditationContract.Effect.ShowError(UiError.Custom("URL Р°СѓРґРёРѕ РѕС‚СЃСўСЃС‚РІСўРµС‚")) }
+            if (meditation.audioUrl?.isBlank() != false) {
+                setEffect { MeditationContract.Effect.ShowError(UiError.Custom(message = "URL Р°СѓРґРёРѕ РѕС‚СЃСўСЃС‚РІСўРµС‚")) }
                 return
             }
 
-            // РќРѕСЂРјР°Р»РёР·СѓРµРј URL РґР»СЏ РјРµРґРёС‚Р°С†РёР№
+            // Нормализуем URL для медитаций
             val audioUrl = when {
-                meditation.audioUrl.contains("example.com") -> "asset:///audio/mixkit-valley-sunset-127.mp3"
-                meditation.audioUrl.startsWith("http://") ||
-                meditation.audioUrl.startsWith("https://") -> meditation.audioUrl
-                meditation.audioUrl.startsWith("asset:///") -> meditation.audioUrl
+                meditation.audioUrl?.contains("example.com") == true -> "asset:///audio/mixkit-valley-sunset-127.mp3"
+                meditation.audioUrl?.startsWith("http://") == true ||
+                meditation.audioUrl?.startsWith("https://") == true -> meditation.audioUrl
+                meditation.audioUrl?.startsWith("asset:///") == true -> meditation.audioUrl
                 else -> {
-                    val assetPath = if (meditation.audioUrl.startsWith("audio/")) {
+                    val assetPath = if (meditation.audioUrl?.startsWith("audio/") == true) {
                         meditation.audioUrl
                     } else {
                         "audio/${meditation.audioUrl}"
@@ -352,7 +357,7 @@ class MeditationViewModel @Inject constructor(
 
                     // AI РЅР°СЃС‚Р°РІРЅРёРє: РІСЃС‚СѓРїРёС‚РµР»СЊРЅС‹Р№ СЃРѕРІРµС‚
                     try {
-                        aiMentor.giveMeditationAdvice()
+                        aiMentor.giveMeditationAdvice("default_user_id")
                     } catch (e: Exception) {
                         Timber.w(e, "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЃРѕРІРµС‚Р° РѕС‚ AI РЅР°СЃС‚Р°РІРЅРёРєР°")
                         // РќРµ РїСЂРµСЂС‹РІР°РµРј РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ РёР·-Р·Р° РѕС€РёР±РєРё AI
@@ -361,7 +366,7 @@ class MeditationViewModel @Inject constructor(
                     // РџСЂРѕРІРµСЂСЏРµРј РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ
                     delay(500)
                     if (!playerService.isPlaying()) {
-                        setEffect { MeditationContract.Effect.ShowError(UiError.Custom("РќРµ СѓРґР°Р»РѕСЃСЊ РЅР°С‡Р°С‚СЊ РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ")) }
+                        setEffect { MeditationContract.Effect.ShowError(UiError.Custom(message = "РќРµ СѓРґР°Р»РѕСЃСЊ РЅР°С‡Р°С‚СЊ РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ")) }
                         return@launch
                     }
 
@@ -372,7 +377,7 @@ class MeditationViewModel @Inject constructor(
                                 delay(60000L)
                                 if (isActive) {
                                     try {
-                                        aiMentor.giveMeditationAdvice()
+                                        aiMentor.giveMeditationAdvice("default_user_id")
                                     } catch (e: Exception) {
                                         Timber.w(e, "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё РїРµСЂРёРѕРґРёС‡РµСЃРєРѕРіРѕ СЃРѕРІРµС‚Р°")
                                         // РџСЂРѕРґРѕР»Р¶Р°РµРј С†РёРєР»
@@ -392,8 +397,7 @@ class MeditationViewModel @Inject constructor(
                 }
             }
 
-            // Р“РѕР»РѕСЃРѕРІРѕР№ Р°РЅРѕРЅСЃ
-            setEffect { MeditationContract.Effect.Speak(meditation.title) }
+            // Голосовой анонс инициируется из UI для локализованного текста
 
         } catch (e: Exception) {
             Timber.e(e, "РљСЂРёС‚РёС‡РµСЃРєР°СЏ РѕС€РёР±РєР° РїСЂРё Р·Р°РїСѓСЃРєРµ РјРµРґРёС‚Р°С†РёРё")
@@ -423,6 +427,8 @@ class MeditationViewModel @Inject constructor(
             meditationJob?.cancel()
             adviceJob?.cancel()
             playerService.stop()
+            // Останавливаем голосовые подсказки при любом стопе
+            try { voiceAssistant.stopGuidance() } catch (_: Exception) {}
 
             // РЎР±СЂР°СЃС‹РІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РґР»СЏ С‚СЂРµРєРѕРІ
             setState {
@@ -441,7 +447,19 @@ class MeditationViewModel @Inject constructor(
         }
     }
 
-    private fun trackSessionEnd(meditationId: String, durationSeconds: Long) {
+    private fun setGuidedMode(enabled: Boolean) {
+        setState { copy(isGuidedMode = enabled) }
+        if (!enabled) {
+            try { voiceAssistant.stopGuidance() } catch (_: Exception) {}
+        }
+    }
+
+    private fun handleBack() {
+        stopMeditation()
+        // Навигация назад реализуется на уровне NavController, но тут вся медиалогика уже остановлена
+    }
+
+    private fun trackSessionEnd(meditationId: String?, durationSeconds: Long) {
         viewModelScope.launch(coroutineExceptionHandler) {
             try {
                 val session = Session(
@@ -450,7 +468,7 @@ class MeditationViewModel @Inject constructor(
                     startTime = Date(System.currentTimeMillis() - durationSeconds * 1000),
                     endTime = Date(),
                     durationSeconds = durationSeconds,
-                    relatedItemId = meditationId
+                    relatedItemId = meditationId ?: ""
                 )
                 trackMeditationSessionUseCase(session)
             } catch (e: Exception) {
@@ -480,7 +498,7 @@ class MeditationViewModel @Inject constructor(
 
     private fun handleVoiceCommand(command: String) {
         try {
-            setEffect { MeditationContract.Effect.Speak("Р“РѕР»РѕСЃРѕРІР°СЏ РєРѕРјР°РЅРґР°: $command") }
+            setEffect { MeditationContract.Effect.Speak(command) }
         } catch (e: Exception) {
             Timber.e(e, "РћС€РёР±РєР° РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ РіРѕР»РѕСЃРѕРІРѕР№ РєРѕРјР°РЅРґС‹")
             val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))

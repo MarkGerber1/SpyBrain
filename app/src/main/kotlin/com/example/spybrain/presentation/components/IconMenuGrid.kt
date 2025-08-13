@@ -36,7 +36,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 
@@ -137,7 +137,7 @@ fun expandableMenu(
             Icon(icon, contentDescription = title, modifier = Modifier.size(24.dp))
             Text(title, modifier = Modifier.padding(start = 8.dp))
         }
-        ExposedDropdownMenu(
+        DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {

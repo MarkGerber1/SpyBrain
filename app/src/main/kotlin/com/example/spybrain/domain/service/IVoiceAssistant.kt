@@ -67,5 +67,12 @@ interface IVoiceAssistant {
      * РћСЃРІРѕР±РѕРґРёС‚СЊ СЂРµСЃСѓСЂСЃС‹ РіРѕР»РѕСЃРѕРІРѕРіРѕ Р°СЃСЃРёСЃС‚РµРЅС‚Р°.
      */
     fun release()
+
+    // Optional advanced features for meditation guidance
+    fun speakIntro() { /* default no-op */ }
+    fun startGuidance(loopIntervalSec: Int) { /* default no-op */ }
+    fun pauseGuidance() { /* default no-op */ }
+    fun resumeGuidance() { /* default no-op */ }
+    fun stopGuidance() { /* default no-op */ }
 }
 // NOTE СЂРµР°Р»РёР·РѕРІР°РЅРѕ РїРѕ Р°СѓРґРёС‚Сѓ: IVoiceAssistant РґР»СЏ DI Рё ViewModel

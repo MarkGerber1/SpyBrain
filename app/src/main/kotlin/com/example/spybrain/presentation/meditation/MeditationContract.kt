@@ -46,6 +46,8 @@ interface MeditationContract {
         val trackDuration: Long = 0L,
         /** РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ С‚СЂРµРєР°. */
         val currentPosition: Long = 0L,
+        /** Признак guided-режима (вкладка «Медитация с инструкцией»). */
+        val isGuidedMode: Boolean = false,
         /** РћС€РёР±РєР° UI. */
         val error: UiError? = null // TODO СЂРµР°Р»РёР·РѕРІР°РЅРѕ: С†РµРЅС‚СЂР°Р»РёР·РѕРІР°РЅРЅР°СЏ РѕР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє
     ) : UiState
@@ -76,6 +78,10 @@ interface MeditationContract {
         object PreviousTrack : Event()
         /** РџРµСЂРµРјРѕС‚РєР° Рє РїРѕР·РёС†РёРё. */
         data class SeekToPosition(val position: Long) : Event()
+        /** Установить guided-режим для управления TTS guidance. */
+        data class SetGuidedMode(val enabled: Boolean) : Event()
+        /** Обработка Back: остановить всё и вернуться. */
+        object BackPressed : Event()
     }
 
     /**

@@ -82,14 +82,16 @@ class GetMeditationsUseCaseTest {
 
     @Test
     fun `should propagate error from repository`() = runTest {
-        // Given
+        // Given: эмулируем ошибку внутри Flow
         val exception = RuntimeException("Database error")
-        coEvery { meditationRepository.getMeditations() } throws exception
+        coEvery { meditationRepository.getMeditations() } returns kotlinx.coroutines.flow.flow {
+            throw exception
+        }
 
         // When & Then
         getMeditationsUseCase().test {
             val error = awaitError()
-            assertEquals(exception, error)
+            assertEquals(exception.message, error.message)
         }
     }
 }

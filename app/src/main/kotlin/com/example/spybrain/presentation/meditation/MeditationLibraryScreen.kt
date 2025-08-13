@@ -48,6 +48,7 @@ import com.example.spybrain.presentation.meditation.MeditationLibraryContract
 import com.example.spybrain.presentation.meditation.MeditationLibraryViewModel
 import androidx.compose.ui.platform.LocalContext
 import com.example.spybrain.util.UiError
+import com.example.spybrain.R
 
 @Composable
 fun meditationLibraryScreen(
@@ -62,10 +63,10 @@ fun meditationLibraryScreen(
                 is MeditationLibraryContract.Effect.ShowError ->
                     Toast.makeText(context, when(val err = effect.error) {
                         is UiError.Custom -> err.message
-                        is UiError.NetworkError -> "РћС€РёР±РєР° СЃРµС‚Рё"
-                        is UiError.ValidationError -> "РћС€РёР±РєР° РІР°Р»РёРґР°С†РёРё"
-                        is UiError.UnknownError -> "РќРµРёР·РІРµСЃС‚РЅР°СЏ РѕС€РёР±РєР°"
-                        else -> "РћС€РёР±РєР°"
+                        is UiError.NetworkError -> context.getString(R.string.error_network)
+                        is UiError.ValidationError -> context.getString(R.string.error_validation)
+                        is UiError.UnknownError -> context.getString(R.string.error_unknown)
+                        else -> context.getString(R.string.error_general)
                     }, Toast.LENGTH_SHORT).show()
             }
         }

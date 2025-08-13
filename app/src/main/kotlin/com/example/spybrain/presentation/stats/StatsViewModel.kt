@@ -63,7 +63,7 @@ class StatsViewModel @Inject constructor(
         when (event) {
             StatsContract.Event.LoadStatsAndHistory -> loadStatsAndHistory()
             StatsContract.Event.RefreshStats -> loadStatsAndHistory()
-            StatsContract.Event.ShowMotivationalMessage -> showMotivationalMessage()
+            is StatsContract.Event.ShowMotivationalMessage -> showMotivationalMessage()
         }
     }
 
@@ -133,7 +133,7 @@ class StatsViewModel @Inject constructor(
             totalSessions < 10 -> "Р’С‹ РЅР° РїСЂР°РІРёР»СЊРЅРѕРј РїСѓС‚Рё! РџСЂРѕРґРѕР»Р¶Р°Р№С‚Рµ РІ С‚РѕРј Р¶Рµ РґСѓС…Рµ."
             totalSessions < 25 -> "Р’РїРµС‡Р°С‚Р»СЏСЋС‰РёР№ РїСЂРѕРіСЂРµСЃСЃ! Р’С‹ СЃС‚Р°РЅРѕРІРёС‚РµСЃСЊ СЃРёР»СЊРЅРµРµ."
             totalSessions < 50 -> "РќРµРІРµСЂРѕСЏС‚РЅРѕ! Р’С‹ РЅР°СЃС‚РѕСЏС‰РёР№ РјР°СЃС‚РµСЂ РѕСЃРѕР·РЅР°РЅРЅРѕСЃС‚Рё."
-            totalSessions < 100 -> "Р›РµРіРµРЅРґР°СЂРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ! Р’С‹ РІРґРѕС…РЅРѕРІР»СЏРµС‚Рµ РґСЂСѓРіРёС…."
+            totalSessions < 100 -> "Р›РµРіРµРЅРґРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ! Р’С‹ РІРґРѕС…РЅРѕРІР»СЏРµС‚Рµ РґСЂСѓРіРёС…."
             else -> "Р’С‹ РґРѕСЃС‚РёРіР»Рё РїСЂРѕСЃРІРµС‚Р»РµРЅРёСЏ! РџРѕРґРµР»РёС‚РµСЃСЊ РјСѓРґСЂРѕСЃС‚СЊСЋ СЃ РјРёСЂРѕРј."
         }
     }

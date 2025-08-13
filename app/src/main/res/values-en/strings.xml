@@ -31,6 +31,7 @@
     <string name="breathing_advice_critical_bpm">Heart rate is high — slow down your breathing or take a break</string>
     <string name="breathing_phase_rest">Rest...</string>
     <string name="breathing_voice_button">Voice</string>
+    <string name="breathing_no_patterns">No breathing patterns available</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
@@ -263,6 +264,10 @@
 
     <!-- Meditation Tracks -->
     <string name="meditation_tracks_title">Meditation Tracks</string>
+    <string name="guided_meditations_title">Guided meditations</string>
+    <string name="meditation_about">About meditation</string>
+    <string name="meditation_how_to">How to use</string>
+    <string name="meditation_voice_greeting">Meditation %1$s. Sit comfortably, relax, breathe deeper and gently. Imagine you are wrapped in clouds...</string>
     <string name="meditation_track_description">Meditation music for relaxation</string>
     <string name="meditation_track_angelic">Angelic Melody</string>
     <string name="meditation_track_chill">Chill</string>
@@ -279,6 +284,18 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="meditations">Meditations</string>
+    <string name="meditation_tab_title">Meditation</string>
+    <string name="meditation_guided_tab_title">Guided meditation</string>
+    <string name="meditation_intro_text">Relax. Sit comfortably. Feel your breath. Let your thoughts slow down. This time is just for you.</string>
+    <string name="guidance_prompt_soft_inhale_exhale">Take a gentle inhale through your nose… and a slow exhale.</string>
+    <string name="guidance_prompt_release_shoulders">Notice your shoulders releasing tension.</string>
+    <string name="guidance_prompt_focus_chest">Focus on sensations in the chest area.</string>
+    <string name="guidance_prompt_belly_breath">Let the belly rise as you inhale and fall as you exhale.</string>
+    <string name="guidance_prompt_return_attention">If distracted — gently return to your breath.</string>
+    <string name="meditation_about_text">Meditation is a practice of mindfulness and relaxation. It helps reduce stress, improve focus and sleep. Start with 5–10 minutes, breathe evenly, observe sensations.</string>
+    <string name="meditation_how_to_text">Sit comfortably with a straight back. Close your eyes. Breathe calmly. Do not try to “turn off thoughts” — simply observe. If you drift, gently return to your breath.</string>
+    <string name="breathing_why_text">Breathing practices regulate the nervous system, helping to release tension faster and restore energy.</string>
+    <string name="breathing_how_help_text">Increases heart rate variability, improves focus, accelerates relaxation. Recommended 2–3 times a day for 3–5 minutes.</string>
 
     <!-- New strings from BreathingScreen.kt -->
     <string name="breath_in">INHALE</string>
@@ -333,4 +350,21 @@
     <string name="toast_track_not_selected">Track not selected</string>
     <string name="toast_ambient_on">Ambient music enabled</string>
     <string name="toast_ambient_error">Music start error: %1$s</string>
+    <string name="notification_ambient_music_playing_error">Failed to start ambient music</string>
+    <string name="voice_hint_error">Voice hint error</string>
+    <string name="meditation_select_title">Select a meditation</string>
+    <string name="meditation_voice_start">start meditation %1$s</string>
+
+    <!-- Per-meditation localized content (subtitles, about, how-to) -->
+    <string name="meditation_subtitle_mindfulness_basics">Short presence practice</string>
+    <string name="meditation_about_mindfulness_basics">Basic mindfulness: gently observe your breath and sensations. Let thoughts pass without involvement.</string>
+    <string name="meditation_howto_mindfulness_basics">1) Sit comfortably. 2) Feel your breath. 3) Notice distractions and gently return to the breath. 4) Practice 5–10 minutes daily.</string>
+
+    <string name="meditation_subtitle_deep_breathing">Calming through breath</string>
+    <string name="meditation_about_deep_breathing">Deep, even breathing relaxes body and mind, reduces tension and stabilizes emotions.</string>
+    <string name="meditation_howto_deep_breathing">1) Inhale through the nose for 4 counts. 2) Exhale through the nose for 4–6 counts. 3) Breathe softly, without effort. 4) Observe sensations.</string>
+
+    <string name="meditation_subtitle_body_scan">Step-by-step body relaxation</string>
+    <string name="meditation_about_body_scan">Body scan builds sensitivity and relieves muscular tension.</string>
+    <string name="meditation_howto_body_scan">1) Move attention from crown to toes. 2) Notice tension. 3) Relax areas on the exhale. 4) Avoid evaluation.</string>
 </resources> 

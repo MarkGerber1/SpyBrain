@@ -1,3 +1,5 @@
+package com.example.spybrain.presentation.meditation
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -5,35 +7,71 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.collectAsState
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Card
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Slider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Alignment
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.filled.VolumeOff
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import com.example.spybrain.presentation.components.MediaControls
+import androidx.activity.compose.BackHandler
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,47 +94,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.spybrain.R
 import com.example.spybrain.domain.model.Meditation
 import com.example.spybrain.presentation.settings.SettingsViewModel
-import com.example.spybrain.service.BackgroundMusicService
+import com.example.spybrain.service.AmbientMusicService
 import com.example.spybrain.service.VoiceAssistantService
-import kotlinx.coroutines.delay
-import android.widget.Toast
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import com.example.spybrain.data.repository.MeditationRepositoryImpl.MeditationTrack
-import timber.log.Timber
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.foundation.layout.heightIn
 import com.example.spybrain.presentation.meditation.MeditationViewModel
 import com.example.spybrain.presentation.meditation.MeditationContract
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.material.icons.filled.*
+import com.example.spybrain.presentation.theme.DynamicBackground
+import kotlinx.coroutines.delay
+import android.widget.Toast
 import android.content.Intent
+import timber.log.Timber
+import com.example.spybrain.meditationInfoTabs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -120,29 +128,7 @@ fun MeditationScreen(
         }
     }
 
-    // Ambient background audio
-    LaunchedEffect(settings.ambientEnabled, settings.ambientTrack) {
-        if (settings.ambientEnabled && settings.ambientTrack.isNotEmpty()) {
-            try {
-                val intent = Intent(context, BackgroundMusicService::class.java).apply {
-                    action = BackgroundMusicService.ACTION_PLAY
-                    putExtra(BackgroundMusicService.EXTRA_URL, "https://example.com/audio/${settings.ambientTrack}.mp3")
-                }
-                context.startService(intent)
-            } catch (e: Exception) {
-                Toast.makeText(context, "РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РїСѓСЃС‚РёС‚СЊ С„РѕРЅРѕРІСѓСЋ РјСѓР·С‹РєСѓ", Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            try {
-                val intent = Intent(context, BackgroundMusicService::class.java).apply {
-                    action = BackgroundMusicService.ACTION_STOP
-                }
-                context.startService(intent)
-            } catch (e: Exception) {
-                // РРіРЅРѕСЂРёСЂСѓРµРј РѕС€РёР±РєРё РїСЂРё РѕСЃС‚Р°РЅРѕРІРєРµ
-            }
-        }
-    }
+    // Ambient background audio: no auto-start here; only ensure stop if disabled handled in MainScreen
 
     // РћР±СЂР°Р±РѕС‚РєР° СЌС„С„РµРєС‚РѕРІ РѕС‚ ViewModel, РІРєР»СЋС‡Р°СЏ РіРѕР»РѕСЃРѕРІС‹Рµ РїРѕРґСЃРєР°Р·РєРё
     LaunchedEffect(viewModel.effect) {
@@ -156,26 +142,27 @@ fun MeditationScreen(
                         try {
                             voiceService.speak(effect.text)
                         } catch (e: Exception) {
-                            Toast.makeText(context, "РћС€РёР±РєР° РіРѕР»РѕСЃРѕРІРѕР№ РїРѕРґСЃРєР°Р·РєРё", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, R.string.voice_hint_error, Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
                 is MeditationContract.Effect.TrackStarted -> {
                     // РњРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ СѓРІРµРґРѕРјР»РµРЅРёРµ Рѕ РЅР°С‡Р°Р»Рµ С‚СЂРµРєР°
-                    Timber.d("РўСЂРµРє РЅР°С‡Р°С‚: ${effect.track.id}")
+                    Timber.d("Track started: ${effect.track.id}")
                 }
                 is MeditationContract.Effect.TrackCompleted -> {
                     // РњРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ СѓРІРµРґРѕРјР»РµРЅРёРµ Рѕ Р·Р°РІРµСЂС€РµРЅРёРё С‚СЂРµРєР°
-                    Timber.d("РўСЂРµРє Р·Р°РІРµСЂС€РµРЅ: ${effect.track.id}")
+                    Timber.d("Track completed: ${effect.track.id}")
                 }
             }
         }
     }
 
+    DynamicBackground {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("РњРµРґРёС‚Р°С†РёСЏ") }
+                title = { Text(stringResource(id = R.string.meditation_title)) }
             )
         }
     ) { paddingValues ->
@@ -184,21 +171,10 @@ fun MeditationScreen(
             val theme = settings.theme
 
             // РћРїСЂРµРґРµР»СЏРµРј СЂРµСЃСѓСЂСЃС‹ С„РѕРЅР° Рё РёРєРѕРЅРєРё Р±РµР· РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ remember
-            val bgPainter = when (theme) {
-                "water" -> painterResource(id = R.drawable.bg_water)
-                "space" -> painterResource(id = R.drawable.bg_space)
-                "nature" -> painterResource(id = R.drawable.bg_nature)
-                "air" -> painterResource(id = R.drawable.bg_air)
-                else -> painterResource(id = R.drawable.bg_nature)
-            }
-
-            val themeIcon = when (theme) {
-                "water" -> painterResource(id = R.drawable.ic_water)
-                "space" -> painterResource(id = R.drawable.ic_space)
-                "nature" -> painterResource(id = R.drawable.ic_nature)
-                "air" -> painterResource(id = R.drawable.ic_air)
-                else -> painterResource(id = R.drawable.ic_nature)
-            }
+            val themePack = com.example.spybrain.presentation.theme.ThemePacks.themePackFor(theme)
+            val iconPack = com.example.spybrain.presentation.theme.ThemePacks.iconPackFor(theme)
+            val bgPainter = painterResource(id = themePack.backgroundImageRes)
+            val themeIconRes = iconPack.themeIconRes
 
             Image(
                 painter = bgPainter,
@@ -216,7 +192,7 @@ fun MeditationScreen(
 
             // РРєРѕРЅРєР° С‚РµРјС‹
             Icon(
-                painter = themeIcon,
+                painter = painterResource(id = themeIconRes),
                 contentDescription = theme,
                 modifier = Modifier
                     .size(40.dp)
@@ -275,7 +251,7 @@ fun MeditationScreen(
                                 )
                             }
 
-                            // РљРЅРѕРїРєР° "РўСЂРµРєРё"
+                            // Кнопка "Медитации с инструкцией"
                             Card(
                                 modifier = Modifier
                                     .weight(1f)
@@ -294,7 +270,7 @@ fun MeditationScreen(
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Text(
-                                    text = stringResource(id = R.string.meditation_tracks_title),
+                                    text = stringResource(id = R.string.meditation_guided_tab_title),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = Color.White,
                                     textAlign = TextAlign.Center,
@@ -303,16 +279,111 @@ fun MeditationScreen(
                             }
                         }
 
+                        // Voice intro when entering basic meditation tab; stop guidance when switching back
+                        LaunchedEffect(selectedMode) {
+                            if (settings.voiceHintsEnabled) {
+                                if (selectedMode == "meditations") {
+                                    try { voiceService.speakIntro() } catch (_: Exception) {}
+                                    viewModel.setEvent(MeditationContract.Event.SetGuidedMode(false))
+                                } else {
+                                    try { voiceService.stopGuidance() } catch (_: Exception) {}
+                                    viewModel.setEvent(MeditationContract.Event.SetGuidedMode(true))
+                                }
+                            }
+                        }
+
                         // РљРѕРЅС‚РµРЅС‚ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РІС‹Р±СЂР°РЅРЅРѕРіРѕ СЂРµР¶РёРјР°
                         when (selectedMode) {
                             "meditations" -> MeditationList(viewModel, settings.voiceHintsEnabled)
-                            "tracks" -> MeditationTrackPlayer(viewModel)
+                            "tracks" -> GuidedMeditationsTab(
+                                viewModel = viewModel,
+                                voiceHintsEnabled = settings.voiceHintsEnabled,
+                                onStartGuidance = { intervalSec ->
+                                    if (settings.voiceHintsEnabled) {
+                                        try { voiceService.startGuidance(intervalSec) } catch (_: Exception) {}
+                                    }
+                                },
+                                onStopGuidance = {
+                                    try { voiceService.stopGuidance() } catch (_: Exception) {}
+                                }
+                            )
                         }
                     }
                 }
                 else -> MeditationPlayerUI(viewModel, state, player, settings.voiceHintsEnabled)
             }
         }
+    }
+    }
+}
+
+@Composable
+fun GuidedMeditationItem(
+    meditation: Meditation,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var menuExpanded by remember { mutableStateOf(false) }
+    var showInfoSheet by remember { mutableStateOf(false) }
+    var infoTabIndex by remember { mutableStateOf(0) }
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = meditation.title, style = MaterialTheme.typography.titleMedium, color = Color.White)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = meditation.description ?: "",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.8f),
+                    maxLines = 2
+                )
+            }
+
+            IconButton(onClick = { menuExpanded = true }) {
+                Icon(imageVector = Icons.Default.Settings, contentDescription = null, tint = Color.White)
+            }
+            DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.meditation_about)) },
+                    onClick = {
+                        menuExpanded = false
+                        infoTabIndex = 0
+                        showInfoSheet = true
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.meditation_how_to)) },
+                    onClick = {
+                        menuExpanded = false
+                        infoTabIndex = 1
+                        showInfoSheet = true
+                    }
+                )
+            }
+        }
+    }
+
+    if (showInfoSheet) {
+        val tabs = meditationInfoTabs(meditation)
+        com.example.spybrain.presentation.components.InfoBottomSheet(
+            title = meditation.title,
+            tabs = tabs,
+            onDismiss = { showInfoSheet = false }
+        )
     }
 }
 
@@ -321,6 +392,7 @@ fun MeditationList(
     viewModel: MeditationViewModel,
     voiceHintsEnabled: Boolean
 ) {
+    val context = LocalContext.current
     val state by viewModel.uiState.collectAsState()
 
     Column(
@@ -341,7 +413,7 @@ fun MeditationList(
             )
         ) {
             Text(
-                text = "Р’С‹Р±РµСЂРёС‚Рµ РјРµРґРёС‚Р°С†РёСЋ",
+                text = stringResource(id = R.string.meditation_select_title),
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -374,7 +446,9 @@ fun MeditationList(
                                 viewModel.setEvent(MeditationContract.Event.PlayMeditation(meditation))
 
                                 if (voiceHintsEnabled) {
-                                    viewModel.setEvent(MeditationContract.Event.VoiceCommand("РЅР°С‡Р°С‚СЊ РјРµРґРёС‚Р°С†РёСЋ ${meditation.title}"))
+                                    viewModel.setEvent(MeditationContract.Event.VoiceCommand(
+                                        context.getString(R.string.meditation_voice_start, meditation.title)
+                                    ))
                                 }
                             },
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -383,7 +457,7 @@ fun MeditationList(
                             Text(text = meditation.title, style = MaterialTheme.typography.titleMedium)
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                text = meditation.description,
+                                text = meditation.description ?: "",
                                 style = MaterialTheme.typography.bodyMedium,
                                 maxLines = 2
                             )
@@ -398,7 +472,7 @@ fun MeditationList(
                                     style = MaterialTheme.typography.bodySmall
                                 )
                                 Text(
-                                    text = meditation.category,
+                                    text = meditation.category ?: "",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -444,6 +518,9 @@ fun MeditationPlayerUI(
             animationSpec = tween(500)
         )
     ) {
+        BackHandler(enabled = true) {
+            viewModel.setEvent(MeditationContract.Event.BackPressed)
+        }
         Column(
             Modifier
                 .fillMaxSize()
@@ -473,7 +550,7 @@ fun MeditationPlayerUI(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = meditation.description,
+                        text = meditation.description ?: "",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.8f),
                         textAlign = TextAlign.Center,
@@ -529,32 +606,19 @@ fun MeditationPlayerUI(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // РљРЅРѕРїРё СѓРїСЂР°РІР»РµРЅРёСЏ
-                    Row(
-                        modifier = Modifier.padding(bottom = 24.dp),
-                        horizontalArrangement = Arrangement.spacedBy(32.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Р›РµРІР°СЏ РєРЅРѕРїРєР° - РЎС‚РѕРї
-                        StopButton { viewModel.setEvent(MeditationContract.Event.StopMeditation) }
-
-                        // Р¦РµРЅС‚СЂР°Р»СЊРЅР°СЏ РєРЅРѕРїРєР° - РРіСЂР°С‚СЊ/РџР°СѓР·Р°
-                        PlayPauseButton(
+            MediaControls(
                             isPlaying = isPlaying,
-                            onPlayPause = {
-                                if (isPlaying) {
-                                    viewModel.setEvent(MeditationContract.Event.PauseMeditation)
-                                } else {
+                isPaused = !isPlaying,
+                onPlay = {
                                     uiState.currentPlaying?.let {
                                         viewModel.setEvent(MeditationContract.Event.PlayMeditation(it))
                                     }
-                                }
-                            }
-                        )
-
-                        // РџСЂР°РІР°СЏ РєРЅРѕРїРєР° - Р•С‰С‘
-                        ExtraButton()
-                    }
+                },
+                onPause = { viewModel.setEvent(MeditationContract.Event.PauseMeditation) },
+                onStop = { viewModel.setEvent(MeditationContract.Event.StopMeditation) },
+                onBack = { viewModel.setEvent(MeditationContract.Event.StopMeditation) },
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
                 }
             }
         }
@@ -565,14 +629,13 @@ fun MeditationPlayerUI(
 fun MeditationCircle(isPlaying: Boolean) {
     // РђРЅРёРјР°С†РёСЏ РїСѓР»СЊСЃР°С†РёРё
     val infiniteTransition = rememberInfiniteTransition(label = "pulseTransition")
-    val animationValue by infiniteTransition.animateFloatAsState(
+    val animationValue by infiniteTransition.animateFloat(
         initialValue = 0.7f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(2000),
             repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulseAnimation"
+        )
     )
 
     val size = if (isPlaying) animationValue else 0.7f
@@ -666,7 +729,7 @@ fun ExtraButton() {
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_nature),
-            contentDescription = "Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРµ РґРµР№СЃС‚РІРёРµ",
+            contentDescription = null,
             tint = Color.White,
             modifier = Modifier.size(30.dp)
         )
@@ -682,9 +745,12 @@ private fun formatDuration(durationMs: Long): String {
 }
 
 @Composable
-fun MeditationTrackPlayer(
+fun GuidedMeditationsTab(
     viewModel: MeditationViewModel,
-    modifier: Modifier = Modifier
+    voiceHintsEnabled: Boolean,
+    modifier: Modifier = Modifier,
+    onStartGuidance: (Int) -> Unit = {},
+    onStopGuidance: () -> Unit = {}
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -697,47 +763,56 @@ fun MeditationTrackPlayer(
     ) {
         // Р—Р°РіРѕР»РѕРІРѕРє СЃРµРєС†РёРё
         Text(
-            text = stringResource(id = R.string.meditation_tracks_title),
+            text = stringResource(id = R.string.guided_meditations_title),
             style = MaterialTheme.typography.headlineSmall,
             color = Color.White,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // РЎРїРёСЃРѕРє С‚СЂРµРєРѕРІ
+        // Управляем голосовыми подсказками в этом табе
+        LaunchedEffect(voiceHintsEnabled) {
+            if (voiceHintsEnabled) onStartGuidance(40) else onStopGuidance()
+        }
+
+        // Список, группируемый по категории
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(max = 300.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(state.meditationTracks) { track ->
-                MeditationTrackItem(
-                    track = track,
-                    isSelected = state.selectedTrack?.id == track.id,
-                    isPlaying = state.currentPlayingTrack?.id == track.id && state.isTrackPlaying,
-                    onClick = { viewModel.handleEvent(MeditationContract.Event.SelectMeditationTrack(track)) }
-                )
+            val groups = state.meditations.groupBy { it.category ?: context.getString(R.string.categories) }
+            groups.forEach { (category, itemsInCategory) ->
+                item {
+                    Text(
+                        text = category,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+                }
+                items(itemsInCategory) { meditation ->
+                    GuidedMeditationItem(
+                        meditation = meditation,
+                        onClick = {
+                            viewModel.setEvent(MeditationContract.Event.PlayMeditation(meditation))
+                            if (voiceHintsEnabled) {
+                                // Немедленно озвучиваем приветствие
+                                // Делаем через эффект, т.к. тут нет доступа к voiceService
+                                viewModel.setEvent(
+                                    MeditationContract.Event.VoiceCommand(
+                                        context.getString(R.string.meditation_voice_greeting, meditation.title)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                }
             }
         }
 
         // Р­Р»РµРјРµРЅС‚С‹ СѓРїСЂР°РІР»РµРЅРёСЏ РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµРј
-        if (state.selectedTrack != null) {
-            Spacer(modifier = Modifier.height(16.dp))
-            TrackPlayerControls(
-                track = state.selectedTrack!!,
-                isPlaying = state.isTrackPlaying,
-                progress = state.trackProgress,
-                duration = state.trackDuration,
-                currentPosition = state.currentPosition,
-                onPlayPause = {
-                    viewModel.handleEvent(MeditationContract.Event.PlaySelectedTrack)
-                },
-                onNext = { viewModel.handleEvent(MeditationContract.Event.NextTrack) },
-                onPrevious = { viewModel.handleEvent(MeditationContract.Event.PreviousTrack) },
-                onSeek = { position -> viewModel.handleEvent(MeditationContract.Event.SeekToPosition(position)) }
-            )
-        }
+        // Элементы управления плеером остаются в основном UI (при воспроизведении)
     }
 }
 
@@ -801,14 +876,13 @@ fun MeditationTrackItem(
                 if (isPlaying) {
                     // РђРЅРёРјРёСЂРѕРІР°РЅРЅР°СЏ РёРєРѕРЅРєР° РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ
                     val infiniteTransition = rememberInfiniteTransition(label = "playing_animation")
-                    val scale by infiniteTransition.animateFloatAsState(
+                    val scale by infiniteTransition.animateFloat(
                         initialValue = 0.8f,
                         targetValue = 1.2f,
                         animationSpec = infiniteRepeatable(
                             animation = tween(1000),
                             repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "playing_scale"
+                        )
                     )
 
                     Icon(

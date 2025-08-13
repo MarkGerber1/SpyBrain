@@ -12,40 +12,53 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 /**
+ * Базовый интерфейс для состояния UI.
  */
 public interface UiState
+
 /**
+ * Базовый интерфейс для событий UI.
  */
 public interface UiEvent
+
 /**
+ * Базовый интерфейс для эффектов UI.
  */
 public interface UiEffect
 
 /**
- * Р‘Р°Р·РѕРІР°СЏ ViewModel РґР»СЏ MVI-Р°СЂС…РёС‚РµРєС‚СѓСЂС‹.
- * @param Event РўРёРї СЃРѕР±С‹С‚РёР№.
- * @param State РўРёРї СЃРѕСЃС‚РѕСЏРЅРёСЏ.
- * @param Effect РўРёРї СЌС„С„РµРєС‚РѕРІ.
+ * Базовая ViewModel для MVI-архитектуры.
+ * @param Event Тип событий.
+ * @param State Тип состояния.
+ * @param Effect Тип эффектов.
  */
 abstract class BaseViewModel<Event : UiEvent, State : UiState, Effect : UiEffect> : ViewModel() {
-    /** РќР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ. */
+    /** Начальное состояние. */
     private val initialState: State by lazy { createInitialState() }
-    /** РЎРѕР·РґР°С‘С‚ РЅР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ. */
+    
+    /** Создает начальное состояние. */
     abstract fun createInitialState(): State
-    /** StateFlow С‚РµРєСѓС‰РµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ UI. */
+    
+    /** StateFlow текущего состояния UI. */
     private val _uiState: MutableStateFlow<State> = MutableStateFlow(initialState)
-    /** РџСѓР±Р»РёС‡РЅС‹Р№ StateFlow СЃРѕСЃС‚РѕСЏРЅРёСЏ UI. */
+    
+    /** Публичный StateFlow состояния UI. */
     val uiState: StateFlow<State> = _uiState.asStateFlow()
-    /** SharedFlow СЃРѕР±С‹С‚РёР№. */
+    
+    /** SharedFlow событий. */
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
-    /** Channel РґР»СЏ СЌС„С„РµРєС‚РѕРІ. */
+    
+    /** Channel для эффектов. */
     private val _effect: Channel<Effect> = Channel()
-    /** Flow СЌС„С„РµРєС‚РѕРІ. */
+    
+    /** Flow эффектов. */
     val effect: Flow<Effect> = _effect.receiveAsFlow()
+    
     init {
         subscribeEvents()
     }
-    /** РџРѕРґРїРёСЃРєР° РЅР° СЃРѕР±С‹С‚РёСЏ. */
+    
+    /** Подписка на события. */
     private fun subscribeEvents() {
         viewModelScope.launch {
             _event.collect {
@@ -53,25 +66,29 @@ abstract class BaseViewModel<Event : UiEvent, State : UiState, Effect : UiEffect
             }
         }
     }
-    /** РћР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёСЏ.
-     * @param event РЎРѕР±С‹С‚РёРµ UI.
+    
+    /** Обработка события.
+     * @param event Событие UI.
      */
     abstract fun handleEvent(event: Event)
-    /** РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРѕР±С‹С‚РёРµ.
-     * @param event РЎРѕР±С‹С‚РёРµ UI.
+    
+    /** Установить событие.
+     * @param event Событие UI.
      */
     fun setEvent(event: Event) {
         viewModelScope.launch { _event.emit(event) }
     }
-    /** РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ.
-     * @param reduce Р›СЏРјР±РґР° РґР»СЏ РёР·РјРµРЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ.
+    
+    /** Установить новое состояние.
+     * @param reduce Лямбда для изменения состояния.
      */
     protected fun setState(reduce: State.() -> State) {
         val newState = uiState.value.reduce()
         _uiState.value = newState
     }
-    /** РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЌС„С„РµРєС‚.
-     * @param builder Р›СЏРјР±РґР° РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СЌС„С„РµРєС‚Р°.
+    
+    /** Установить эффект.
+     * @param builder Лямбда для создания эффекта.
      */
     protected fun setEffect(builder: () -> Effect) {
         val effectValue = builder()

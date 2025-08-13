@@ -18,6 +18,7 @@ import com.example.spybrain.data.storage.dao.HeartRateDao
 import com.example.spybrain.data.storage.MIGRATION_1_2
 import com.example.spybrain.data.storage.MIGRATION_2_3
 import com.example.spybrain.data.storage.MIGRATION_3_4
+import com.example.spybrain.BuildConfig
 
 /**
  * DI-модуль для представления зависимостей хранения.
@@ -37,6 +38,12 @@ object StorageModule {
             "spybrain.db"
         )
         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+        .apply {
+            if (BuildConfig.DEBUG) {
+                // В debug режиме не блокируем работу из-за несовпадения схемы
+                fallbackToDestructiveMigration()
+            }
+        }
         .build()
 
     /**

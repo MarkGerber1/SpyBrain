@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,6 +30,7 @@ class SettingsDataStore @Inject constructor(
         val THEME = stringPreferencesKey("theme")
         val AMBIENT_ENABLED = booleanPreferencesKey("ambient_enabled")
         val AMBIENT_TRACK = stringPreferencesKey("ambient_track")
+        val AMBIENT_VOLUME = intPreferencesKey("ambient_volume_percent")
         val HEARTBEAT_ENABLED = booleanPreferencesKey("heartbeat_enabled")
         val VOICE_ENABLED = booleanPreferencesKey("voice_enabled")
         val VOICE_HINTS_ENABLED = booleanPreferencesKey("voice_hints_enabled")
@@ -56,6 +58,14 @@ class SettingsDataStore @Inject constructor(
      */
     val ambientTrackFlow: Flow<String> = dataStore.data.map { preferences ->
         preferences[PreferencesKey.AMBIENT_TRACK] ?: ""
+    }
+
+    /**
+     * Громкость ambient (0.0..1.0), хранится как проценты 0..100
+     */
+    val ambientVolumeFlow: Flow<Float> = dataStore.data.map { preferences ->
+        val percent = preferences[PreferencesKey.AMBIENT_VOLUME] ?: 50
+        (percent.coerceIn(0, 100)) / 100f
     }
 
     /**
@@ -131,6 +141,15 @@ class SettingsDataStore @Inject constructor(
     }
 
     /**
+     * Установить громкость ambient в процентах (0..100)
+     */
+    suspend fun setAmbientVolumePercent(percent: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.AMBIENT_VOLUME] = percent.coerceIn(0, 100)
+        }
+    }
+
+    /**
      * Включить/выключить heartbeat.
      * @param enabled Включенно.
      */
@@ -195,13 +214,8 @@ class SettingsDataStore @Inject constructor(
      * @return Flow с треком.
      */
     fun getAmbientTrack(): String = runBlocking {
-        var trackValue = ""
-        dataStore.data.map { preferences ->
-            preferences[PreferencesKey.AMBIENT_TRACK] ?: ""
-        }.collect {
-            trackValue = it
-        }
-        return@runBlocking trackValue
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.AMBIENT_TRACK] ?: ""
     }
 
     /**
@@ -209,13 +223,14 @@ class SettingsDataStore @Inject constructor(
      * @return Flow с состоянием.
      */
     fun getAmbientEnabled(): Boolean = runBlocking {
-        var enabledValue = false
-        dataStore.data.map { preferences ->
-            preferences[PreferencesKey.AMBIENT_ENABLED] ?: false
-        }.collect {
-            enabledValue = it
-        }
-        return@runBlocking enabledValue
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.AMBIENT_ENABLED] ?: false
+    }
+
+    fun getAmbientVolume(): Float = runBlocking {
+        val preferences = dataStore.data.first()
+        val percent = preferences[PreferencesKey.AMBIENT_VOLUME] ?: 50
+        (percent.coerceIn(0, 100)) / 100f
     }
 
     /**
@@ -223,13 +238,8 @@ class SettingsDataStore @Inject constructor(
      * @return Flow с очками.
      */
     fun getMotivationalPoints(): Int = runBlocking {
-        var pointsValue = 0
-        dataStore.data.map { preferences ->
-            preferences[PreferencesKey.MOTIVATIONAL_POINTS] ?: 0
-        }.collect {
-            pointsValue = it
-        }
-        return@runBlocking pointsValue
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.MOTIVATIONAL_POINTS] ?: 0
     }
 
     /**
@@ -237,13 +247,8 @@ class SettingsDataStore @Inject constructor(
      * @return Flow с состоянием.
      */
     fun getVibrationEnabled(): Boolean = runBlocking {
-        var vibrationValue = true
-        dataStore.data.map { preferences ->
-            preferences[PreferencesKey.VIBRATION_ENABLED] ?: true
-        }.collect {
-            vibrationValue = it
-        }
-        return@runBlocking vibrationValue
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.VIBRATION_ENABLED] ?: true
     }
 
     /**
@@ -251,12 +256,7 @@ class SettingsDataStore @Inject constructor(
      * @return Flow с ID.
      */
     fun getVoiceId(): String = runBlocking {
-        var voiceIdValue = ""
-        dataStore.data.map { preferences ->
-            preferences[PreferencesKey.VOICE_ID] ?: ""
-        }.collect {
-            voiceIdValue = it
-        }
-        return@runBlocking voiceIdValue
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.VOICE_ID] ?: ""
     }
 }

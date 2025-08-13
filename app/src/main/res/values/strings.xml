@@ -68,6 +68,7 @@
     <string name="settings_ambient_enabled">Включена</string>
     <string name="settings_ambient_disabled">Выключена</string>
     <string name="settings_select_track">Выберите трек</string>
+    <string name="settings_ambient_volume">Громкость фоновой музыки</string>
     <string name="settings_heartbeat">Бьющееся сердце</string>
     <string name="settings_heartbeat_enabled">Включено</string>
     <string name="settings_heartbeat_disabled">Выключено</string>
@@ -182,6 +183,7 @@
     <string name="breathing_advice_high_bpm">Пульс немного повышен — попробуйте удлинить выдох</string>
     <string name="breathing_advice_critical_bpm">Пульс высокий — замедлите дыхание или сделайте паузу</string>
     <string name="breathing_voice_button">Голос</string>
+    <string name="breathing_no_patterns">Нет доступных шаблонов дыхания</string>
 
     <!-- Errors (adding specific ones found) -->
     <string name="error_network">Ошибка сети</string>
@@ -413,6 +415,10 @@
 
     <!-- Meditation Tracks -->
     <string name="meditation_tracks_title">Медитационные треки</string>
+    <string name="guided_meditations_title">Медитации с инструкцией</string>
+    <string name="meditation_about">О медитации</string>
+    <string name="meditation_how_to">Как использовать</string>
+    <string name="meditation_voice_greeting">Медитация %1$s. Сядьте удобно, расслабьтесь, дышите глубже и легко. Представьте, что вас мягко окутывают облака...</string>
     <string name="meditation_track_description">Медитационная музыка для расслабления</string>
     <string name="meditation_track_angelic">Ангельская мелодия</string>
     <string name="meditation_track_chill">Спокойствие</string>
@@ -429,6 +435,18 @@
     <string name="next">Следующий</string>
     <string name="previous">Предыдущий</string>
     <string name="meditations">Медитации</string>
+    <string name="meditation_tab_title">Медитация</string>
+    <string name="meditation_guided_tab_title">Медитация с инструкцией</string>
+    <string name="meditation_intro_text">Расслабьтесь. Сядьте поудобнее. Почувствуйте дыхание. Позвольте мыслям замедлиться. Это время только для вас.</string>
+    <string name="guidance_prompt_soft_inhale_exhale">Сделайте мягкий вдох через нос… и медленный выдох.</string>
+    <string name="guidance_prompt_release_shoulders">Почувствуйте, как плечи отпускают напряжение.</string>
+    <string name="guidance_prompt_focus_chest">Сфокусируйтесь на ощущениях в области груди.</string>
+    <string name="guidance_prompt_belly_breath">Позвольте животу подниматься на вдохе и опускаться на выдохе.</string>
+    <string name="guidance_prompt_return_attention">Если отвлеклись — спокойно вернитесь к дыханию.</string>
+    <string name="meditation_about_text">Медитация — это практика осознанности и расслабления. Она помогает снизить стресс, улучшить концентрацию и сон. Начните с 5–10 минут, дышите ровно, наблюдайте за ощущениями.</string>
+    <string name="meditation_how_to_text">Сядьте удобно, выпрямите спину. Закройте глаза. Дышите спокойно. Не пытайтесь «выключить мысли» — просто наблюдайте. Если отвлеклись — мягко возвращайтесь к дыханию.</string>
+    <string name="breathing_why_text">Дыхательные практики регулируют нервную систему, помогают быстрее сбрасывать напряжение и восстанавливать энергию.</string>
+    <string name="breathing_how_help_text">Повышает вариабельность сердечного ритма, улучшает концентрацию, ускоряет расслабление. Рекомендуем 2–3 раза в день по 3–5 минут.</string>
 
     <!-- Personal Greeting -->
     <string name="default_user_name">Друг</string>
@@ -507,6 +525,23 @@
     <string name="toast_track_not_selected">Трек не выбран</string>
     <string name="toast_ambient_on">Фоновая музыка включена</string>
     <string name="toast_ambient_error">Ошибка запуска музыки: %1$s</string>
+    <string name="notification_ambient_music_playing_error">Не удалось запустить фоновую музыку</string>
+    <string name="voice_hint_error">Ошибка голосовой подсказки</string>
+    <string name="meditation_select_title">Выберите медитацию</string>
+    <string name="meditation_voice_start">начать медитацию %1$s</string>
+
+    <!-- Per-meditation localized content (subtitles, about, how-to) -->
+    <string name="meditation_subtitle_mindfulness_basics">Короткая практика присутствия</string>
+    <string name="meditation_about_mindfulness_basics">Базовая медитация осознанности: мягко наблюдайте за дыханием и ощущениями. Позволяйте мыслям проходить, не вовлекаясь.</string>
+    <string name="meditation_howto_mindfulness_basics">1) Сядьте удобно. 2) Почувствуйте дыхание. 3) Замечайте отвлечения и мягко возвращайтесь к дыханию. 4) 5–10 минут ежедневно.</string>
+
+    <string name="meditation_subtitle_deep_breathing">Успокоение через дыхание</string>
+    <string name="meditation_about_deep_breathing">Глубокое ровное дыхание помогает расслабить тело и ум, снизить напряжение и стабилизировать эмоции.</string>
+    <string name="meditation_howto_deep_breathing">1) Вдох через нос 4 счета. 2) Выдох через нос 4–6 счетов. 3) Дышите мягко, без усилий. 4) Наблюдайте ощущения.</string>
+
+    <string name="meditation_subtitle_body_scan">Расслабление тела по шагам</string>
+    <string name="meditation_about_body_scan">Пошаговое сканирование тела развивает чувствительность и снимает мышечные зажимы.</string>
+    <string name="meditation_howto_body_scan">1) Пройдитесь вниманием от макушки к стопам. 2) Замечайте напряжение. 3) На выдохе расслабляйте область. 4) Не оценивайте.</string>
 
     <string name="meditation">Медитация</string>
     <string name="profile">Профиль</string>

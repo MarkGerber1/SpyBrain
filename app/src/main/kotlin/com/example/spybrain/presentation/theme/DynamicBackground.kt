@@ -48,6 +48,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloat
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.LottieConstants
 
 /**
  * @property id РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РІСЂРµРјРµРЅРё СЃСўРѕРє.
@@ -139,14 +143,14 @@ object DynamicBackgroundManager {
     /**
      * РџРѕР»СѓС‡Р°РµС‚ РїСЂРёРІРµС‚СЃС‚РІРµРЅРЅРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РІСЂРµРјРµРЅРё СЃСўРѕРє
      */
-    fun getWelcomeMessage(): String {
+    fun getWelcomeMessage(context: Context): String {
         val calendar = Calendar.getInstance()
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         return when (TimeOfDay.fromHour(hour)) {
-            TimeOfDay.MORNING -> "Р”РѕР±СЂРѕРµ СѓС‚СЂРѕ!"
-            TimeOfDay.DAY -> "Р”РѕР±СЂС‹Р№ РґРµРЅСЊ!"
-            TimeOfDay.EVENING -> "Р”РѕР±СЂС‹Р№ РІРµС‡РµСЂ!"
-            TimeOfDay.NIGHT -> "Р”РѕР±СЂРѕР№ РЅРѕС‡Рё!"
+            TimeOfDay.MORNING -> context.getString(R.string.greeting_morning)
+            TimeOfDay.DAY -> context.getString(R.string.greeting_day)
+            TimeOfDay.EVENING -> context.getString(R.string.greeting_evening)
+            TimeOfDay.NIGHT -> context.getString(R.string.greeting_night)
         }
     }
 
@@ -217,15 +221,38 @@ fun DynamicBackground(
                 )
             )
     ) {
-        // Р¤РѕРЅРѕРІРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ
-        Image(
-            painter = painterResource(id = backgroundData.backgroundResId),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(0.3f),
-            contentScale = ContentScale.Crop
+        // Lottie-анимация (если есть подходящий JSON в raw), иначе fallback на изображение
+        val context = LocalContext.current
+        val lottieKey = when (timeOfDay) {
+            TimeOfDay.MORNING -> "lottie_morning"
+            TimeOfDay.DAY -> "lottie_day"
+            TimeOfDay.EVENING -> "lottie_evening"
+            TimeOfDay.NIGHT -> "lottie_night"
+        }
+        val lottieResId = remember(lottieKey) {
+            context.resources.getIdentifier(lottieKey, "raw", context.packageName)
+        }
+        val comp by rememberLottieComposition(
+            if (lottieResId != 0) LottieCompositionSpec.RawRes(lottieResId) else LottieCompositionSpec.RawRes(0)
         )
+        if (lottieResId != 0 && comp != null) {
+            LottieAnimation(
+                composition = comp,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.35f)
+            )
+        } else {
+            Image(
+                painter = painterResource(id = backgroundData.backgroundResId),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.3f),
+                contentScale = ContentScale.Crop
+            )
+        }
 
         // РџСЂРёРІРµС‚СЃС‚РІРёРµ СЃ Р°РЅРёРјР°С†РёРµР№
         AnimatedVisibility(
@@ -282,9 +309,9 @@ private fun getGradientColorsForTimeOfDay(timeOfDay: TimeOfDay): List<Color> {
  */
 private fun getGreetingForTimeOfDay(context: Context, timeOfDay: TimeOfDay): String {
     return when (timeOfDay) {
-        TimeOfDay.MORNING -> "Р”РѕР±СЂРѕРµ СѓС‚СЂРѕ! вЂпёЏ"
-        TimeOfDay.DAY -> "Р”РѕР±СЂС‹Р№ РґРµРЅСЊ! рџЊ¤пёЏ"
-        TimeOfDay.EVENING -> "Р”РѕР±СЂС‹Р№ РІРµС‡РµСЂ! рџЊ…"
-        TimeOfDay.NIGHT -> "Р”РѕР±СЂРѕР№ РЅРѕС‡Рё! рџЊ™"
+        TimeOfDay.MORNING -> context.getString(R.string.greeting_morning)
+        TimeOfDay.DAY -> context.getString(R.string.greeting_day)
+        TimeOfDay.EVENING -> context.getString(R.string.greeting_evening)
+        TimeOfDay.NIGHT -> context.getString(R.string.greeting_night)
     }
 }

@@ -5,7 +5,7 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.spybrain.domain.service.IPlayerService
-import com.example.spybrain.service.MeditationPlayerService
+import com.example.spybrain.service.PlayerServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,5 +45,5 @@ object PlayerModule {
     @Singleton
     fun providePlayerService(
         @ApplicationContext context: Context
-    ): IPlayerService = MeditationPlayerService()
+    ): IPlayerService = PlayerServiceImpl(context)
 }

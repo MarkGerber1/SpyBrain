@@ -1,3 +1,13 @@
+## v0.1.0
+
+- feat(meditation): two-tab layout; play/pause/stop/back unified; BackHandler stops playback
+- feat(tts): intro + guided prompts with audio focus; pause/resume/stop
+- feat(breathing): info bottom sheet (why/how helps); confirm stop on Back
+- fix(audio): no ambient autoplay; MediaSession added; stop on task removed
+- feat(ui): Lottie backgrounds with safe fallback
+- feat(localization): RU/EN strings; per-app language switching
+- chore(media): migrate meditation tracks to res/raw and android.resource URIs
+
 # 📝 CHANGELOG - Журнал изменений SpyBrain
 
 Все значимые изменения в проекте документируются в этом файле.

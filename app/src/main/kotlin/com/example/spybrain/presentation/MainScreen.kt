@@ -5,11 +5,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.spybrain.presentation.navigation.BottomNavigationBar
 import com.example.spybrain.presentation.navigation.NavGraph
+import com.example.spybrain.presentation.theme.DynamicBackground
+import androidx.compose.runtime.CompositionLocalProvider
+import com.example.spybrain.presentation.theme.LocalIconPack
+import com.example.spybrain.presentation.theme.LocalThemePack
+import com.example.spybrain.presentation.theme.ThemePacks
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import com.example.spybrain.service.AmbientMusicService
+import com.example.spybrain.presentation.settings.SettingsViewModel
 
 /**
  * Р“Р»Р°РІРЅС‹Р№ СЌРєСЂР°РЅ РїСЂРёР»РѕР¶РµРЅРёСЏ СЃ РЅР°РІРёРіР°С†РёРµР№.
@@ -17,26 +30,39 @@ import com.example.spybrain.presentation.navigation.NavGraph
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun mainScreen(
+fun MainScreen(
     navController: NavHostController = rememberNavController()
 ) {
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(navController)
+    // Автозапуск фоновой музыки при входе
+    val settingsViewModel: SettingsViewModel = hiltViewModel()
+    val settings by settingsViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(settings.ambientEnabled, settings.ambientTrack) {
+        // Больше не автозапускаем музыку. Только гарантируем стоп, если выключено.
+        if (!settings.ambientEnabled || settings.ambientTrack.isEmpty()) {
+            runCatching {
+                val intent = Intent(context, AmbientMusicService::class.java).apply { action = AmbientMusicService.ACTION_STOP }
+                context.startService(intent)
+            }
         }
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            // РџРѕРєР°Р·С‹РІР°РµРј NavGraph РЅР°РїСЂСЏРјСѓСЋ, Р±РµР· welcome screen
-            NavGraph(navController = navController)
+    }
+
+    val themePack = ThemePacks.themePackFor(settings.theme)
+    val iconPack = ThemePacks.iconPackFor(settings.theme)
+
+    CompositionLocalProvider(LocalThemePack provides themePack, LocalIconPack provides iconPack) {
+    DynamicBackground {
+        Scaffold(
+            bottomBar = {
+                BottomNavigationBar(navController)
+            }
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues)) {
+                NavGraph(navController = navController)
+            }
         }
+    }
     }
 }
 
-@Composable
-fun MainScreen() {
-    // TODO: Реализовать основной экран
-}
-
-// Если компонента нет, добавить:
-// @Composable
-// fun MainScreen() { /* TODO: Реализовать */ }

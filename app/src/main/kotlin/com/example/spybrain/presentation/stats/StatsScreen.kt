@@ -1,18 +1,17 @@
 package com.example.spybrain.presentation.stats
 
-// TODO: Сбор всех TODO/FIXME по файлу ниже
-
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,12 +27,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.ui.res.stringResource
+import com.example.spybrain.R
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.SelfImprovement
@@ -45,52 +50,38 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.spybrain.R
-import com.example.spybrain.domain.model.BreathingSession
-import com.example.spybrain.domain.model.Session
+import com.example.spybrain.presentation.theme.DynamicBackground
+import androidx.compose.ui.platform.LocalContext
 import com.example.spybrain.util.VibrationUtil
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import com.example.spybrain.domain.model.BreathingSession
+import com.example.spybrain.domain.model.Session
 
 /**
  * Р­РЅР°СЂ СЃС‚Р°С‚РёСЃС‚РёРєРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
@@ -160,13 +151,13 @@ fun StatsScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "РЎС‚Р°С‚РёСЃС‚РёРєР° С‚СЂРµРЅРёСЂРѕРІРѕРє",
+                                text = stringResource(id = R.string.stats_training_statistics),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "РћС‚СЃР»РµР¶РёРІР°Р№С‚Рµ СЃРІРѕР№ РїСЂРѕРіСЂРµСЃСЃ",
+                                text = stringResource(id = R.string.statistics),
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -195,48 +186,48 @@ fun StatsScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
-                                text = "РѕР±С‰Р°СЏ СЃС‚Р°С‚РёСЃС‚РёРєР°",
+                                text = stringResource(id = R.string.statistics),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold
                             )
 
                             statRow(
-                                label = "РјРµРґРёС‚Р°С†РёСЏ (РјРёРЅСѓС‚С‹)",
+                                label = stringResource(id = R.string.stats_total_meditation_minutes),
                                 value = "${(state.stats?.totalMeditationTimeSeconds ?: 0) / 60}",
                                 icon = Icons.Default.SelfImprovement,
                                 color = Color(0xFF4CAF50)
                             )
 
                             statRow(
-                                label = "Р”С‹С…Р°РЅРёРµ (РјРёРЅСѓС‚С‹)",
+                                label = stringResource(id = R.string.stats_total_breathing_minutes),
                                 value = "${(state.stats?.totalBreathingTimeSeconds ?: 0) / 60}",
                                 icon = Icons.Default.Air,
                                 color = Color(0xFF2196F3)
                             )
 
                             statRow(
-                                label = "РЎРµСЃСЃРёРё РјРµРґРёС‚Р°С†РёРё",
+                                label = stringResource(id = R.string.stats_completed_meditation_sessions),
                                 value = "${state.stats?.completedMeditationSessions ?: 0}",
                                 icon = Icons.Default.Spa,
                                 color = Color(0xFF9C27B0)
                             )
 
                             statRow(
-                                label = "РЎРµСЃСЃРёРё РґС‹С…Р°РЅРёСЏ",
+                                label = stringResource(id = R.string.stats_completed_breathing_sessions),
                                 value = "${state.stats?.completedBreathingSessions ?: 0}",
                                 icon = Icons.Default.Timeline,
                                 color = Color(0xFFFF9800)
                             )
 
                             statRow(
-                                label = "РўРµРєСѓС‰Р°СЏ СЃРµСЂРёСЏ",
+                                label = stringResource(id = R.string.stats_current_streak_days),
                                 value = "${state.stats?.currentStreakDays ?: 0}",
                                 icon = Icons.Default.DateRange,
                                 color = Color(0xFFE91E63)
                             )
 
                             statRow(
-                                label = "Р›СѓС‡С€Р°СЏ СЃРµСЂРёСЏ",
+                                label = stringResource(id = R.string.stats_longest_streak_days),
                                 value = "${state.stats?.longestStreakDays ?: 0}",
                                 icon = Icons.Default.Star,
                                 color = Color(0xFFFFD700)
@@ -265,14 +256,14 @@ fun StatsScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Text(
-                                text = "РёСЃС‚РѕСЂРёСЏ РґС‹С…Р°С‚РµР»СЊРЅС‹С… СЃРµСЃСЃРёР№",
+                                text = stringResource(id = R.string.stats_breathing_history_title),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold
                             )
 
                             if (state.breathingHistory.isEmpty()) {
                                 emptyStateMessage(
-                                    message = "РќРµС‚ РґС‹С…Р°С‚РµР»СЊРЅС‹С… СЃРµСЃСЃРёР№",
+                                    message = stringResource(id = R.string.stats_no_breathing_sessions),
                                     icon = Icons.Default.Air
                                 )
                             } else {
@@ -314,14 +305,14 @@ fun StatsScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Text(
-                                text = "РёСЃС‚РѕСЂРёСЏ РјРµРґРёС‚Р°С†РёР№",
+                                text = stringResource(id = R.string.stats_meditation_history_title),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold
                             )
 
                             if (state.sessionHistory.isEmpty()) {
                                 emptyStateMessage(
-                                    message = "РќРµС‚ РјРµРґРёС‚Р°С†РёРѕРЅРЅС‹С… СЃРµСЃСЃРёР№",
+                                    message = stringResource(id = R.string.stats_no_meditation_sessions),
                                     icon = Icons.Default.SelfImprovement
                                 )
                             } else {
@@ -440,12 +431,12 @@ fun sessionItem(
             // РРЅС„РѕСЂРјР°С†РёСЏ
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "РЎРµСЃСЃРёСЏ ${session.id.takeLast(8)}",
+                    text = stringResource(id = R.string.meditation_session_completed),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "${session.durationSeconds / 60} РјРёРЅСѓС‚",
+                    text = stringResource(id = R.string.duration_seconds_format, session.durationSeconds),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
@@ -464,9 +455,9 @@ fun sessionItem(
             ) {
                 Text(
                     when (session.type) {
-                        com.example.spybrain.domain.model.SessionType.MEDITATION -> "РјРµРґРёС‚Р°С†РёСЏ"
-                        com.example.spybrain.domain.model.SessionType.BREATHING -> "Р”С‹С…Р°РЅРёРµ"
-                        else -> "РЎРµСЃСЃРёСЏ"
+                        com.example.spybrain.domain.model.SessionType.MEDITATION -> stringResource(id = R.string.meditation)
+                        com.example.spybrain.domain.model.SessionType.BREATHING -> stringResource(id = R.string.breathing)
+                        else -> stringResource(id = R.string.meditation)
                     }
                 )
             }
@@ -513,7 +504,7 @@ fun sessionItem(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "${session.durationSeconds / 60} РјРёРЅСѓС‚",
+                    text = stringResource(id = R.string.duration_seconds_format, session.durationSeconds),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
@@ -530,7 +521,7 @@ fun sessionItem(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Text("Р”С‹С…Р°РЅРёРµ")
+                Text(stringResource(id = R.string.breathing))
             }
         }
     }

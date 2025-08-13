@@ -24,6 +24,6 @@ object ErrorHandler {
     fun mapToUiError(error: AppError): UiError = when (error) {
         AppError.Network -> UiError.NetworkError
         AppError.Unknown -> UiError.UnknownError
-        is AppError.Custom -> UiError.Custom(error.message)
+        is AppError.Custom -> UiError.Custom(message = error.message)
     }
 }

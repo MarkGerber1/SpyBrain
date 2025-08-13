@@ -86,15 +86,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import android.speech.tts.Voice
 
-object LocaleManager {
-    fun setLocale(activity: Activity, language: String) {
-        val locale = Locale(language)
-        Locale.setDefault(locale)
-        val config = Configuration(activity.resources.configuration)
-        config.setLocale(locale)
-        activity.createConfigurationContext(config)
-    }
-}
+// Moved to dedicated file LocaleManager.kt
 
 /**
  */
@@ -224,6 +216,14 @@ fun SettingsScreen(
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = stringResource(R.string.settings_ambient_volume))
+                androidx.compose.material3.Slider(
+                    value = state.ambientVolume,
+                    onValueChange = { viewModel.setEvent(Event.AmbientVolumeChanged(it)) },
+                    valueRange = 0f..1f
+                )
             }
         }
 
@@ -298,7 +298,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val languages = listOf("ru" to "Р СўСЃРєРёР№", "en" to "English")
+                val languages = listOf("ru" to context.getString(R.string.settings_language_ru), "en" to context.getString(R.string.settings_language_en))
                 val currentLanguage = Locale.getDefault().language
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -45,6 +45,12 @@ class AmbientMusicService : Service() {
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "ambient_music_channel"
         private const val FADE_DURATION_MS = 3000L
+
+        const val ACTION_PLAY: String = "com.example.spybrain.service.AMBIENT_MUSIC_PLAY"
+        const val ACTION_STOP: String = "com.example.spybrain.service.AMBIENT_MUSIC_STOP"
+        const val ACTION_SET_VOLUME: String = "com.example.spybrain.service.AMBIENT_MUSIC_SET_VOLUME"
+        const val EXTRA_TRACK_ID: String = "com.example.spybrain.service.EXTRA_TRACK_ID"
+        const val EXTRA_VOLUME: String = "com.example.spybrain.service.EXTRA_VOLUME"
     }
 
     inner class LocalBinder : Binder() {
@@ -56,6 +62,25 @@ class AmbientMusicService : Service() {
         createNotificationChannel()
         initializePlayer()
         Timber.d("AmbientMusicService created")
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_PLAY -> {
+                val trackId = intent.getStringExtra(EXTRA_TRACK_ID) ?: ""
+                if (trackId.isNotEmpty()) {
+                    playAmbientMusic(trackId)
+                }
+            }
+            ACTION_STOP -> {
+                stopAmbientMusic()
+            }
+            ACTION_SET_VOLUME -> {
+                val volume = intent.getFloatExtra(EXTRA_VOLUME, 0.5f)
+                setVolume(volume)
+            }
+        }
+        return START_STICKY
     }
 
     private fun initializePlayer() {
@@ -120,13 +145,16 @@ class AmbientMusicService : Service() {
 
     fun playAmbientMusic(trackId: String) {
         try {
+            // Используем реальные ресурсы из res/raw (см. список mixkit_*.mp3)
+            val pkg = packageName
+            val androidRes = { name: String -> "android.resource://$pkg/raw/$name" }
             val mediaItem = when (trackId) {
-                "nature" -> MediaItem.fromUri("asset:///audio/ambient_nature.mp3")
-                "ocean" -> MediaItem.fromUri("asset:///audio/ambient_ocean.mp3")
-                "forest" -> MediaItem.fromUri("asset:///audio/ambient_forest.mp3")
-                "rain" -> MediaItem.fromUri("asset:///audio/ambient_rain.mp3")
-                "fire" -> MediaItem.fromUri("asset:///audio/ambient_fire.mp3")
-                else -> MediaItem.fromUri("asset:///audio/ambient_nature.mp3")
+                "nature" -> MediaItem.fromUri(androidRes("mixkit_spirit_in_the_woods_139"))
+                "water", "ocean" -> MediaItem.fromUri(androidRes("mixkit_chillax_655"))
+                "space" -> MediaItem.fromUri(androidRes("mixkit_staring_at_the_night_sky_168"))
+                "air" -> MediaItem.fromUri(androidRes("mixkit_valley_sunset_127"))
+                "relax", "fire" -> MediaItem.fromUri(androidRes("mixkit_relaxation_05_749"))
+                else -> MediaItem.fromUri(androidRes("mixkit_spirit_in_the_woods_139"))
             }
 
             exoPlayer?.apply {
@@ -201,7 +229,7 @@ class AmbientMusicService : Service() {
                 "Ambient Music",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Р¤РѕРЅРѕРІР°СЏ РјСѓР·С‹РєР° РґР»СЏ РјРµРґРёС‚Р°С†РёРё"
+                description = getString(R.string.settings_ambient_music)
                 setShowBadge(false)
             }
 
@@ -217,8 +245,8 @@ class AmbientMusicService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Р¤РѕРЅРѕРІР°СЏ РјСѓР·С‹РєР°")
-            .setContentText("Р’РѕСЃРїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ РїСЂРёСЏС‚РЅР°СЏ РјСѓР·С‹РєР° РґР»СЏ РјРµРґРёС‚Р°С†РёРё")
+            .setContentTitle(getString(R.string.settings_ambient_music))
+            .setContentText(getString(R.string.settings_ambient_music))
             .setSmallIcon(R.drawable.ic_notification)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
@@ -241,5 +269,17 @@ class AmbientMusicService : Service() {
             Timber.e(e, "Error destroying service")
         }
         super.onDestroy()
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        try {
+            exoPlayer?.stop()
+            exoPlayer?.release()
+            stopSelf()
+            Timber.d("AmbientMusicService onTaskRemoved: stopped and released")
+        } catch (e: Exception) {
+            Timber.e(e, "Error onTaskRemoved cleanup")
+        }
+        super.onTaskRemoved(rootIntent)
     }
 }

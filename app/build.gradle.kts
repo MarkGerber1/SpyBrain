@@ -150,6 +150,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
+    testImplementation("org.robolectric:robolectric:4.10.3")
+    testImplementation("androidx.test:core:1.5.0")
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation("androidx.test:core:1.4.0")
     androidTestImplementation(libs.espresso.core)
@@ -174,6 +176,8 @@ dependencies {
     androidTestImplementation("androidx.room:room-testing:2.6.1")
 
     implementation("androidx.navigation:navigation-compose:2.7.3")
+    // Lottie for animated backgrounds
+    implementation("com.airbnb.android:lottie-compose:6.3.0")
 }
 
 // Detekt configuration

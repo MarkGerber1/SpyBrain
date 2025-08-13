@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.spybrain.data.datastore.SettingsDataStore
 import com.example.spybrain.domain.usecase.meditation.GetMeditationsUseCase
 import com.example.spybrain.presentation.base.BaseViewModel
-import com.example.spybrain.service.BackgroundMusicService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.launchIn
@@ -64,17 +63,23 @@ class SettingsViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
 
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РІС‹Р±РѕСЂ С‚СЂРµРєР°
+        // Подписка на выбор трека (без автопереключений/автопуска)
         settingsDataStore.ambientTrackFlow
             .onEach { track ->
                 setState { copy(ambientTrack = track) }
+            }
+            .launchIn(viewModelScope)
 
-                // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё РїРµСЂРµРєР»СЋС‡Р°РµРј С‚СЂРµРє РµСЃР»Рё РјСѓР·С‹РєР° РІРєР»СЋС‡РµРЅР°
-                settingsDataStore.ambientEnabledFlow.map { enabled ->
-                    if (enabled) {
-                        handleAmbientMusicChange(true, track)
-                    }
-                }.launchIn(viewModelScope)
+        // Подписка на громкость ambient
+        settingsDataStore.ambientVolumeFlow
+            .onEach { volume ->
+                setState { copy(ambientVolume = volume) }
+                // Пробрасываем громкость в сервис
+                val intent = Intent(context, com.example.spybrain.service.AmbientMusicService::class.java).apply {
+                    action = com.example.spybrain.service.AmbientMusicService.ACTION_SET_VOLUME
+                    putExtra(com.example.spybrain.service.AmbientMusicService.EXTRA_VOLUME, volume)
+                }
+                context.startService(intent)
             }
             .launchIn(viewModelScope)
 
@@ -98,7 +103,7 @@ class SettingsViewModel @Inject constructor(
             .onEach { setState { copy(vibrationEnabled = it) } }
             .launchIn(viewModelScope)
 
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РґРѕСЃС‚СѓРїРЅС‹Рµ С‚СЂРµРєРё РјРµРґРёС‚Р°С†РёРё
+        // Подписка на доступные треки медитации (для UI)
         getMeditationsUseCase()
             .map { meditations -> meditations.map { it.id to it.title } }
             .onEach { setState { copy(availableTracks = it) } }
@@ -108,14 +113,7 @@ class SettingsViewModel @Inject constructor(
             .onEach { setState { copy(voiceId = it) } }
             .launchIn(viewModelScope)
 
-        // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё Р·Р°РїСѓСЃРєР°РµРј С„РѕРЅРѕРІСѓСЋ РјСѓР·С‹РєСѓ РїСЂРё СЃС‚Р°СЂС‚Рµ РїСЂРёР»РѕР¶РµРЅРёСЏ (РµСЃР»Рё РІРєР»СЋС‡РµРЅР°)
-        viewModelScope.launch {
-            val isEnabled = settingsDataStore.getAmbientEnabled()
-            val track = settingsDataStore.getAmbientTrack()
-            if (isEnabled && track.isNotEmpty()) {
-                handleAmbientMusicChange(true, track)
-            }
-        }
+        // Больше не автозапускаем при старте приложения — только по явному действию пользователя
     }
 
     override fun handleEvent(event: SettingsContract.Event) {
@@ -140,6 +138,12 @@ class SettingsViewModel @Inject constructor(
                     if (enabled) {
                         handleAmbientMusicChange(true, event.trackId)
                     }
+                }
+            }
+            is SettingsContract.Event.AmbientVolumeChanged -> {
+                viewModelScope.launch {
+                    // Храним проценты, но приходят float 0..1
+                    settingsDataStore.setAmbientVolumePercent((event.volume * 100).toInt())
                 }
             }
             is SettingsContract.Event.HeartbeatToggled -> {
@@ -207,6 +211,8 @@ class SettingsViewModel @Inject constructor(
             is SettingsContract.Event.LanguageChanged -> {
                 viewModelScope.launch {
                     setState { copy(currentLanguage = event.language) }
+                    // Применяем локаль на лету
+                    LocaleManager.setLocale(event.language)
                     setEffect { SettingsContract.Effect.RefreshUI(event.language) }
                     setEffect {
                         SettingsContract.Effect.ShowToast(
@@ -251,9 +257,10 @@ class SettingsViewModel @Inject constructor(
                 }
             }
 
-            val intent = Intent(context, BackgroundMusicService::class.java).apply {
-                action = BackgroundMusicService.ACTION_PLAY
-                putExtra(BackgroundMusicService.EXTRA_URL, audioUrl)
+            // Переключено на AmbientMusicService с трек-id и управлением громкостью
+            val intent = Intent(context, com.example.spybrain.service.AmbientMusicService::class.java).apply {
+                action = com.example.spybrain.service.AmbientMusicService.ACTION_PLAY
+                putExtra(com.example.spybrain.service.AmbientMusicService.EXTRA_TRACK_ID, trackId)
             }
             context.startService(intent)
             setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_ambient_on)) }
@@ -265,8 +272,8 @@ class SettingsViewModel @Inject constructor(
 
     // РћСЃС‚Р°РЅРѕРІРєР° РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ С„РѕРЅРѕРІРѕР№ РјСѓР·С‹РєРё
     private fun stopAmbientMusic() {
-        val intent = Intent(context, BackgroundMusicService::class.java).apply {
-            action = BackgroundMusicService.ACTION_STOP
+        val intent = Intent(context, com.example.spybrain.service.AmbientMusicService::class.java).apply {
+            action = com.example.spybrain.service.AmbientMusicService.ACTION_STOP
         }
         context.startService(intent)
     }

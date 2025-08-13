@@ -4,9 +4,6 @@ import com.example.spybrain.domain.model.CustomBreathingPattern
 import com.example.spybrain.domain.repository.CustomBreathingPatternRepository
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.flow.first
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -22,18 +19,22 @@ class GetCustomBreathingPatternsUseCaseTest {
     }
 
     @Test
-    fun `invoke should return patterns from repository`() = runBlocking {
+    fun `invoke should return patterns from repository`() {
         val patterns = listOf(
             CustomBreathingPattern(
-                name = "Test1", description = null,
-                inhaleSeconds = 1, holdAfterInhaleSeconds = 1,
-                exhaleSeconds = 1, holdAfterExhaleSeconds = 1,
+                id = 1L,
+                name = "Test1", 
+                description = null,
+                inhaleSeconds = 1, 
+                holdAfterInhaleSeconds = 1,
+                exhaleSeconds = 1, 
+                holdAfterExhaleSeconds = 1,
                 totalCycles = 1
             )
         )
-        every { repository.getCustomPatterns() } returns flowOf(patterns)
+        every { repository.getAll() } returns patterns
 
-        val result = useCase.invoke().first()
+        val result = useCase.invoke()
         assertEquals(patterns, result)
     }
 }

@@ -38,6 +38,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import com.example.spybrain.R
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.height
 
 /**
  */
@@ -57,16 +60,16 @@ fun ProfileScreen(
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.Center) {
         if (profile != null) {
-            Text(text = "РРјСЏ: ${profile.name}", style = MaterialTheme.typography.titleLarge)
-            Text(text = "Р”РЅРµР№ РїРѕРґСЂСЏРґ: ${profile.streakDays}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = stringResource(id = R.string.edit_profile) + ": ${profile.name}", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(id = R.string.streak) + ": ${profile.streakDays}", style = MaterialTheme.typography.bodyMedium)
             val sdf = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
             Text(text = "Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ: ${sdf.format(profile.joinDate)}", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = { viewModel.setEvent(ProfileContract.Event.EditNameClicked) }) {
-                Text("РР·РјРµРЅРёС‚СЊ РёРјСЏ")
+                Text(stringResource(id = R.string.edit_profile))
             }
         } else {
-            Text("Р—Р°РіСЂСѓР·РєР° РїСЂРѕС„РёР»СЏ...", modifier = Modifier.align(Alignment.CenterHorizontally))
+            Text(stringResource(id = R.string.common_loading), modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
 
@@ -75,20 +78,20 @@ fun ProfileScreen(
             onDismissRequest = { viewModel.setEvent(ProfileContract.Event.DismissDialog) },
             confirmButton = {
                 TextButton(onClick = { viewModel.setEvent(ProfileContract.Event.SaveName) }) {
-                    Text("РЎРѕС…СЂР°РЅРёС‚СЊ")
+                    Text(stringResource(id = R.string.common_save))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.setEvent(ProfileContract.Event.DismissDialog) }) {
-                    Text("РћС‚РјРµРЅР°")
+                    Text(stringResource(id = R.string.common_cancel))
                 }
             },
-            title = { Text("РР·РјРµРЅРёС‚СЊ РёРјСЏ") },
+            title = { Text(stringResource(id = R.string.edit_profile)) },
             text = {
                 OutlinedTextField(
                     value = state.newName,
                     onValueChange = { viewModel.setEvent(ProfileContract.Event.NameChanged(it)) },
-                    label = { Text("РќРѕРІРѕРµ РёРјСЏ") }
+                    label = { Text(stringResource(id = R.string.edit_profile)) }
                 )
             }
         )

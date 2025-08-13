@@ -119,15 +119,15 @@ fun editCustomBreathingPatternScreen(
                     VibrationUtil.vibrateError(context)
                     Toast.makeText(context, when(val err = effect.error) {
                         is UiError.Custom -> err.message
-                        is UiError.NetworkError -> "РћС€РёР±РєР° СЃРµС‚Рё"
-                        is UiError.ValidationError -> "РћС€РёР±РєР° РІР°Р»РёРґР°С†РёРё"
-                        is UiError.UnknownError -> "РќРµРёР·РІРµСЃС‚РЅР°СЏ РѕС€РёР±РєР°"
-                        else -> "РћС€РёР±РєР°"
+                        is UiError.NetworkError -> context.getString(R.string.error_network)
+                        is UiError.ValidationError -> context.getString(R.string.error_validation)
+                        is UiError.UnknownError -> context.getString(R.string.error_unknown)
+                        else -> context.getString(R.string.error_general)
                     }, Toast.LENGTH_SHORT).show()
                 }
                 is BreathingPatternBuilderContract.Effect.ShowSuccessMessage -> {
                     VibrationUtil.vibrateSuccess(context)
-                    Toast.makeText(context, "РР·РјРµРЅРµРЅРёСЏ СЃРѕС…СЂР°РЅРµРЅС‹!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, R.string.common_success, Toast.LENGTH_SHORT).show()
                     navController.popBackStack()
                 }
             }
@@ -225,7 +225,7 @@ fun editCustomBreathingPatternScreen(
                                     VibrationUtil.vibrateLight(context)
                                     viewModel.setEvent(BreathingPatternBuilderContract.Event.EnterName(it))
                                 },
-                                label = { Text("РќР°Р·РІР°РЅРёРµ С€Р°Р±Р»РѕРЅР°") },
+                                label = { Text(stringResource(id = R.string.pattern_builder_title)) },
                                 leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -239,7 +239,7 @@ fun editCustomBreathingPatternScreen(
                                 onValueChange = {
                                     viewModel.setEvent(BreathingPatternBuilderContract.Event.EnterDescription(it))
                                 },
-                                label = { Text("РћРїРёСЃР°РЅРёРµ (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ)") },
+                                label = { Text(stringResource(id = R.string.pattern_builder_description)) },
                                 leadingIcon = { Icon(Icons.Default.Description, contentDescription = null) },
                                 modifier = Modifier.fillMaxWidth(),
                                 minLines = 2,

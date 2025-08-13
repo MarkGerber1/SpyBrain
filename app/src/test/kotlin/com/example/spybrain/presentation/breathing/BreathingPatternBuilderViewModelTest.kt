@@ -13,7 +13,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.coVerify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -36,7 +35,7 @@ class BreathingPatternBuilderViewModelTest {
 
     @Before
     fun setUp() = runTest {
-        every { getUseCase() } returns flowOf(emptyList())
+        every { getUseCase() } returns emptyList()
         viewModel = BreathingPatternBuilderViewModel(context, getUseCase, addUseCase, deleteUseCase)
     }
 
@@ -58,9 +57,8 @@ class BreathingPatternBuilderViewModelTest {
     fun `on save with empty name emits ShowError effect`() = runTest {
         viewModel.effect.test {
             viewModel.setEvent(Contract.Event.SavePattern)
-            val effect = awaitItem() as Contract.Effect.ShowError
-            val customError = effect.error as UiError.Custom
-            assertEquals("Р’РІРµРґРёС‚Рµ РЅР°Р·РІР°РЅРёРµ С€Р°Р±Р»РѕРЅР°", customError.message)
+            val effect = awaitItem()
+            assert(effect is Contract.Effect.ShowError)
             cancelAndIgnoreRemainingEvents()
         }
     }

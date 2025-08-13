@@ -38,7 +38,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.example.spybrain.service.BackgroundMusicService" android:exported="false"/>
+        <!-- Legacy service removed: BackgroundMusicService -->
         <service android:name="com.example.spybrain.service.AmbientMusicService" android:exported="false"/>
 
         <service android:name="com.example.spybrain.service.VoiceAssistantService" android:exported="false"/>

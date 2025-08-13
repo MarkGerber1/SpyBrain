@@ -136,7 +136,7 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                 if (state.name.isBlank()) {
                     setEffect {
                         BreathingPatternBuilderContract.Effect.ShowError(
-                            UiError.Custom(context.getString(R.string.pattern_builder_enter_name))
+                            UiError.Custom(message = context.getString(R.string.pattern_builder_enter_name))
                         )
                     }
                     setState { copy(isLoading = false) }
@@ -148,7 +148,7 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                 if (inhale <= 0 || exhale <= 0 || cycles <= 0) {
                     setEffect {
                         BreathingPatternBuilderContract.Effect.ShowError(
-                            UiError.Custom(context.getString(R.string.pattern_builder_invalid_values))
+                            UiError.Custom(message = context.getString(R.string.pattern_builder_invalid_values))
                         )
                     }
                     setState { copy(isLoading = false) }
@@ -157,7 +157,7 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                 if (inhale > 60 || exhale > 60 || cycles > 100) {
                     setEffect {
                         BreathingPatternBuilderContract.Effect.ShowError(
-                            UiError.Custom("Значения слишком большие. Проверьте параметры.")
+                            UiError.Custom(message = "Значения слишком большие. Проверьте параметры.")
                         )
                     }
                     setState { copy(isLoading = false) }

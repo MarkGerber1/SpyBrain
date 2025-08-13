@@ -23,12 +23,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Alignment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,6 +51,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 
 /**
  * Р­РЅСЂР°РЅ СўРјРЅРѕРіРѕ РїСЂРёРІРµС‚СЃС‚РІРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
@@ -78,34 +79,34 @@ fun SmartWelcomeScreen(
     // РћРїСЂРµРґРµР»СЏРµРј РІСЂРµРјСЏ СЃСўС‚РѕРє
     val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
     val (greeting, bgRes) = when (hour) {
-        in 5..11 -> "Р”РѕР±СЂРѕРµ СўС‚СЂРѕ!" to com.example.spybrain.R.drawable.bg_water
-        in 12..17 -> "Р”РѕР±С‹Р№ РґРµРЅСЊ!" to com.example.spybrain.R.drawable.bg_nature
-        in 18..22 -> "Р”РѕР±С‹Р№ РІРµС‡РµСЂ!" to com.example.spybrain.R.drawable.bg_space
-        else -> "Р”РѕР±СЂРѕР№ РЅРѕС‡Рё!" to com.example.spybrain.R.drawable.bg_air
+        in 5..11 -> context.getString(R.string.greeting_morning) to com.example.spybrain.R.drawable.bg_water
+        in 12..17 -> context.getString(R.string.greeting_day) to com.example.spybrain.R.drawable.bg_nature
+        in 18..22 -> context.getString(R.string.greeting_evening) to com.example.spybrain.R.drawable.bg_space
+        else -> context.getString(R.string.greeting_night) to com.example.spybrain.R.drawable.bg_air
     }
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = bgRes),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
-            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            contentScale = ContentScale.Crop
         )
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp),
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(greeting, style = MaterialTheme.typography.headlineLarge, color = Color.White)
             Spacer(modifier = Modifier.height(24.dp))
             if (!isNetworkAvailable) {
-                Text("РќРµС‚ СЃРѕРµРґРёРЅРёСЏ СЃ СЃРµС‚СЊСЋ", color = Color.Red)
+                Text(stringResource(id = R.string.error_network), color = Color.Red)
             } else {
                 // Р‘С‹СЃС‚СЂС‹Рµ РґРµР№СЃС‚РІРёСЏ
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Button(onClick = { onQuickAction("breathing") }) { Text("Р‘С‹СЃС‚СЂРѕРµ РґС‹С…РЅРёРµ") }
-                    Button(onClick = { onQuickAction("meditation") }) { Text("Р‘С‹СЃС‚СЂР°СЏ РјРµРґРёС‚РёСЏ") }
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
+                    Button(onClick = { onQuickAction("breathing") }) { Text(stringResource(id = R.string.breathing)) }
+                    Button(onClick = { onQuickAction("meditation") }) { Text(stringResource(id = R.string.meditation)) }
                 }
             }
 

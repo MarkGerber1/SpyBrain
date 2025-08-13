@@ -14,9 +14,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.example.spybrain.domain.error.ErrorHandler // FIXME Р±РёР»Рґ-С„РёРєСЃ 09.05.2025
 import javax.inject.Inject
-import com.example.spybrain.presentation.base.BaseContract.UiEvent
-import com.example.spybrain.presentation.base.BaseContract.UiState
-import com.example.spybrain.presentation.base.BaseContract.UiEffect
+import com.example.spybrain.presentation.base.UiEvent
+import com.example.spybrain.presentation.base.UiState
+import com.example.spybrain.presentation.base.UiEffect
 
 /**
  * @constructor Р’РЅРµРґСЂРµРЅРёРµ Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№ С‡РµСЂРµР· Hilt.

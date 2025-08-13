@@ -1,6 +1,9 @@
 ﻿package com.example.spybrain.service
 
 import android.content.Context
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
+import android.media.AudioManager
 import android.speech.tts.TextToSpeech
 import android.speech.tts.Voice
 import android.speech.tts.UtteranceProgressListener
@@ -30,6 +33,10 @@ class VoiceAssistantService @Inject constructor(
     private var textToSpeech: TextToSpeech? = null
     private var isInitialized = false
     private val scope = CoroutineScope(Dispatchers.Main)
+    private var guidanceJob: kotlinx.coroutines.Job? = null
+    private val audioManager: AudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private var focusRequest: AudioFocusRequest? = null
+    private var hasAudioFocus: Boolean = false
 
     // Р”РѕСЃС‚СѓРїРЅС‹Рµ РіРѕР»РѕСЃР°
     private val availableVoices = mutableListOf<Voice>()
@@ -106,6 +113,7 @@ class VoiceAssistantService @Inject constructor(
         }
 
         textToSpeech?.let { tts ->
+            requestAudioFocus()
             // РќР°СЃС‚СЂР°РёРІР°РµРј РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ Р±РѕР»РµРµ РµСЃС‚РµСЃС‚РІРµРЅРЅРѕРіРѕ Р·РІСѓС‡Р°РЅРёСЏ
             tts.setSpeechRate(0.85f) // РќРµРјРЅРѕРіРѕ РјРµРґР»РµРЅРЅРµРµ РґР»СЏ РµСЃС‚РµСЃС‚РІРµРЅРЅРѕСЃС‚Рё
             tts.setPitch(1.0f) // РќРѕСЂРјР°Р»СЊРЅР°СЏ РІС‹СЃРѕС‚Р°
@@ -168,6 +176,7 @@ class VoiceAssistantService @Inject constructor(
 
     fun stop() {
         textToSpeech?.stop()
+        abandonAudioFocus()
     }
 
     fun shutdown() {
@@ -184,21 +193,21 @@ class VoiceAssistantService @Inject constructor(
     fun getVoiceDescription(voice: android.speech.tts.Voice): String {
         return try {
             val quality = when (voice.quality) {
-                android.speech.tts.Voice.QUALITY_HIGH -> "Р’С‹СЃРѕРєРѕРµ"
-                android.speech.tts.Voice.QUALITY_NORMAL -> "РЎСЂРµРґРЅРµРµ"
-                android.speech.tts.Voice.QUALITY_LOW -> "РќРёР·РєРѕРµ"
-                else -> "РќРµРёР·РІРµСЃС‚РЅРѕРµ"
+                android.speech.tts.Voice.QUALITY_HIGH -> context.getString(R.string.voice_quality_high)
+                android.speech.tts.Voice.QUALITY_NORMAL -> context.getString(R.string.voice_quality_normal)
+                android.speech.tts.Voice.QUALITY_LOW -> context.getString(R.string.voice_quality_low)
+                else -> context.getString(R.string.voice_quality_unknown)
             }
 
             val gender = when {
-                voice.name.contains("female", ignoreCase = true) -> "Р–РµРЅСЃРєРёР№"
-                voice.name.contains("male", ignoreCase = true) -> "РњСѓР¶СЃРєРѕР№"
-                else -> "РќРµР№С‚СЂР°Р»СЊРЅС‹Р№"
+                voice.name.contains("female", ignoreCase = true) -> context.getString(R.string.voice_gender_female)
+                voice.name.contains("male", ignoreCase = true) -> context.getString(R.string.voice_gender_male)
+                else -> context.getString(R.string.voice_gender_unknown)
             }
 
-            "${voice.name} ($gender, $quality РєР°С‡РµСЃС‚РІРѕ, ${voice.locale.displayLanguage})"
+            "${voice.name} ($gender, $quality, ${voice.locale.displayLanguage})"
         } catch (e: Exception) {
-            Timber.e(e, "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё РѕРїРёСЃР°РЅРёСЏ РіРѕР»РѕСЃР°")
+            Timber.e(e, "Error building voice description")
             voice.name
         }
     }
@@ -213,9 +222,11 @@ class VoiceAssistantService @Inject constructor(
 
     override fun release() {
         try {
+            guidanceJob?.cancel()
             textToSpeech?.stop()
             textToSpeech?.shutdown()
             scope.cancel()
+            abandonAudioFocus()
             Timber.d("VoiceAssistantService released")
         } catch (e: Exception) {
             Timber.e(e, "Failed to release TTS")
@@ -255,7 +266,7 @@ class VoiceAssistantService @Inject constructor(
     }
 
     override fun speakComplete() {
-        speakBreathingPrompt(context.getString(R.string.breathing_complete_message))
+        speakBreathingPrompt("Сессия завершена")
     }
 
     fun speakCycle(cycle: Int, total: Int) {
@@ -263,8 +274,7 @@ class VoiceAssistantService @Inject constructor(
     }
 
     override fun speakMotivation(message: String) {
-        // TODO: Реализовать логику
-        throw NotImplementedError("VoiceAssistantService logic not implemented yet")
+        speakBreathingPrompt(message)
     }
 
     override fun speak(text: String) {
@@ -272,7 +282,88 @@ class VoiceAssistantService @Inject constructor(
     }
 
     override fun startListening() {
-        // TODO: Реализовать логику
-        throw NotImplementedError("VoiceAssistantService logic not implemented yet")
+        // Неподдерживаемо без интеграции ASR; безопасный no-op
+    }
+
+    // Intro for Meditation tab (Mode A)
+    override fun speakIntro() {
+        val intro = context.getString(R.string.meditation_intro_text)
+        speakWithEmotion(intro, Emotion.GENTLE)
+    }
+
+    // Guided prompts for Guided Meditation tab (Mode B)
+    override fun startGuidance(loopIntervalSec: Int) {
+        guidanceJob?.cancel()
+        val prompts = listOf(
+            R.string.guidance_prompt_soft_inhale_exhale,
+            R.string.guidance_prompt_release_shoulders,
+            R.string.guidance_prompt_focus_chest,
+            R.string.guidance_prompt_belly_breath,
+            R.string.guidance_prompt_return_attention
+        ).map { context.getString(it) }
+
+        guidanceJob = scope.launch {
+            var index = 0
+            while (true) {
+                requestAudioFocus()
+                speakMeditationGuidance(prompts[index % prompts.size])
+                index++
+                kotlinx.coroutines.delay(loopIntervalSec * 1000L)
+            }
+        }
+    }
+
+    override fun pauseGuidance() {
+        guidanceJob?.cancel()
+    }
+
+    override fun resumeGuidance() {
+        if (guidanceJob == null || guidanceJob?.isCancelled == true) {
+            startGuidance(loopIntervalSec = 40)
+        }
+    }
+
+    override fun stopGuidance() {
+        guidanceJob?.cancel()
+        guidanceJob = null
+        abandonAudioFocus()
+    }
+
+    private fun requestAudioFocus() {
+        if (hasAudioFocus) return
+        val audioAttrs = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+            .build()
+        val fr = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+            .setOnAudioFocusChangeListener { change ->
+                when (change) {
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
+                    AudioManager.AUDIOFOCUS_LOSS -> {
+                        pauseGuidance()
+                    }
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+                        textToSpeech?.setSpeechRate(0.8f)
+                    }
+                    AudioManager.AUDIOFOCUS_GAIN -> {
+                        textToSpeech?.setSpeechRate(0.85f)
+                    }
+                }
+            }
+            .setAudioAttributes(audioAttrs)
+            .build()
+        val res = audioManager.requestAudioFocus(fr)
+        if (res == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            focusRequest = fr
+            hasAudioFocus = true
+        }
+    }
+
+    private fun abandonAudioFocus() {
+        focusRequest?.let {
+            audioManager.abandonAudioFocusRequest(it)
+        }
+        focusRequest = null
+        hasAudioFocus = false
     }
 }

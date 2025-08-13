@@ -4,11 +4,13 @@ import com.example.spybrain.data.model.CustomBreathingPatternEntity
 import com.example.spybrain.data.storage.dao.CustomBreathingPatternDao
 import com.example.spybrain.domain.model.CustomBreathingPattern
 import com.example.spybrain.data.model.toEntity
+import com.example.spybrain.data.model.toDomain
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.just
 import io.mockk.Runs
+// avoid wildcard any import; not required
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -26,63 +28,69 @@ class CustomBreathingPatternRepositoryImplTest {
     }
 
     @Test
-    fun `getCustomPatterns should map entities to domain models`() = runBlocking {
+    fun `getAll should return patterns from dao`() = runBlocking {
         val entities = listOf(
             CustomBreathingPatternEntity(
-                id = "id1",
-                name = "Name1",
-                description = "Desc1",
-                inhaleSeconds = 1,
-                holdAfterInhaleSeconds = 2,
-                exhaleSeconds = 3,
-                holdAfterExhaleSeconds = 4,
-                totalCycles = 5
+                id = "1",
+                name = "Test Pattern",
+                description = "Test Description",
+                inhaleSeconds = 4,
+                holdAfterInhaleSeconds = 7,
+                exhaleSeconds = 8,
+                holdAfterExhaleSeconds = 0,
+                totalCycles = 10
             )
         )
+        val expectedPatterns = entities.map { it.toDomain() }
+
         coEvery { dao.getAllPatterns() } returns flowOf(entities)
 
-        val result = repository.getCustomPatterns().first()
-        assertEquals(1, result.size)
-        val domain = result[0]
-        assertEquals("id1", domain.id)
-        assertEquals("Name1", domain.name)
-        assertEquals("Desc1", domain.description)
+        val result = repository.getAll()
+
+        assertEquals(expectedPatterns, result)
+        coVerify { dao.getAllPatterns() }
     }
 
     @Test
-    fun `addCustomPattern should call dao insert`() = runBlocking {
+    fun `add should call dao insert`() = runBlocking {
         val pattern = CustomBreathingPattern(
-            name = "Name",
-            description = "Desc",
-            inhaleSeconds = 1,
-            holdAfterInhaleSeconds = 1,
-            exhaleSeconds = 1,
-            holdAfterExhaleSeconds = 1,
-            totalCycles = 1
+            id = 1L,
+            name = "Test Pattern",
+            description = "Test Description",
+            inhaleSeconds = 4,
+            holdAfterInhaleSeconds = 7,
+            exhaleSeconds = 8,
+            holdAfterExhaleSeconds = 0,
+            totalCycles = 10
         )
+
         coEvery { dao.insertPattern(any()) } just Runs
 
-        repository.addCustomPattern(pattern)
+        repository.add(pattern)
 
-        coVerify(exactly = 1) { dao.insertPattern(pattern.toEntity()) }
+        coVerify { dao.insertPattern(any()) }
     }
 
     @Test
-    fun `deleteCustomPattern should call dao delete`() = runBlocking {
-        val pattern = CustomBreathingPattern(
-            name = "Name",
-            description = "Desc",
-            inhaleSeconds = 1,
-            holdAfterInhaleSeconds = 1,
-            exhaleSeconds = 1,
-            holdAfterExhaleSeconds = 1,
-            totalCycles = 1
+    fun `delete should call dao delete`() = runBlocking {
+        val patternId = 1L
+        val entity = CustomBreathingPatternEntity(
+            id = patternId.toString(),
+            name = "Test Pattern",
+            description = null,
+            inhaleSeconds = 4,
+            holdAfterInhaleSeconds = 7,
+            exhaleSeconds = 8,
+            holdAfterExhaleSeconds = 0,
+            totalCycles = 10
         )
+
+        coEvery { dao.getAllPatterns() } returns flowOf(listOf(entity))
         coEvery { dao.deletePattern(any()) } just Runs
 
-        repository.deleteCustomPattern(pattern)
+        repository.delete(patternId)
 
-        coVerify(exactly = 1) { dao.deletePattern(pattern.toEntity()) }
+        coVerify { dao.deletePattern(any()) }
     }
 }
 

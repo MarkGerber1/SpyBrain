@@ -22,8 +22,9 @@ class AddCustomBreathingPatternUseCaseTest {
     }
 
     @Test
-    fun `invoke should call addCustomPattern on repository`() = runBlocking {
+    fun `invoke should call add on repository`() = runBlocking {
         val pattern = CustomBreathingPattern(
+            id = 1L,
             name = "Test",
             description = "Desc",
             inhaleSeconds = 3,
@@ -32,11 +33,11 @@ class AddCustomBreathingPatternUseCaseTest {
             holdAfterExhaleSeconds = 1,
             totalCycles = 5
         )
-        coEvery { repository.addCustomPattern(pattern) } just Runs
+        coEvery { repository.add(pattern) } just Runs
 
         useCase.invoke(pattern)
 
-        coVerify(exactly = 1) { repository.addCustomPattern(pattern) }
+        coVerify(exactly = 1) { repository.add(pattern) }
     }
 }
 

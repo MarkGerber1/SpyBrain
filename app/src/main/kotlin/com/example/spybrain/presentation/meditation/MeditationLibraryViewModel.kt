@@ -61,8 +61,8 @@ class MeditationLibraryViewModel @Inject constructor(
 
     fun playProgram(program: MeditationProgram) {
         playerService.stop()
-        playerService.play(program.audioUrl)
-        aiMentor.giveMeditationAdvice()
+        playerService.play(program.audioUrl ?: "")
+        aiMentor.giveMeditationAdvice("default_user_id")
     }
 
     override fun onCleared() {
