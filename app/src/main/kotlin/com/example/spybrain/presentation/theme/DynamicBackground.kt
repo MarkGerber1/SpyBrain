@@ -231,7 +231,11 @@ fun DynamicBackground(
             TimeOfDay.NIGHT -> "lottie_night"
         }
         val lottieResId = remember(lottieKey) {
-            context.resources.getIdentifier(lottieKey, "raw", context.packageName)
+            when (lottieKey) {
+                "lottie_meditation" -> R.raw.lottie_meditation
+                "lottie_guided" -> R.raw.lottie_guided
+                else -> context.resources.getIdentifier(lottieKey, "raw", context.packageName)
+            }
         }
         val comp by rememberLottieComposition(
             if (lottieResId != 0) LottieCompositionSpec.RawRes(lottieResId) else LottieCompositionSpec.RawRes(0)

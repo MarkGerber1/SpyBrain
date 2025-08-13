@@ -47,19 +47,11 @@ class SettingsViewModel @Inject constructor(
             .onEach { setState { copy(theme = it) } }
             .launchIn(viewModelScope)
 
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РІРєР»СЋС‡РµРЅРёРµ С„РѕРЅРѕРІРѕР№ РјСѓР·С‹РєРё
+        // Подписываемся на включение фоновой музыки (без автозапуска при старте)
         settingsDataStore.ambientEnabledFlow
             .onEach { enabled ->
                 setState { copy(ambientEnabled = enabled) }
-
-                // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё Р·Р°РїСѓСЃРєР°РµРј РјСѓР·С‹РєСѓ РїСЂРё РІРєР»СЋС‡РµРЅРёРё
-                if (enabled) {
-                    settingsDataStore.ambientTrackFlow.map { track ->
-                        handleAmbientMusicChange(true, track)
-                    }.launchIn(viewModelScope)
-                } else {
-                    stopAmbientMusic()
-                }
+                if (!enabled) stopAmbientMusic()
             }
             .launchIn(viewModelScope)
 
