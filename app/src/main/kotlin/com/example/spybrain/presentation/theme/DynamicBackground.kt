@@ -191,6 +191,7 @@ object DynamicBackgroundManager {
 @Composable
 fun DynamicBackground(
     modifier: Modifier = Modifier,
+    lottieKeyOverride: String? = null,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -223,7 +224,7 @@ fun DynamicBackground(
     ) {
         // Lottie-анимация (если есть подходящий JSON в raw), иначе fallback на изображение
         val context = LocalContext.current
-        val lottieKey = when (timeOfDay) {
+        val lottieKey = lottieKeyOverride ?: when (timeOfDay) {
             TimeOfDay.MORNING -> "lottie_morning"
             TimeOfDay.DAY -> "lottie_day"
             TimeOfDay.EVENING -> "lottie_evening"

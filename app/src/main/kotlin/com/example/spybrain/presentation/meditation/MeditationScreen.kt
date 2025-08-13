@@ -158,7 +158,7 @@ fun MeditationScreen(
         }
     }
 
-    DynamicBackground {
+    DynamicBackground(lottieKeyOverride = if (state.currentPlaying == null) null else if (state.isGuidedMode) "lottie_guided" else "lottie_meditation") {
     Scaffold(
         topBar = {
             TopAppBar(
