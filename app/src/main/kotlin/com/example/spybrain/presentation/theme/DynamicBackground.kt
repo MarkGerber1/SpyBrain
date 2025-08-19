@@ -228,26 +228,26 @@ fun DynamicBackground(
         // Lottie-анимация (если есть подходящий JSON в raw), иначе fallback на изображение
         val context = LocalContext.current
         val themePack = LocalThemePack.current
-        val packResId = themePack.backgroundLottie ?: 0
-        try {
-            android.util.Log.d("DynamicBackground", "theme=${themePack.name} packResId=$packResId")
-        } catch (_: Exception) {}
+        // Базовый ресурс из темы
+        var packResId = themePack.backgroundLottie ?: 0
+        // Коррекция по времени суток (ночью всегда космос, днём — облака/океан в зависимости от темы)
+        packResId = when (timeOfDay) {
+            TimeOfDay.NIGHT -> R.raw.lottie_space
+            TimeOfDay.EVENING -> if (packResId != 0) packResId else R.raw.lottie_space
+            TimeOfDay.MORNING, TimeOfDay.DAY -> if (packResId != 0) packResId else R.raw.lottie_clouds
+        }
+        try { android.util.Log.d("DynamicBackground", "theme=${themePack.name} resId=$packResId time=$timeOfDay") } catch (_: Exception) {}
         val lottieKey = lottieKeyOverride
-        val resolvedResId = if (packResId != 0) {
-            packResId
-        } else {
-            val fallbackKey = lottieKey ?: when (timeOfDay) {
-                TimeOfDay.MORNING -> "lottie_morning"
-                TimeOfDay.DAY -> "lottie_day"
-                TimeOfDay.EVENING -> "lottie_evening"
-                TimeOfDay.NIGHT -> "lottie_night"
-            }
-            when (fallbackKey) {
+        val resolvedResId = if (lottieKey != null) {
+            when (lottieKey) {
                 "lottie_meditation" -> R.raw.lottie_meditation
                 "lottie_guided" -> R.raw.lottie_guided
-                else -> context.resources.getIdentifier(fallbackKey, "raw", context.packageName)
+                "lottie_ocean" -> R.raw.lottie_ocean
+                "lottie_space" -> R.raw.lottie_space
+                "lottie_clouds" -> R.raw.lottie_clouds
+                else -> context.resources.getIdentifier(lottieKey, "raw", context.packageName)
             }
-        }
+        } else packResId
         val comp by rememberLottieComposition(
             if (resolvedResId != 0) LottieCompositionSpec.RawRes(resolvedResId) else LottieCompositionSpec.RawRes(R.raw.lottie_meditation)
         )
