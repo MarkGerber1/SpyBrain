@@ -230,11 +230,30 @@ fun DynamicBackground(
         val themePack = LocalThemePack.current
         // Базовый ресурс из темы
         var packResId = themePack.backgroundLottie ?: 0
-        // Коррекция по времени суток (ночью всегда космос, днём — облака/океан в зависимости от темы)
-        packResId = when (timeOfDay) {
-            TimeOfDay.NIGHT -> R.raw.lottie_space
-            TimeOfDay.EVENING -> if (packResId != 0) packResId else R.raw.lottie_space
-            TimeOfDay.MORNING, TimeOfDay.DAY -> if (packResId != 0) packResId else R.raw.lottie_clouds
+        // Опциональный стиль из настроек
+        val style = try {
+            val ep = dagger.hilt.android.EntryPointAccessors.fromApplication(context.applicationContext, com.example.spybrain.di.AppEntryPoints::class.java)
+            ep.settingsDataStore().getBackgroundStyle()
+        } catch (_: Exception) { "auto" }
+        fun styleToRes(key: String?): Int = when (key) {
+            "ocean" -> R.raw.lottie_ocean
+            "clouds" -> R.raw.lottie_clouds
+            "stars" -> R.raw.lottie_space
+            "forest" -> R.raw.lottie_clouds
+            "mountains" -> R.raw.lottie_clouds
+            "rain" -> R.raw.lottie_ocean
+            "sky" -> R.raw.lottie_clouds
+            "waterfall" -> R.raw.lottie_ocean
+            else -> 0
+        }
+        val styleRes = styleToRes(style)
+        packResId = when {
+            style != "auto" && styleRes != 0 -> styleRes
+            else -> when (timeOfDay) {
+                TimeOfDay.NIGHT -> R.raw.lottie_space
+                TimeOfDay.EVENING -> if (packResId != 0) packResId else R.raw.lottie_space
+                TimeOfDay.MORNING, TimeOfDay.DAY -> if (packResId != 0) packResId else R.raw.lottie_clouds
+            }
         }
         try { android.util.Log.d("DynamicBackground", "theme=${themePack.name} resId=$packResId time=$timeOfDay") } catch (_: Exception) {}
         val lottieKey = lottieKeyOverride

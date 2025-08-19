@@ -389,6 +389,31 @@ fun SettingsScreen(
         }
 
         item {
+            Text(text = "Живой фон", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(8.dp))
+            val styles = listOf(
+                "auto" to "Авто",
+                "ocean" to "Океан",
+                "waterfall" to "Водопад",
+                "clouds" to "Облака",
+                "stars" to "Звёзды",
+                "forest" to "Лес",
+                "mountains" to "Горы",
+                "rain" to "Дождь",
+                "sky" to "Небо"
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                styles.forEach { (key, label) ->
+                    androidx.compose.material3.FilterChip(
+                        selected = state.backgroundStyle == key,
+                        onClick = { viewModel.setEvent(Event.BackgroundStyleChanged(key)) },
+                        label = { Text(label) }
+                    )
+                }
+            }
+        }
+
+        item {
             Text(text = "Профиль", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(8.dp))
             androidx.compose.material3.OutlinedTextField(

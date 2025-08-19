@@ -42,6 +42,7 @@ class SettingsDataStore @Inject constructor(
         val USER_NAME = stringPreferencesKey("user_name")
         val USER_AGE = intPreferencesKey("user_age")
         val USER_GENDER = stringPreferencesKey("user_gender")
+        val BACKGROUND_STYLE = stringPreferencesKey("background_style")
     }
 
     /**
@@ -144,6 +145,13 @@ class SettingsDataStore @Inject constructor(
      */
     val userGenderFlow: Flow<String> = dataStore.data.map { preferences ->
         preferences[PreferencesKey.USER_GENDER] ?: "other"
+    }
+
+    /**
+     * Стиль живого фона (auto|ocean|waterfall|clouds|stars|forest|mountains|rain|sky).
+     */
+    val backgroundStyleFlow: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.BACKGROUND_STYLE] ?: "auto"
     }
 
     /**
@@ -275,6 +283,12 @@ class SettingsDataStore @Inject constructor(
         }
     }
 
+    suspend fun setBackgroundStyle(style: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.BACKGROUND_STYLE] = style
+        }
+    }
+
     /**
      * Получить трек ambient-музыки.
      * @return Flow с треком.
@@ -351,5 +365,10 @@ class SettingsDataStore @Inject constructor(
     fun getUserGender(): String = runBlocking {
         val preferences = dataStore.data.first()
         preferences[PreferencesKey.USER_GENDER] ?: "other"
+    }
+
+    fun getBackgroundStyle(): String = runBlocking {
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.BACKGROUND_STYLE] ?: "auto"
     }
 }

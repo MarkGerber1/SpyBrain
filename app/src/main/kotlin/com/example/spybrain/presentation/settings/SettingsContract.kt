@@ -23,6 +23,7 @@ object SettingsContract {
         val userName: String = "",
         val userAge: Int = 0,
         val userGender: String = "other",
+        val backgroundStyle: String = "auto",
         val availableTracks: List<Pair<String, String>> = emptyList(),
         val voiceId: String = "",
         val voiceRate: Float = 0.85f,
@@ -68,6 +69,7 @@ object SettingsContract {
         data class UserNameChanged(val name: String) : Event()
         data class UserAgeChanged(val age: Int) : Event()
         data class UserGenderChanged(val gender: String) : Event()
+        data class BackgroundStyleChanged(val style: String) : Event()
     }
 
     /**

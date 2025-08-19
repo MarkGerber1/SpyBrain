@@ -106,6 +106,10 @@ class SettingsViewModel @Inject constructor(
             .onEach { setState { copy(userGender = it) } }
             .launchIn(viewModelScope)
 
+        settingsDataStore.backgroundStyleFlow
+            .onEach { setState { copy(backgroundStyle = it) } }
+            .launchIn(viewModelScope)
+
         // Предлагаем список поддерживаемых ambient-треков (а не список медитаций)
         val ambientOptions = listOf(
             "nature" to "Природа",
@@ -262,6 +266,9 @@ class SettingsViewModel @Inject constructor(
             }
             is SettingsContract.Event.UserGenderChanged -> {
                 viewModelScope.launch { settingsDataStore.setUserGender(event.gender) }
+            }
+            is SettingsContract.Event.BackgroundStyleChanged -> {
+                viewModelScope.launch { settingsDataStore.setBackgroundStyle(event.style) }
             }
         }
     }
