@@ -94,9 +94,8 @@ fun MainScreen(
     CompositionLocalProvider(LocalThemePack provides themePack, LocalIconPack provides themePack.icons) {
     DynamicBackground(greetingOverride = greeting) {
         Scaffold(
-            bottomBar = {
-                // Нижнюю панель теперь рендерим в MainActivity, чтобы она была общей для всего графа
-            }
+            containerColor = Color.Transparent,
+            bottomBar = { /* нижняя панель в MainActivity */ }
         ) { paddingValues ->
             Box(modifier = Modifier
                 .fillMaxSize()
@@ -108,7 +107,7 @@ fun MainScreen(
                     in 17..21 -> "Добрый вечер"
                     else -> "Доброй ночи"
                 }
-                // Мотивационный подзаголовок
+                // Приветствие и мотивация
                 val quotes = listOf(
                     "Познай себя — через медитацию.",
                     "Расслабление — искусство, которому можно научиться.",
@@ -116,15 +115,26 @@ fun MainScreen(
                     "Спокойствие — твоя суперсила.",
                     "Твое внимание — твоя энергия."
                 )
-                Text(
-                    text = quotes.random(),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = Color.White.copy(alpha = 0.9f),
+                Column(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 64.dp),
-                    textAlign = TextAlign.Center
-                )
+                        .padding(top = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = greeting,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = quotes.random(),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = Color.White.copy(alpha = 0.9f),
+                        textAlign = TextAlign.Center
+                    )
+                }
 
                 // Узлы вкладок
                 Row(
@@ -137,19 +147,25 @@ fun MainScreen(
                     HomeNode(
                         icon = Icons.Filled.Star,
                         label = context.getString(com.example.spybrain.R.string.meditations),
-                        onClick = { navController.navigate(Screen.Meditation.route) }
+                        onClick = { navController.navigate(Screen.Meditation.route) },
+                        sizeDp = 120,
+                        offsetYDp = 12
                     )
                     Spacer(Modifier.weight(1f))
                     HomeNode(
                         icon = Icons.Filled.Headphones,
                         label = context.getString(com.example.spybrain.R.string.meditation_guided_tab_title),
-                        onClick = { navController.navigate(Screen.Meditation.route) }
+                        onClick = { navController.navigate(Screen.Meditation.route) },
+                        sizeDp = 136,
+                        offsetYDp = -8
                     )
                     Spacer(Modifier.weight(1f))
                     HomeNode(
                         icon = Icons.Filled.Air,
                         label = context.getString(com.example.spybrain.R.string.breathing_title),
-                        onClick = { navController.navigate(Screen.Breathing.route) }
+                        onClick = { navController.navigate(Screen.Breathing.route) },
+                        sizeDp = 120,
+                        offsetYDp = 16
                     )
                     Spacer(Modifier.size(24.dp))
                 }
@@ -163,12 +179,13 @@ fun MainScreen(
 }
 
 @Composable
-private fun HomeNode(icon: ImageVector, label: String, onClick: () -> Unit) {
+private fun HomeNode(icon: ImageVector, label: String, onClick: () -> Unit, sizeDp: Int = 100, offsetYDp: Int = 0) {
     Card(
         modifier = Modifier
-            .size(100.dp)
+            .size(sizeDp.dp)
             .clip(CircleShape)
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .padding(top = offsetYDp.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -177,7 +194,7 @@ private fun HomeNode(icon: ImageVector, label: String, onClick: () -> Unit) {
                     imageVector = icon,
                     contentDescription = label,
                     tint = Color.White,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size((sizeDp * 0.4f).dp)
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.White, textAlign = TextAlign.Center)
