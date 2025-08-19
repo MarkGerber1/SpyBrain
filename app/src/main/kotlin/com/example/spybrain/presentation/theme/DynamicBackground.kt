@@ -270,13 +270,13 @@ fun DynamicBackground(
         val comp by rememberLottieComposition(
             if (resolvedResId != 0) LottieCompositionSpec.RawRes(resolvedResId) else LottieCompositionSpec.RawRes(R.raw.lottie_meditation)
         )
-        if (resolvedResId != 0 && comp != null) {
+        if (comp != null) {
             LottieAnimation(
                 composition = comp,
                 iterations = LottieConstants.IterateForever,
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(0.85f)
+                    .alpha(0.95f)
             )
         } else {
             Image(
