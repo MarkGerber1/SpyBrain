@@ -1,11 +1,6 @@
 ﻿package com.example.spybrain.presentation.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.SelfImprovement
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Timeline
+import com.example.spybrain.presentation.theme.LocalIconPack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -29,12 +24,13 @@ import com.example.spybrain.R
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     // Создаём фиксированный список элементов навигации для гарантированного отображения
+    val icons = LocalIconPack.current
     val items = listOf(
-        Triple(Screen.Meditation.route, Icons.Default.SelfImprovement, R.string.bottom_nav_meditation),
-        Triple(Screen.Breathing.route, Icons.Default.Air, R.string.bottom_nav_breathing),
-        Triple(Screen.Stats.route, Icons.Default.Timeline, R.string.bottom_nav_stats),
-        Triple(Screen.HeartRate.route, Icons.Default.Favorite, R.string.bottom_nav_heart_rate),
-        Triple(Screen.Settings.route, Icons.Default.Settings, R.string.bottom_nav_settings)
+        Triple(Screen.Meditation.route, icons.navMeditation, R.string.bottom_nav_meditation),
+        Triple(Screen.Breathing.route, icons.navBreathing, R.string.bottom_nav_breathing),
+        Triple(Screen.Stats.route, icons.navStats, R.string.bottom_nav_stats),
+        Triple(Screen.HeartRate.route, icons.navHeartRate, R.string.bottom_nav_heart_rate),
+        Triple(Screen.Settings.route, icons.navSettings, R.string.bottom_nav_settings)
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()

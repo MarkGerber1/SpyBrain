@@ -426,19 +426,18 @@ fun HeartRateGraph(
  */
 fun DrawScope.drawHeartRateGraph(measurements: List<HeartRateMeasurement>, size: androidx.compose.ui.geometry.Size) {
     if (measurements.isEmpty()) return
+    if (size.width.isNaN() || size.height.isNaN() || size.width <= 0f || size.height <= 0f) return
 
     val maxBpm = measurements.maxOf { it.heartRate }
     val minBpm = measurements.minOf { it.heartRate }
-    val range = maxBpm - minBpm
-
-
+    val range = (maxBpm - minBpm).coerceAtLeast(1)
 
     val path = Path()
-    val stepX = size.width / (measurements.size - 1)
+    val stepX = if (measurements.size > 1) size.width / (measurements.size - 1) else 0f
 
     measurements.forEachIndexed { index, measurement ->
         val x = index * stepX
-        val normalizedBpm = (measurement.heartRate - minBpm).toFloat() / range
+        val normalizedBpm = (measurement.heartRate - minBpm).toFloat() / range.toFloat()
         val y = size.height - (normalizedBpm * size.height)
 
         if (index == 0) {
@@ -447,12 +446,14 @@ fun DrawScope.drawHeartRateGraph(measurements: List<HeartRateMeasurement>, size:
             path.lineTo(x, y)
         }
 
-        // Р РёСЃСўРµРј СЃРµСЂРґРµС‡РєРё РІ С‚РѕС‡РєР°С…
-        drawCircle(
-            color = Color.Red,
-            radius = 4f,
-            center = Offset(x, y)
-        )
+        val center = Offset(x, y)
+        if (!center.x.isNaN() && !center.y.isNaN()) {
+            drawCircle(
+                color = Color.Red,
+                radius = 4f,
+                center = center
+            )
+        }
     }
 
     drawPath(

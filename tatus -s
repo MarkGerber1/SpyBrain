@@ -1,0 +1,29 @@
+warning: in the working copy of 'app/build.gradle.kts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/MainActivity.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/data/storage/AppDatabase.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/data/storage/Migrations.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/presentation/breathing/BreathingScreen.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/presentation/meditation/MeditationContract.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/presentation/meditation/MeditationInfo.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/presentation/meditation/MeditationScreen.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/presentation/meditation/MeditationViewModel.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/presentation/settings/SettingsViewModel.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/presentation/theme/AppTheme.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/kotlin/com/example/spybrain/presentation/theme/Color.kt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/res/values-en/strings.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/src/main/res/values/strings.xml', LF will be replaced by CRLF the next time Git touches it
+ app/build.gradle.kts                               |  8 +--
+ .../kotlin/com/example/spybrain/MainActivity.kt    | 12 +++-
+ .../example/spybrain/data/storage/AppDatabase.kt   |  2 +-
+ .../example/spybrain/data/storage/Migrations.kt    |  2 +-
+ .../presentation/breathing/BreathingScreen.kt      |  4 +-
+ .../presentation/meditation/MeditationContract.kt  |  4 +-
+ .../presentation/meditation/MeditationInfo.kt      | 67 +++++++++++++++++++++-
+ .../presentation/meditation/MeditationScreen.kt    | 38 ++++--------
+ .../presentation/meditation/MeditationViewModel.kt | 19 +++++-
+ .../presentation/settings/SettingsViewModel.kt     |  7 ++-
+ .../spybrain/presentation/theme/AppTheme.kt        | 32 ++++++++++-
+ .../example/spybrain/presentation/theme/Color.kt   | 11 ++++
+ app/src/main/res/values-en/strings.xml             | 48 +++++++++++++++-
+ app/src/main/res/values/strings.xml                | 49 +++++++++++++++-
+ 14 files changed, 254 insertions(+), 49 deletions(-)

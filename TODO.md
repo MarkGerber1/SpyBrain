@@ -1,3 +1,11 @@
+- [ ] Onboarding screen to collect name/age/gender on first launch and save to DataStore
+- [ ] Settings: validation and hints for age/gender inputs
+- [ ] MainScreen: refine neural "synapses" curves and add subtle parallax to nodes
+- [ ] DynamicBackground: per-theme curated assets (ocean, waterfall, clouds, stars)
+- [ ] Localize motivational phrases (ru/en)
+- [ ] Add button in menu to return to Home from anywhere
+- [ ] Add tests for SettingsDataStore user fields
+- [ ] Replace random() quote with deterministic rotation per session
 # 📋 TODO - Список задач по аудиту SpyBrain
 
 ## 🔴 Критические проблемы (Высокий приоритет)

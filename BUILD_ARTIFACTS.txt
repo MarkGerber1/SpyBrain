@@ -1,0 +1,21 @@
+ Gradle -v
+ ------------------------------------------------------------
+ Gradle 8.9
+
+ Assemble Debug
+ > Task :app:stripDebugDebugSymbols
+ Unable to strip the following libraries, packaging them as they are: libimage_processing_util_jni.so.
+ BUILD SUCCESSFUL
+
+ Lint/Static analysis (detekt, ktlint)
+ BUILD SUCCESSFUL (с предупреждениями detekt)
+
+ Unit tests
+ 44 tests completed, 1 failed, 17 skipped
+ FAILED: com.example.spybrain.service.VoiceAssistantServiceTest > service can be created
+ java.lang.ClassCastException at VoiceAssistantServiceTest.kt:12
+ See: app/build/reports/tests/testDebugUnitTest/index.html
+
+
+
+

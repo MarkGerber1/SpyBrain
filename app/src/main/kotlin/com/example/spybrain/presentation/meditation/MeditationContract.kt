@@ -78,8 +78,10 @@ interface MeditationContract {
         object PreviousTrack : Event()
         /** РџРµСЂРµРјРѕС‚РєР° Рє РїРѕР·РёС†РёРё. */
         data class SeekToPosition(val position: Long) : Event()
-        /** Установить guided-режим для управления TTS guidance. */
+		/** Установить guided-режим для управления TTS guidance. */
         data class SetGuidedMode(val enabled: Boolean) : Event()
+		/** Воспроизвести голосовое интро (для вкладки «Медитация»). */
+		object PlayIntro : Event()
         /** Обработка Back: остановить всё и вернуться. */
         object BackPressed : Event()
     }

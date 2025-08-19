@@ -148,12 +148,18 @@ class BreathingViewModel @Inject constructor(
                 )
             }
 
-            // Голосовое сопровождение старт
-            if (voiceAssistant.isReady()) {
-                voiceAssistant.speakStart()
-                voiceAssistant.speakBreathingPrompt(pattern.voicePrompt ?: "")
-            } else {
-                setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_start_inhale)) }
+            // Голосовое сопровождение старт (ждём готовности TTS до 1.5с)
+            viewModelScope.launch {
+                kotlinx.coroutines.withTimeoutOrNull(1500) {
+                    while (!voiceAssistant.isReady()) { delay(100) }
+                }
+                if (voiceAssistant.isReady()) {
+                    voiceAssistant.speakStart()
+                    val prompt = pattern.voicePrompt ?: ""
+                    if (prompt.isNotBlank()) voiceAssistant.speakBreathingPrompt(prompt)
+                } else {
+                    setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_start_inhale)) }
+                }
             }
 
             breathingJob = viewModelScope.launch(coroutineExceptionHandler + SupervisorJob()) {

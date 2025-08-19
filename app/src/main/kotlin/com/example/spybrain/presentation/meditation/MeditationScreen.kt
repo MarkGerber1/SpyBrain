@@ -105,6 +105,8 @@ import android.widget.Toast
 import android.content.Intent
 import timber.log.Timber
 import com.example.spybrain.meditationInfoTabs
+import com.example.spybrain.meditationDisplayTitle
+import com.example.spybrain.meditationDisplaySubtitle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,10 +117,7 @@ fun MeditationScreen(
     val settings by settingsViewModel.uiState.collectAsState()
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val voiceService = remember {
-        // РЎРѕР·РґР°РµРј РїСЂРѕСЃС‚СѓСЋ РІРµСЂСЃРёСЋ Р±РµР· settingsDataStore РґР»СЏ UI
-        VoiceAssistantService(context, null)
-    }
+    // Голосовой ассистент теперь управляется из ViewModel через DI
     val player = viewModel.player
 
     // DisposableEffect РґР»СЏ РѕС‡РёСЃС‚РєРё СЂРµСЃСѓСЂСЃРѕРІ РїСЂРё СЂР°Р·РјРѕРЅС‚РёСЂРѕРІР°РЅРёРё РєРѕРјРїРѕР·Р°Р±Р»Р°
@@ -137,15 +136,7 @@ fun MeditationScreen(
                 is MeditationContract.Effect.ShowError -> {
                     Toast.makeText(context, effect.error.toString(), Toast.LENGTH_SHORT).show()
                 }
-                is MeditationContract.Effect.Speak -> {
-                    if (settings.voiceHintsEnabled) {
-                        try {
-                            voiceService.speak(effect.text)
-                        } catch (e: Exception) {
-                            Toast.makeText(context, R.string.voice_hint_error, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
+                is MeditationContract.Effect.Speak -> Unit // озвучивание перенесено в ViewModel/сервис по событиям
                 is MeditationContract.Effect.TrackStarted -> {
                     // РњРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ СѓРІРµРґРѕРјР»РµРЅРёРµ Рѕ РЅР°С‡Р°Р»Рµ С‚СЂРµРєР°
                     Timber.d("Track started: ${effect.track.id}")
@@ -168,37 +159,11 @@ fun MeditationScreen(
     ) { paddingValues ->
         // Р—Р°РјРµРЅСЏРµРј Crossfade РЅР° РїСЂРѕСЃС‚РѕР№ Box СЃ key РґР»СЏ РїРµСЂРµСЃРѕР·РґР°РЅРёСЏ РїСЂРё СЃРјРµРЅРµ С‚РµРјС‹
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            val theme = settings.theme
-
-            // РћРїСЂРµРґРµР»СЏРµРј СЂРµСЃСѓСЂСЃС‹ С„РѕРЅР° Рё РёРєРѕРЅРєРё Р±РµР· РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ remember
-            val themePack = com.example.spybrain.presentation.theme.ThemePacks.themePackFor(theme)
-            val iconPack = com.example.spybrain.presentation.theme.ThemePacks.iconPackFor(theme)
-            val bgPainter = painterResource(id = themePack.backgroundImageRes)
-            val themeIconRes = iconPack.themeIconRes
-
-            Image(
-                painter = bgPainter,
-                contentDescription = stringResource(id = R.string.meditation_background_image_description),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
-            )
-
-            // РџРѕР»СѓРїСЂРѕР·СЂР°С‡РЅС‹Р№ РѕРІРµСЂР»РµР№ РґР»СЏ Р»СѓС‡С€РµР№ С‡РёС‚Р°РµРјРѕСЃС‚Рё
+            // Тонкий оверлей поверх Lottie для читабельности
             Box(
                 modifier = Modifier
                     .matchParentSize()
-                    .background(Color.Black.copy(alpha = 0.3f))
-            )
-
-            // РРєРѕРЅРєР° С‚РµРјС‹
-            Icon(
-                painter = painterResource(id = themeIconRes),
-                contentDescription = theme,
-                modifier = Modifier
-                    .size(40.dp)
-                    .align(Alignment.TopCenter)
-                    .padding(top = 16.dp),
-                tint = Color.Unspecified
+                    .background(Color.Black.copy(alpha = 0.18f))
             )
 
             when {
@@ -281,15 +246,9 @@ fun MeditationScreen(
 
                         // Voice intro when entering basic meditation tab; stop guidance when switching back
                         LaunchedEffect(selectedMode) {
-                            if (settings.voiceHintsEnabled) {
-                                if (selectedMode == "meditations") {
-                                    try { voiceService.speakIntro() } catch (_: Exception) {}
-                                    viewModel.setEvent(MeditationContract.Event.SetGuidedMode(false))
-                                } else {
-                                    try { voiceService.stopGuidance() } catch (_: Exception) {}
-                                    viewModel.setEvent(MeditationContract.Event.SetGuidedMode(true))
-                                }
-                            }
+                            // При входе в guided вкладку не запускаем голос и не трогаем ambient.
+                            // Только помечаем режим для визуала.
+                            viewModel.setEvent(MeditationContract.Event.SetGuidedMode(selectedMode == "tracks"))
                         }
 
                         // РљРѕРЅС‚РµРЅС‚ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РІС‹Р±СЂР°РЅРЅРѕРіРѕ СЂРµР¶РёРјР°
@@ -298,14 +257,8 @@ fun MeditationScreen(
                             "tracks" -> GuidedMeditationsTab(
                                 viewModel = viewModel,
                                 voiceHintsEnabled = settings.voiceHintsEnabled,
-                                onStartGuidance = { intervalSec ->
-                                    if (settings.voiceHintsEnabled) {
-                                        try { voiceService.startGuidance(intervalSec) } catch (_: Exception) {}
-                                    }
-                                },
-                                onStopGuidance = {
-                                    try { voiceService.stopGuidance() } catch (_: Exception) {}
-                                }
+                                onStartGuidance = { _ -> viewModel.setEvent(MeditationContract.Event.PlayIntro) },
+                                onStopGuidance = { viewModel.setEvent(MeditationContract.Event.SetGuidedMode(false)) }
                             )
                         }
                     }
@@ -343,10 +296,10 @@ fun GuidedMeditationItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = meditation.title, style = MaterialTheme.typography.titleMedium, color = Color.White)
+                Text(text = meditationDisplayTitle(meditation), style = MaterialTheme.typography.titleMedium, color = Color.White)
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = meditation.description ?: "",
+                    text = meditationDisplaySubtitle(meditation) ?: "",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.8f),
                     maxLines = 2
@@ -770,10 +723,7 @@ fun GuidedMeditationsTab(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Управляем голосовыми подсказками в этом табе
-        LaunchedEffect(voiceHintsEnabled) {
-            if (voiceHintsEnabled) onStartGuidance(40) else onStopGuidance()
-        }
+        // Не автозапускаем голос: стартуем вместе со стартом медитации по нажатию
 
         // Список, группируемый по категории
         LazyColumn(
@@ -795,16 +745,18 @@ fun GuidedMeditationsTab(
                     GuidedMeditationItem(
                         meditation = meditation,
                         onClick = {
+                            // Останавливаем ambient, чтобы не было наложения с треком медитации
+                            try {
+                                val stopAmbient = android.content.Intent(context, com.example.spybrain.service.AmbientMusicService::class.java).apply {
+                                    action = com.example.spybrain.service.AmbientMusicService.ACTION_STOP
+                                }
+                                context.startService(stopAmbient)
+                            } catch (_: Exception) {}
+
+                            // Стартуем трек медитации
                             viewModel.setEvent(MeditationContract.Event.PlayMeditation(meditation))
-                            if (voiceHintsEnabled) {
-                                // Немедленно озвучиваем приветствие
-                                // Делаем через эффект, т.к. тут нет доступа к voiceService
-                                viewModel.setEvent(
-                                    MeditationContract.Event.VoiceCommand(
-                                        context.getString(R.string.meditation_voice_greeting, meditation.title)
-                                    )
-                                )
-                            }
+                            // И параллельно голос, если включены подсказки
+                            if (voiceHintsEnabled) onStartGuidance(40)
                         }
                     )
                 }

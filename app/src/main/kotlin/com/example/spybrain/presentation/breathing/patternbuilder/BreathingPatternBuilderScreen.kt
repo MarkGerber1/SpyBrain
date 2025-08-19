@@ -184,13 +184,13 @@ fun breathingPatternBuilderScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "РЎРѕР·РґР°РЅРёРµ РґС‹С…Р°С‚РµР»СЊРЅРѕРіРѕ С€Р°Р±Р»РѕРЅР°",
+                                text = stringResource(id = R.string.breathing_params),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "РќР°СЃС‚СЂРѕР№С‚Рµ СЃРІРѕР№ СѓРЅРёРєР°Р»СЊРЅС‹Р№ СЂРёС‚Рј РґС‹С…Р°РЅРёСЏ",
+                                text = stringResource(id = R.string.breathing_how_help_text),
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -219,7 +219,7 @@ fun breathingPatternBuilderScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
-                                text = "РћСЅРЅРѕРІРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹",
+                                text = stringResource(id = R.string.pattern_builder_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -230,7 +230,7 @@ fun breathingPatternBuilderScreen(
                                     VibrationUtil.vibrateLight(context)
                                     viewModel.setEvent(BreathingPatternBuilderContract.Event.EnterName(it))
                                 },
-                                label = { Text("РќР°Р·РІР°РЅРёРµ С€Р°Р±Р»РѕРЅР°") },
+                                label = { Text(stringResource(id = R.string.pattern_builder_enter_name)) },
                                 leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -244,7 +244,7 @@ fun breathingPatternBuilderScreen(
                                 onValueChange = {
                                     viewModel.setEvent(BreathingPatternBuilderContract.Event.EnterDescription(it))
                                 },
-                                label = { Text("РћРїРёСЃР°РЅРёРµ (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ)") },
+                                label = { Text(stringResource(id = R.string.pattern_builder_description)) },
                                 leadingIcon = { Icon(Icons.Default.Description, contentDescription = null) },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -276,7 +276,7 @@ fun breathingPatternBuilderScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
-                                text = "РџР°СЂР°РјРµС‚СЂС‹ РґС‹С…Р°РЅРёСЏ",
+                                text = stringResource(id = R.string.breathing_params),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -377,7 +377,7 @@ fun breathingPatternBuilderScreen(
                             ) {
                                 Icon(Icons.Default.Save, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(R.string.save_changes), fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.pattern_builder_save), fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -455,17 +455,17 @@ fun breathingPatternBuilderScreen(
                                                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                                                         ) {
                                                             Text(
-                                                                "Р’РґРѕС… ${pattern.inhaleSeconds}СЃ",
+                                                                stringResource(id = R.string.inhale) + " ${pattern.inhaleSeconds}с",
                                                                 style = MaterialTheme.typography.bodySmall,
                                                                 color = Color(0xFF4CAF50)
                                                             )
                                                             Text(
-                                                                "Р’С‹РґРѕС… ${pattern.exhaleSeconds}СЃ",
+                                                                stringResource(id = R.string.exhale) + " ${pattern.exhaleSeconds}с",
                                                                 style = MaterialTheme.typography.bodySmall,
                                                                 color = Color(0xFFE91E63)
                                                             )
                                                             Text(
-                                                                "Р¦РёРєР»РѕРІ: ${pattern.totalCycles}",
+                                                                stringResource(id = R.string.cycles_count) + ": ${pattern.totalCycles}",
                                                                 style = MaterialTheme.typography.bodySmall,
                                                                 color = MaterialTheme.colorScheme.primary
                                                             )

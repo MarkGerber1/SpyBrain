@@ -50,8 +50,8 @@ class SettingsViewModel @Inject constructor(
         // Подписываемся на включение фоновой музыки (без автозапуска при старте)
         settingsDataStore.ambientEnabledFlow
             .onEach { enabled ->
+                // Только обновляем состояние. Запуск/останов выполняются в явных событиях.
                 setState { copy(ambientEnabled = enabled) }
-                if (!enabled) stopAmbientMusic()
             }
             .launchIn(viewModelScope)
 
@@ -95,14 +95,37 @@ class SettingsViewModel @Inject constructor(
             .onEach { setState { copy(vibrationEnabled = it) } }
             .launchIn(viewModelScope)
 
-        // Подписка на доступные треки медитации (для UI)
-        getMeditationsUseCase()
-            .map { meditations -> meditations.map { it.id to it.title } }
-            .onEach { setState { copy(availableTracks = it) } }
+        // Профиль пользователя
+        settingsDataStore.userNameFlow
+            .onEach { setState { copy(userName = it) } }
             .launchIn(viewModelScope)
+        settingsDataStore.userAgeFlow
+            .onEach { setState { copy(userAge = it) } }
+            .launchIn(viewModelScope)
+        settingsDataStore.userGenderFlow
+            .onEach { setState { copy(userGender = it) } }
+            .launchIn(viewModelScope)
+
+        // Предлагаем список поддерживаемых ambient-треков (а не список медитаций)
+        val ambientOptions = listOf(
+            "nature" to "Природа",
+            "water" to "Вода/Океан",
+            "space" to "Космос",
+            "air" to "Воздух",
+            "relax" to "Релакс"
+        )
+        setState { copy(availableTracks = ambientOptions) }
 
         settingsDataStore.voiceIdFlow
             .onEach { setState { copy(voiceId = it) } }
+            .launchIn(viewModelScope)
+
+        settingsDataStore.voiceRateFlow
+            .onEach { setState { copy(voiceRate = it) } }
+            .launchIn(viewModelScope)
+
+        settingsDataStore.voicePitchFlow
+            .onEach { setState { copy(voicePitch = it) } }
             .launchIn(viewModelScope)
 
         // Больше не автозапускаем при старте приложения — только по явному действию пользователя
@@ -118,8 +141,13 @@ class SettingsViewModel @Inject constructor(
             }
             is SettingsContract.Event.AmbientToggled -> {
                 viewModelScope.launch {
-                    val track = settingsDataStore.getAmbientTrack()
+                    var track = settingsDataStore.getAmbientTrack()
                     settingsDataStore.setAmbientEnabled(event.enabled)
+                    if (event.enabled && track.isEmpty()) {
+                        // Назначаем дефолтный трек, если ранее не был выбран
+                        track = "nature"
+                        settingsDataStore.setAmbientTrack(track)
+                    }
                     handleAmbientMusicChange(event.enabled, track)
                 }
             }
@@ -183,6 +211,16 @@ class SettingsViewModel @Inject constructor(
                     setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_voice_changed)) }
                 }
             }
+            is SettingsContract.Event.VoiceRateChanged -> {
+                viewModelScope.launch {
+                    settingsDataStore.setVoiceRatePercent((event.rate * 100).toInt())
+                }
+            }
+            is SettingsContract.Event.VoicePitchChanged -> {
+                viewModelScope.launch {
+                    settingsDataStore.setVoicePitchPercent((event.pitch * 100).toInt())
+                }
+            }
             is SettingsContract.Event.VibrationToggled -> {
                 viewModelScope.launch {
                     settingsDataStore.setVibrationEnabled(event.enabled)
@@ -215,6 +253,15 @@ class SettingsViewModel @Inject constructor(
                         )
                     }
                 }
+            }
+            is SettingsContract.Event.UserNameChanged -> {
+                viewModelScope.launch { settingsDataStore.setUserName(event.name) }
+            }
+            is SettingsContract.Event.UserAgeChanged -> {
+                viewModelScope.launch { settingsDataStore.setUserAge(event.age) }
+            }
+            is SettingsContract.Event.UserGenderChanged -> {
+                viewModelScope.launch { settingsDataStore.setUserGender(event.gender) }
             }
         }
     }

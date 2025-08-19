@@ -21,3 +21,14 @@ val PurpleGrey40 = Color(0xFF625b71)
 /**
  */
 val Pink40 = Color(0xFF7D5260)
+
+// Extended palette for Theme Packs
+val Blue80 = Color(0xFF90CAF9)
+val Blue40 = Color(0xFF42A5F5)
+val BlueGrey40 = Color(0xFF607D8B)
+
+val Teal40 = Color(0xFF26A69A)
+val Teal80 = Color(0xFF80CBC4)
+
+val Green40 = Color(0xFF66BB6A)
+val Green80 = Color(0xFFA5D6A7)

@@ -1,0 +1,16 @@
+ Severity;Module;File;Line;Issue;Why;FixIdea
+ Major;app;app/src/test/kotlin/com/example/spybrain/service/VoiceAssistantServiceTest.kt;12;Unit-test fails with ClassCastException for Context/AudioManager;TTS initializes system services in unit env without Robolectric;Use Robolectric or inject abstractions for Audio/TTS and provide fakes in tests
+ Major;app;app/src/main/kotlin/com/example/spybrain/presentation/meditation/MeditationScreen.kt;118;VoiceAssistantService instantiated in Composable;Lifecycle/DI violation, potential leaks;Inject IVoiceAssistant via Hilt into ViewModel, manage release in lifecycle
+ Major;app;app/src/main/kotlin/com/example/spybrain/di/StorageModule.kt;54;DAOs provided directly in DI;Leaky abstraction, bypasses repositories;Provide repositories only, keep DAOs internal to data layer
+ Minor;app;app/src/main/res/values*/strings.xml;—;Localization keys duplicated/misaligned;Legacy keys and unsynced locales;Audit keys, remove duplicates, align RU/EN
+ Minor;app;app/src/main/kotlin/com/example/spybrain/service/AmbientMusicService.kt;123;Audio effects usage without capability checks;May fail on devices lacking effect support;Guard with capability checks and safe fallbacks
+ Minor;app;—;Comments show mojibake (encoding issues);UTF-8/CP1251 mismatch in comments;Normalize file encodings and retype comments in UTF-8
+ Minor;app;UI icons/buttons;—;Missing contentDescription on some Icons;Accessibility issue;Add contentDescription or semantics
+ Minor;root;—;No CI integration for detekt/ktlint/tests;Quality gates absent in CI;Add CI workflow with Gradle tasks and artifacts
+ Major;app;app/build.gradle.kts;176;Duplicate direct Navigation Compose version (2.7.3) while TOML declares 2.7.7;Version drift risks inconsistent APIs;Use only libs.navigation.compose from TOML and remove direct 2.7.3
+ Major;app;app/build.gradle.kts;131;Legacy androidx.media alongside Media3;Potential API conflicts and Jetifier warnings;Remove androidx.media:media unless strictly required; prefer Media3 stack
+ Major;app;app/src/main/kotlin/com/example/spybrain/presentation/theme/AppTheme.kt;30;Duplicate colorSchemeForThemeKey vs ThemePack.kt;Caused compile conflict (fixed);Keep single implementation (ThemePack.kt)
+ Major;app;app/src/main/kotlin/com/example/spybrain/presentation/meditation/MeditationScreen.kt;166;References to non-existent ThemePacks.iconPackFor/backgroundImageRes;Compile errors (fixed);Rely on DynamicBackground and existing ThemePack API
+
+
+

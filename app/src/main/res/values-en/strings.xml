@@ -262,6 +262,53 @@
     <string name="meditation_vipassana_desc">Gain insight through vipassana meditation</string>
     <string name="meditation_transcendental_desc">Step through the threshold into the world of transcendence</string>
 
+  <!-- i18n EN: meditation cards -->
+  <string name="meditation_fire_name">Fire Warmth</string>
+  <string name="meditation_fire_subtitle">Releasing tension with warmth visualization</string>
+  <string name="meditation_fire_about">A short practice to relax and restore focus.</string>
+  <string name="meditation_fire_howto">Sit comfortably, focus on your breath and visualize a warm flame in the chest. Inhale — warmth expands, exhale — gently washes the body.</string>
+
+  <string name="meditation_forest_name">Forest Spirit</string>
+  <string name="meditation_forest_subtitle">Grounding and calm</string>
+  <string name="meditation_forest_about">Helps reduce anxiety and regain stability.</string>
+  <string name="meditation_forest_howto">Imagine a forest: inhale the scent of pine, exhale tension. Listen to inner silence.</string>
+
+  <string name="meditation_night_sky_name">Night Sky</string>
+  <string name="meditation_night_sky_subtitle">Calming the mind before sleep</string>
+  <string name="meditation_night_sky_about">A gentle practice to transition into sleep.</string>
+  <string name="meditation_night_sky_howto">Close your eyes and imagine a starry sky. Inhale — starlight, exhale — letting thoughts go.</string>
+
+  <string name="meditation_angelic_name">Angelic Melody</string>
+  <string name="meditation_angelic_subtitle">Lightness and inspiration</string>
+  <string name="meditation_angelic_about">Helps spread the inner “wings” and feel peace.</string>
+  <string name="meditation_angelic_howto">Breathe evenly. Inhale — light, exhale — gratitude.</string>
+
+  <string name="meditation_dreaming_name">Dreaming</string>
+  <string name="meditation_dreaming_subtitle">Creative imagination</string>
+  <string name="meditation_dreaming_about">Visualization practice for soft concentration and creativity.</string>
+  <string name="meditation_dreaming_howto">Focus on the breath and allow images to arise freely without evaluation.</string>
+
+  <string name="meditation_relaxation_name">Relaxation</string>
+  <string name="meditation_relaxation_subtitle">Deep relaxation</string>
+  <string name="meditation_relaxation_about">Releases muscle tension and helps to let go.</string>
+  <string name="meditation_relaxation_howto">Scan the body from head to toes. Relax any tension with each exhale.</string>
+
+  <string name="meditation_spiritual_name">Spiritual</string>
+  <string name="meditation_spiritual_subtitle">Quiet inner depth</string>
+  <string name="meditation_spiritual_about">Creates a space of silence and presence.</string>
+  <string name="meditation_spiritual_howto">Sit upright, gentle breathing. Let silence and pauses fill your attention.</string>
+
+  <string name="meditation_valley_sunset_name">Valley Sunset</string>
+  <string name="meditation_valley_sunset_subtitle">Warm end of the day</string>
+  <string name="meditation_valley_sunset_about">A slow practice to reflect and let go.</string>
+  <string name="meditation_valley_sunset_howto">Inhale — “receive experience”, exhale — “let go of the excess”. Keep a gentle rhythm.</string>
+
+  <!-- Breathing info EN -->
+  <string name="breathing_why_title">Why it’s needed</string>
+  <string name="breathing_why_text">Breathing practices regulate the autonomic nervous system, reduce stress and increase resilience.</string>
+  <string name="breathing_benefits_title">How it helps</string>
+  <string name="breathing_benefits_text">Improves HRV, focus, sleep quality and energy recovery.</string>
+
     <!-- Meditation Tracks -->
     <string name="meditation_tracks_title">Meditation Tracks</string>
     <string name="guided_meditations_title">Guided meditations</string>
@@ -294,7 +341,6 @@
     <string name="guidance_prompt_return_attention">If distracted — gently return to your breath.</string>
     <string name="meditation_about_text">Meditation is a practice of mindfulness and relaxation. It helps reduce stress, improve focus and sleep. Start with 5–10 minutes, breathe evenly, observe sensations.</string>
     <string name="meditation_how_to_text">Sit comfortably with a straight back. Close your eyes. Breathe calmly. Do not try to “turn off thoughts” — simply observe. If you drift, gently return to your breath.</string>
-    <string name="breathing_why_text">Breathing practices regulate the nervous system, helping to release tension faster and restore energy.</string>
     <string name="breathing_how_help_text">Increases heart rate variability, improves focus, accelerates relaxation. Recommended 2–3 times a day for 3–5 minutes.</string>
 
     <!-- New strings from BreathingScreen.kt -->
@@ -367,4 +413,7 @@
     <string name="meditation_subtitle_body_scan">Step-by-step body relaxation</string>
     <string name="meditation_about_body_scan">Body scan builds sensitivity and relieves muscular tension.</string>
     <string name="meditation_howto_body_scan">1) Move attention from crown to toes. 2) Notice tension. 3) Relax areas on the exhale. 4) Avoid evaluation.</string>
+
+    <!-- Meditation Categories (EN, for curated list) -->
+    <string name="meditation_category_evening">Evening</string>
 </resources> 

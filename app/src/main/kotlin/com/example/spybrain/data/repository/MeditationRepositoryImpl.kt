@@ -28,32 +28,67 @@ class MeditationRepositoryImpl @Inject constructor(
 ) : MeditationRepository {
 
     override fun getMeditations(): Flow<List<Meditation>> = flow {
-        val files = context.assets.list("audio")?.filter { it.endsWith(".mp3") } ?: emptyList()
-        val meditations = files.map { fileName ->
-            val name = fileName.substringBeforeLast('.')
-            // Получаем локализованное название и описание
-            val (title, description, category) = getLocalizedMeditationInfo(name)
-            // Извлекаем длительность в минутах
-            val assetFd = context.assets.openFd("audio/$fileName")
-            val retriever = MediaMetadataRetriever().apply {
-                setDataSource(assetFd.fileDescriptor, assetFd.startOffset, assetFd.length)
-            }
-            val durationMs = retriever
-                .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                ?.toLongOrNull() ?: 0L
-            val durationMin = (durationMs / 1000 / 60).toInt()
-            assetFd.close()
-            retriever.release()
+        val pkg = context.packageName
+        val androidRes = { name: String -> "android.resource://$pkg/raw/$name" }
+        val curated = listOf(
             Meditation(
-                id = name,
-                title = title,
-                description = description,
-                durationMinutes = durationMin,
-                audioUrl = "asset:///audio/$fileName",
-                category = category
+                id = "angelic",
+                title = context.getString(R.string.meditation_angelic_name),
+                description = context.getString(R.string.meditation_angelic_about),
+                durationMinutes = 3,
+                audioUrl = androidRes("meditation_angelic"),
+                category = context.getString(R.string.meditation_category_energy)
+            ),
+            Meditation(
+                id = "dreaming",
+                title = context.getString(R.string.meditation_dreaming_name),
+                description = context.getString(R.string.meditation_dreaming_about),
+                durationMinutes = 4,
+                audioUrl = androidRes("meditation_dreaming"),
+                category = context.getString(R.string.meditation_category_creativity)
+            ),
+            Meditation(
+                id = "forest_spirit",
+                title = context.getString(R.string.meditation_forest_name),
+                description = context.getString(R.string.meditation_forest_about),
+                durationMinutes = 5,
+                audioUrl = androidRes("meditation_forest_spirit"),
+                category = context.getString(R.string.meditation_category_focus)
+            ),
+            Meditation(
+                id = "night_sky",
+                title = context.getString(R.string.meditation_night_sky_name),
+                description = context.getString(R.string.meditation_night_sky_about),
+                durationMinutes = 4,
+                audioUrl = androidRes("meditation_night_sky"),
+                category = context.getString(R.string.meditation_category_sleep)
+            ),
+            Meditation(
+                id = "relaxation",
+                title = context.getString(R.string.meditation_relaxation_name),
+                description = context.getString(R.string.meditation_relaxation_about),
+                durationMinutes = 3,
+                audioUrl = androidRes("meditation_relaxation"),
+                category = context.getString(R.string.category_sleep)
+            ),
+            Meditation(
+                id = "spiritual",
+                title = context.getString(R.string.meditation_spiritual_name),
+                description = context.getString(R.string.meditation_spiritual_about),
+                durationMinutes = 3,
+                audioUrl = androidRes("meditation_spiritual"),
+                category = context.getString(R.string.meditation_category_morning)
+            ),
+            Meditation(
+                id = "valley_sunset",
+                title = context.getString(R.string.meditation_valley_sunset_name),
+                description = context.getString(R.string.meditation_valley_sunset_about),
+                durationMinutes = 4,
+                audioUrl = androidRes("meditation_valley_sunset"),
+                category = context.getString(R.string.category_sleep)
             )
-        }
-        emit(meditations)
+        )
+        emit(curated)
     }
 
     private fun getLocalizedMeditationInfo(fileName: String): Triple<String, String, String> {

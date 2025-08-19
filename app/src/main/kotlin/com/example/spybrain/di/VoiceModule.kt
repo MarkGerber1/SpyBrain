@@ -2,6 +2,10 @@
 
 import android.content.Context
 import com.example.spybrain.service.VoiceAssistantService
+import com.example.spybrain.service.AndroidTtsEngine
+import com.example.spybrain.service.AndroidAudioFocusManager
+import com.example.spybrain.domain.service.ITtsEngine
+import com.example.spybrain.domain.service.IAudioFocusManager
 import com.example.spybrain.service.HealthAdvisorService
 import com.example.spybrain.domain.service.IVoiceAssistant
 import com.example.spybrain.domain.service.IHealthAdvisor
@@ -20,18 +24,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object VoiceModule {
-    /**
-     * РџСЂРµРґРѕСЃС‚Р°РІР»СЏРµС‚ СЃРµСЂРІРёСЃ РіРѕР»РѕСЃРѕРІРѕРіРѕ Р°СЃСЃРёСЃС‚РµРЅС‚Р°.
-     * @return Р­РєР·РµРјРїР»СЏСЂ VoiceAssistantService.
-     */
-    @Provides
-    @Singleton
-    fun provideVoiceAssistantService(
-        @ApplicationContext context: Context,
-        settingsDataStore: com.example.spybrain.data.datastore.SettingsDataStore
-    ): VoiceAssistantService {
-        return VoiceAssistantService(context, settingsDataStore)
-    }
+    // Constructor injection will be used for VoiceAssistantService
 
     /**
      * РџСЂРµРґРѕСЃС‚Р°РІР»СЏРµС‚ СЃРµСЂРІРёСЃ СЃРѕРІРµС‚РЅРёРєР° РїРѕ Р·РґРѕСЂРѕРІСЊСЋ.
@@ -68,6 +61,14 @@ abstract class VoiceBindsModule {
     @Binds
     @Singleton
     abstract fun bindVoiceAssistant(impl: VoiceAssistantService): IVoiceAssistant
+
+    @Binds
+    @Singleton
+    abstract fun bindTtsEngine(impl: AndroidTtsEngine): ITtsEngine
+
+    @Binds
+    @Singleton
+    abstract fun bindAudioFocusManager(impl: AndroidAudioFocusManager): IAudioFocusManager
 }
 
 // NOTE СЂРµР°Р»РёР·РѕРІР°РЅРѕ РїРѕ Р°СѓРґРёС‚Сѓ: DI С‚РѕР»СЊРєРѕ С‡РµСЂРµР· Р°Р±СЃС‚СЂР°РєС†РёРё

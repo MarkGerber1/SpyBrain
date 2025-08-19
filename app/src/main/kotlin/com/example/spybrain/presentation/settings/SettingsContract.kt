@@ -20,8 +20,13 @@ object SettingsContract {
         val voiceEnabled: Boolean = false,
         val voiceHintsEnabled: Boolean = false,
         val vibrationEnabled: Boolean = true,
+        val userName: String = "",
+        val userAge: Int = 0,
+        val userGender: String = "other",
         val availableTracks: List<Pair<String, String>> = emptyList(),
         val voiceId: String = "",
+        val voiceRate: Float = 0.85f,
+        val voicePitch: Float = 1.0f,
         val currentLanguage: String = "ru",
         val isLoading: Boolean = false,
         val error: String? = null
@@ -52,12 +57,17 @@ object SettingsContract {
         /**
          */
         data class VoiceIdSelected(val voiceId: String) : Event()
+        data class VoiceRateChanged(val rate: Float) : Event()
+        data class VoicePitchChanged(val pitch: Float) : Event()
         /**
          */
         data class VibrationToggled(val enabled: Boolean) : Event()
         /**
          */
         data class LanguageChanged(val language: String) : Event()
+        data class UserNameChanged(val name: String) : Event()
+        data class UserAgeChanged(val age: Int) : Event()
+        data class UserGenderChanged(val gender: String) : Event()
     }
 
     /**

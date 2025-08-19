@@ -1,3 +1,37 @@
+# SpyBrain Roadmap
+
+## Home screen (animated neural UI)
+- Time-of-day dynamic background (morning/day/evening/night)
+- Lottie or image fallback with soft gradient overlay
+- Personalized greeting with user name
+- Motivational subtitle with rotating phrases
+- Three clickable nodes (Meditations, Guided, Breathing) connected with animated "synapses"
+
+## Personalization
+- Settings: user name, age, gender stored in DataStore
+- Greeting uses stored name
+- Theme selection maps to background palette and ambient track suggestions
+
+## Audio
+- Ambient background controllable from settings (enable/disable/track/volume)
+- Meditation tracks from raw with robust android.resource URIs
+
+## Navigation
+- Global bottom navigation (Meditation, Breathing, Stats, Heart Rate, Settings)
+- Splash routes to Main screen
+
+## Next iterations
+- Guided onboarding to collect name/age/gender on first launch
+- Theme-to-background: ocean/waterfall/clouds/stars/night sky curated set
+- Replace placeholder Lottie with higher quality packs (license-friendly)
+- Add achievements and streaks widget on Home
+- Add daily tip from AI mentor on Home
+
+## Tech debt / Improvements
+- Extract MainScreen "synapses" animation into reusable composable
+- Unit tests for SettingsDataStore new fields
+- Optimize Lottie performance for low-end devices
+
 # 🗺️ ROADMAP - Стратегия развития SpyBrain
 
 ## 🎯 Текущий этап: Стабилизация + Мультимедиа (Август 2025)

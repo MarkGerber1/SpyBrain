@@ -74,7 +74,7 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
             CREATE TABLE IF NOT EXISTS `heart_rate_measurements` (
                 `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                 `heartRate` INTEGER NOT NULL,
-                `timestamp` TEXT NOT NULL
+                `timestamp` INTEGER NOT NULL
             )
         """.trimIndent())
     }

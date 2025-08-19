@@ -35,8 +35,13 @@ class SettingsDataStore @Inject constructor(
         val VOICE_ENABLED = booleanPreferencesKey("voice_enabled")
         val VOICE_HINTS_ENABLED = booleanPreferencesKey("voice_hints_enabled")
         val VOICE_ID = stringPreferencesKey("voice_id")
+        val VOICE_RATE = intPreferencesKey("voice_rate_percent")
+        val VOICE_PITCH = intPreferencesKey("voice_pitch_percent")
         val MOTIVATIONAL_POINTS = intPreferencesKey("motivational_points")
         val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
+        val USER_NAME = stringPreferencesKey("user_name")
+        val USER_AGE = intPreferencesKey("user_age")
+        val USER_GENDER = stringPreferencesKey("user_gender")
     }
 
     /**
@@ -96,6 +101,16 @@ class SettingsDataStore @Inject constructor(
         preferences[PreferencesKey.VOICE_ID] ?: ""
     }
 
+    val voiceRateFlow: Flow<Float> = dataStore.data.map { preferences ->
+        val percent = preferences[PreferencesKey.VOICE_RATE] ?: 85
+        (percent.coerceIn(30, 200)) / 100f
+    }
+
+    val voicePitchFlow: Flow<Float> = dataStore.data.map { preferences ->
+        val percent = preferences[PreferencesKey.VOICE_PITCH] ?: 100
+        (percent.coerceIn(50, 200)) / 100f
+    }
+
     /**
      * Мотивационные очки.
      */
@@ -108,6 +123,27 @@ class SettingsDataStore @Inject constructor(
      */
     val vibrationEnabledFlow: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[PreferencesKey.VIBRATION_ENABLED] ?: true
+    }
+
+    /**
+     * Имя пользователя.
+     */
+    val userNameFlow: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.USER_NAME] ?: ""
+    }
+
+    /**
+     * Возраст пользователя.
+     */
+    val userAgeFlow: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.USER_AGE] ?: 0
+    }
+
+    /**
+     * Пол пользователя ("male" | "female" | "other").
+     */
+    val userGenderFlow: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.USER_GENDER] ?: "other"
     }
 
     /**
@@ -189,6 +225,18 @@ class SettingsDataStore @Inject constructor(
         }
     }
 
+    suspend fun setVoiceRatePercent(percent: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.VOICE_RATE] = percent.coerceIn(30, 200)
+        }
+    }
+
+    suspend fun setVoicePitchPercent(percent: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.VOICE_PITCH] = percent.coerceIn(50, 200)
+        }
+    }
+
     /**
      * Установить мотивационные очки.
      * @param points Количество очков.
@@ -206,6 +254,24 @@ class SettingsDataStore @Inject constructor(
     suspend fun setVibrationEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.VIBRATION_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setUserName(name: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.USER_NAME] = name
+        }
+    }
+
+    suspend fun setUserAge(age: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.USER_AGE] = age.coerceAtLeast(0)
+        }
+    }
+
+    suspend fun setUserGender(gender: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.USER_GENDER] = gender
         }
     }
 
@@ -258,5 +324,32 @@ class SettingsDataStore @Inject constructor(
     fun getVoiceId(): String = runBlocking {
         val preferences = dataStore.data.first()
         preferences[PreferencesKey.VOICE_ID] ?: ""
+    }
+
+    fun getVoiceRate(): Float = runBlocking {
+        val preferences = dataStore.data.first()
+        val percent = preferences[PreferencesKey.VOICE_RATE] ?: 85
+        (percent.coerceIn(30, 200)) / 100f
+    }
+
+    fun getVoicePitch(): Float = runBlocking {
+        val preferences = dataStore.data.first()
+        val percent = preferences[PreferencesKey.VOICE_PITCH] ?: 100
+        (percent.coerceIn(50, 200)) / 100f
+    }
+
+    fun getUserName(): String = runBlocking {
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.USER_NAME] ?: ""
+    }
+
+    fun getUserAge(): Int = runBlocking {
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.USER_AGE] ?: 0
+    }
+
+    fun getUserGender(): String = runBlocking {
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.USER_GENDER] ?: "other"
     }
 }

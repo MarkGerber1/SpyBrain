@@ -26,7 +26,7 @@
         <item name="postSplashScreenTheme">@style/Theme.SpyBrain</item>
     </style>
 
-    <style name="Theme.SpyBrain" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.SpyBrain" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>

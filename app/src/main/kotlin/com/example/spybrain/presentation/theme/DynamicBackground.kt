@@ -52,6 +52,8 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.compose.LottieConstants
+import androidx.compose.runtime.CompositionLocalProvider
+import com.example.spybrain.presentation.theme.LocalThemePack
 
 /**
  * @property id РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РІСЂРµРјРµРЅРё СЃСўРѕРє.
@@ -192,12 +194,13 @@ object DynamicBackgroundManager {
 fun DynamicBackground(
     modifier: Modifier = Modifier,
     lottieKeyOverride: String? = null,
+    greetingOverride: String? = null,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
     val timeOfDay = remember { getCurrentTimeOfDay() }
     val backgroundData = remember(timeOfDay) { getBackgroundForTimeOfDay(timeOfDay) }
-    val greeting = remember(timeOfDay) { getGreetingForTimeOfDay(context, timeOfDay) }
+    val greeting = remember(timeOfDay, greetingOverride) { greetingOverride ?: getGreetingForTimeOfDay(context, timeOfDay) }
 
     // РђРЅРёРјР°С†РёСЏ РґР»СЏ РїР»Р°РІРЅРѕРіРѕ РїРµСЂРµС…РѕРґР°
     val infiniteTransition = rememberInfiniteTransition()
@@ -224,29 +227,37 @@ fun DynamicBackground(
     ) {
         // Lottie-анимация (если есть подходящий JSON в raw), иначе fallback на изображение
         val context = LocalContext.current
-        val lottieKey = lottieKeyOverride ?: when (timeOfDay) {
-            TimeOfDay.MORNING -> "lottie_morning"
-            TimeOfDay.DAY -> "lottie_day"
-            TimeOfDay.EVENING -> "lottie_evening"
-            TimeOfDay.NIGHT -> "lottie_night"
-        }
-        val lottieResId = remember(lottieKey) {
-            when (lottieKey) {
+        val themePack = LocalThemePack.current
+        val packResId = themePack.backgroundLottie ?: 0
+        try {
+            android.util.Log.d("DynamicBackground", "theme=${themePack.name} packResId=$packResId")
+        } catch (_: Exception) {}
+        val lottieKey = lottieKeyOverride
+        val resolvedResId = if (packResId != 0) {
+            packResId
+        } else {
+            val fallbackKey = lottieKey ?: when (timeOfDay) {
+                TimeOfDay.MORNING -> "lottie_morning"
+                TimeOfDay.DAY -> "lottie_day"
+                TimeOfDay.EVENING -> "lottie_evening"
+                TimeOfDay.NIGHT -> "lottie_night"
+            }
+            when (fallbackKey) {
                 "lottie_meditation" -> R.raw.lottie_meditation
                 "lottie_guided" -> R.raw.lottie_guided
-                else -> context.resources.getIdentifier(lottieKey, "raw", context.packageName)
+                else -> context.resources.getIdentifier(fallbackKey, "raw", context.packageName)
             }
         }
         val comp by rememberLottieComposition(
-            if (lottieResId != 0) LottieCompositionSpec.RawRes(lottieResId) else LottieCompositionSpec.RawRes(0)
+            if (resolvedResId != 0) LottieCompositionSpec.RawRes(resolvedResId) else LottieCompositionSpec.RawRes(R.raw.lottie_meditation)
         )
-        if (lottieResId != 0 && comp != null) {
+        if (resolvedResId != 0 && comp != null) {
             LottieAnimation(
                 composition = comp,
                 iterations = LottieConstants.IterateForever,
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(0.35f)
+                    .alpha(0.85f)
             )
         } else {
             Image(
@@ -254,7 +265,7 @@ fun DynamicBackground(
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(0.3f),
+                    .alpha(0.8f),
                 contentScale = ContentScale.Crop
             )
         }

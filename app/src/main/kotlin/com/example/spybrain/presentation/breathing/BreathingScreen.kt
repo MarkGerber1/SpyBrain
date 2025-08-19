@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -160,8 +162,8 @@ fun breathingScreen(
                 InfoBottomSheet(
                     title = stringResource(id = R.string.breathing_title),
                     tabs = listOf(
-                        stringResource(id = R.string.meditation_about) to stringResource(id = R.string.breathing_why_text),
-                        stringResource(id = R.string.meditation_how_to) to stringResource(id = R.string.breathing_how_help_text)
+                        stringResource(id = R.string.breathing_why_title) to stringResource(id = R.string.breathing_why_text),
+                        stringResource(id = R.string.breathing_benefits_title) to stringResource(id = R.string.breathing_benefits_text)
                     ),
                     onDismiss = { showInfoSheet = false }
                 )
@@ -230,7 +232,7 @@ fun breathingScreen(
                         else -> state.patterns
                     }
 
-                    breathingList(
+                    breathingGrid(
                         patterns = filteredPatterns,
                         onPatternSelected = { pattern ->
                             VibrationUtil.achievementVibration(context)
@@ -286,15 +288,21 @@ fun categoryTabs(
  * @param onPatternSelected Обработчик выбора паттерна.
  */
 @Composable
-fun breathingList(
+fun breathingGrid(
     patterns: List<BreathingPattern>,
     onPatternSelected: (BreathingPattern) -> Unit
 ) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    // 2 в ряд по умолчанию, на больших экранах — 3
+    val columns = if (androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp >= 600) 3 else 2
+    androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
+        columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(columns),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(patterns) { pattern ->
-            breathingItem(pattern = pattern, onClick = { onPatternSelected(pattern) })
+        items(patterns.size) { index ->
+            val pattern = patterns[index]
+            breathingCard(pattern = pattern, onClick = { onPatternSelected(pattern) })
         }
     }
 }
@@ -305,39 +313,66 @@ fun breathingList(
  * @param onClick Callback при нажатии.
  */
 @Composable
-fun breathingItem(
+fun breathingCard(
     pattern: BreathingPattern,
     onClick: () -> Unit
 ) {
+    // Покачивание
+    val infinite = androidx.compose.animation.core.rememberInfiniteTransition(label = "breath_card_sway")
+    val sway by infinite.animateFloat(
+        initialValue = -1.5f,
+        targetValue = 1.5f,
+        animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+            animation = androidx.compose.animation.core.tween(3800, easing = androidx.compose.animation.core.FastOutSlowInEasing),
+            repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
+        ),
+        label = "sway"
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .graphicsLayer(
+                rotationZ = sway,
+                translationY = sway * 2f
+            )
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f))
+                )
+            )
         ) {
-            Text(
-                text = pattern.name,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = pattern.description ?: "",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(text = pattern.name, style = MaterialTheme.typography.titleMedium, color = Color.White)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = pattern.description ?: "", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.9f))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // Визуализация схемы дыхания
-            breathingDetails(pattern = pattern)
+                breathingDetails(pattern = pattern)
 
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = stringResource(id = R.string.pattern_preview_inhale, pattern.inhaleSeconds, pattern.holdAfterInhaleSeconds), style = MaterialTheme.typography.bodySmall)
-            Text(text = stringResource(id = R.string.pattern_preview_exhale, pattern.exhaleSeconds, pattern.holdAfterExhaleSeconds), style = MaterialTheme.typography.bodySmall)
-            Text(text = stringResource(id = R.string.pattern_preview_cycles, pattern.totalCycles), style = MaterialTheme.typography.bodySmall)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = stringResource(id = R.string.pattern_preview_inhale, pattern.inhaleSeconds, pattern.holdAfterInhaleSeconds), style = MaterialTheme.typography.bodySmall, color = Color.White)
+                Text(text = stringResource(id = R.string.pattern_preview_exhale, pattern.exhaleSeconds, pattern.holdAfterExhaleSeconds), style = MaterialTheme.typography.bodySmall, color = Color.White)
+                Text(text = stringResource(id = R.string.pattern_preview_cycles, pattern.totalCycles), style = MaterialTheme.typography.bodySmall, color = Color.White)
+
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(onClick = onClick, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(id = R.string.start))
+                }
+            }
         }
     }
 }

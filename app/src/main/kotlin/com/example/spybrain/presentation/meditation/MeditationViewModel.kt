@@ -107,6 +107,7 @@ class MeditationViewModel @Inject constructor(
             is MeditationContract.Event.PreviousTrack -> previousTrack()
             is MeditationContract.Event.SeekToPosition -> seekToPosition(event.position)
             is MeditationContract.Event.SetGuidedMode -> setGuidedMode(event.enabled)
+            is MeditationContract.Event.PlayIntro -> playIntro()
             is MeditationContract.Event.BackPressed -> handleBack()
         }
     }
@@ -333,6 +334,7 @@ class MeditationViewModel @Inject constructor(
             // Нормализуем URL для медитаций
             val audioUrl = when {
                 meditation.audioUrl?.contains("example.com") == true -> "asset:///audio/mixkit-valley-sunset-127.mp3"
+                meditation.audioUrl?.startsWith("android.resource://") == true -> meditation.audioUrl
                 meditation.audioUrl?.startsWith("http://") == true ||
                 meditation.audioUrl?.startsWith("https://") == true -> meditation.audioUrl
                 meditation.audioUrl?.startsWith("asset:///") == true -> meditation.audioUrl
@@ -450,13 +452,22 @@ class MeditationViewModel @Inject constructor(
     private fun setGuidedMode(enabled: Boolean) {
         setState { copy(isGuidedMode = enabled) }
         if (!enabled) {
-            try { voiceAssistant.stopGuidance() } catch (_: Exception) {}
+            runCatching { voiceAssistant.stopGuidance() }
         }
+    }
+
+    private fun playIntro() {
+        // Запускаем голосовое вступление и затем guidance-подсказки
+        runCatching { voiceAssistant.speakIntro() }
+        runCatching { voiceAssistant.startGuidance(40) }
+        Timber.d("voice:prepare ok; voice:start ok")
     }
 
     private fun handleBack() {
         stopMeditation()
-        // Навигация назад реализуется на уровне NavController, но тут вся медиалогика уже остановлена
+        // Также гарантируем останов guidance/освобождение фокуса
+        runCatching { voiceAssistant.stopGuidance() }
+        runCatching { voiceAssistant.release() }
     }
 
     private fun trackSessionEnd(meditationId: String?, durationSeconds: Long) {
@@ -498,7 +509,12 @@ class MeditationViewModel @Inject constructor(
 
     private fun handleVoiceCommand(command: String) {
         try {
-            setEffect { MeditationContract.Effect.Speak(command) }
+            when (command) {
+                "pause_guidance" -> runCatching { voiceAssistant.pauseGuidance() }.also { Timber.d("voice:pause") }
+                "resume_guidance" -> runCatching { voiceAssistant.resumeGuidance() }.also { Timber.d("voice:resume") }
+                "stop_guidance" -> runCatching { voiceAssistant.stopGuidance() }.also { Timber.d("voice:stop") }
+                else -> setEffect { MeditationContract.Effect.Speak(command) }
+            }
         } catch (e: Exception) {
             Timber.e(e, "РћС€РёР±РєР° РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ РіРѕР»РѕСЃРѕРІРѕР№ РєРѕРјР°РЅРґС‹")
             val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))
@@ -517,6 +533,9 @@ class MeditationViewModel @Inject constructor(
             uiState.value.currentPlaying?.let {
                 playerService.pause()
             }
+            // Дополнительно освобождаем голос
+            runCatching { voiceAssistant.stopGuidance() }
+            runCatching { voiceAssistant.release() }
         } catch (e: Exception) {
             Timber.e(e, "РћС€РёР±РєР° РїСЂРё РѕС‡РёСЃС‚РєРµ СЂРµСЃСѓСЂСЃРѕРІ")
             val uiError = ErrorHandler.mapToUiError(ErrorHandler.handle(e))

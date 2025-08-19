@@ -1,47 +1,76 @@
 ﻿package com.example.spybrain
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.spybrain.presentation.MainScreen
+import com.example.spybrain.presentation.theme.SpyBrainTheme
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.example.spybrain.presentation.settings.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Box
+import com.example.spybrain.presentation.navigation.BottomNavigationBar
+import com.example.spybrain.presentation.navigation.Screen
 
 /**
  * Р“Р»Р°РІРЅР°СЏ activity РїСЂРёР»РѕР¶РµРЅРёСЏ SpyBrain.
  */
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
-        // Гарантированно останавливаем звук при выходе с экрана
+        // Не глушим ambient на уход в фон, чтобы музыка могла играть в фоне.
         try {
             val appCtx = applicationContext
-            // Останов фоновой музыки
-            val stopAmbient = android.content.Intent(appCtx, com.example.spybrain.service.AmbientMusicService::class.java).apply {
-                action = com.example.spybrain.service.AmbientMusicService.ACTION_STOP
-            }
-            appCtx.startService(stopAmbient)
-
-            // Через Hilt EntryPoint получаем сервисы и освобождаем ресурсы
             val entryPoints = dagger.hilt.android.EntryPointAccessors.fromApplication(appCtx, com.example.spybrain.di.AppEntryPoints::class.java)
-            runCatching { entryPoints.playerService().stop(); entryPoints.playerService().release() }
-            runCatching { entryPoints.voiceAssistantService().release() }
+            runCatching { entryPoints.playerService().pause() }
         } catch (_: Exception) { }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val uiState = settingsViewModel.uiState.collectAsState()
+            // Прокидываем ThemePack через CompositionLocal, чтобы DynamicBackground видел Lottie
+            val themePack = com.example.spybrain.presentation.theme.ThemePacks.themePackFor(uiState.value.theme)
+            androidx.compose.runtime.CompositionLocalProvider(
+                com.example.spybrain.presentation.theme.LocalThemePack provides themePack,
+                com.example.spybrain.presentation.theme.LocalIconPack provides themePack.icons
+            ) {
+            SpyBrainTheme(themeKey = uiState.value.theme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+                    val navController = androidx.navigation.compose.rememberNavController()
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+                    val showBottomBar = currentRoute != com.example.spybrain.presentation.navigation.Screen.Splash.route
+
+                    Scaffold(
+                        bottomBar = {
+                            if (showBottomBar) {
+                                BottomNavigationBar(navController)
+                            }
+                        }
+                    ) { padding ->
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)) {
+                            com.example.spybrain.presentation.navigation.NavGraph(navController = navController)
+                        }
+                    }
                 }
+            }
             }
         }
     }

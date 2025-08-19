@@ -27,6 +27,9 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40
 )
 
+// Removed duplicate colorSchemeForThemeKey to avoid conflicts with the
+// implementation in ThemePack.kt. The version from ThemePack.kt will be used.
+
 /**
  * @param darkTheme РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚С‘РјРЅСѓСЋ С‚РµРјСѓ.
  * @param dynamicColor РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРёРЅР°РјРёС‡РµСЃРєРёРµ С†РІРµС‚Р°.
@@ -34,8 +37,9 @@ private val LightColorScheme = lightColorScheme(
  */
 @Composable
 fun SpyBrainTheme(
+    themeKey: String = "nature",
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -43,8 +47,7 @@ fun SpyBrainTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        else -> colorSchemeForThemeKey(themeKey, darkTheme)
     }
     val view = LocalView.current
     if (!view.isInEditMode) {

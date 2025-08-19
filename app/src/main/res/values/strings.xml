@@ -413,6 +413,53 @@
     <string name="meditation_vipassana_desc">Обретите прозрение через инсайт-медитацию</string>
     <string name="meditation_transcendental_desc">Переступите порог в мир трансценденции</string>
 
+    <!-- i18n: карточки медитаций (минимальный набор ключей по ТЗ) -->
+    <string name="meditation_fire_name">Огненное тепло</string>
+    <string name="meditation_fire_subtitle">Снятие напряжения через визуализацию тепла</string>
+    <string name="meditation_fire_about">Короткая практика для расслабления и восстановления фокуса.</string>
+    <string name="meditation_fire_howto">Сядьте удобно, сосредоточьтесь на дыхании и представляйте тёплое пламя в области груди. На вдохе тепло расширяется, на выдохе — мягко омывает тело.</string>
+
+    <string name="meditation_forest_name">Дух леса</string>
+    <string name="meditation_forest_subtitle">Заземление и спокойствие</string>
+    <string name="meditation_forest_about">Практика, которая помогает снять тревожность и обрести устойчивость.</string>
+    <string name="meditation_forest_howto">Представьте, что вы в лесу: вдох — аромат хвои, выдох — отпускаете напряжение. Слушайте внутреннюю тишину.</string>
+
+    <string name="meditation_night_sky_name">Ночное небо</string>
+    <string name="meditation_night_sky_subtitle">Успокоение ума перед сном</string>
+    <string name="meditation_night_sky_about">Мягкая медитация для плавного перехода ко сну.</string>
+    <string name="meditation_night_sky_howto">Закройте глаза и представьте звёздное небо. На вдохе — свет звёзд, на выдохе — отпускание мыслей.</string>
+
+    <string name="meditation_angelic_name">Ангельская мелодия</string>
+    <string name="meditation_angelic_subtitle">Лёгкость и вдохновение</string>
+    <string name="meditation_angelic_about">Помогает расправить внутренние «крылья» и почувствовать спокойствие.</string>
+    <string name="meditation_angelic_howto">Дышите ровно. На вдохе представляйте свет, на выдохе — благодарность.</string>
+
+    <string name="meditation_dreaming_name">Мечтания</string>
+    <string name="meditation_dreaming_subtitle">Творческое воображение</string>
+    <string name="meditation_dreaming_about">Практика визуализации для мягкой концентрации и креатива.</string>
+    <string name="meditation_dreaming_howto">Сфокусируйтесь на дыхании и позвольте образам возникать свободно, не оценивая.</string>
+
+    <string name="meditation_relaxation_name">Релаксация</string>
+    <string name="meditation_relaxation_subtitle">Глубокое расслабление</string>
+    <string name="meditation_relaxation_about">Снимает мышечные зажимы и помогает отпустить внутреннее напряжение.</string>
+    <string name="meditation_relaxation_howto">Сканируйте тело вниманием от макушки к стопам. На выдохе расслабляйте ощущаемые зажимы.</string>
+
+    <string name="meditation_spiritual_name">Духовность</string>
+    <string name="meditation_spiritual_subtitle">Тихая внутренняя глубина</string>
+    <string name="meditation_spiritual_about">Создаёт пространство тишины и присутствия.</string>
+    <string name="meditation_spiritual_howto">Сидите прямо, мягкое дыхание. Позвольте тишине и паузам наполнять внимание.</string>
+
+    <string name="meditation_valley_sunset_name">Закат в долине</string>
+    <string name="meditation_valley_sunset_subtitle">Тёплое завершение дня</string>
+    <string name="meditation_valley_sunset_about">Медленная практика для подведения итогов и отпускания.</string>
+    <string name="meditation_valley_sunset_howto">На вдохе — «беру опыт», на выдохе — «отпускаю лишнее». Сохраняйте мягкий ритм.</string>
+
+    <!-- Дыхание: базовые (RU) строки + переопределения в values-en/values-ru -->
+    <string name="breathing_why_title">Для чего нужно</string>
+    <string name="breathing_why_text">Дыхательные практики регулируют вегетативную нервную систему, снижают уровень стресса и повышают устойчивость к нагрузкам.</string>
+    <string name="breathing_benefits_title">Как помогает</string>
+    <string name="breathing_benefits_text">Повышает вариабельность сердечного ритма, улучшает концентрацию, способствует лучшему сну и восстановлению энергии.</string>
+
     <!-- Meditation Tracks -->
     <string name="meditation_tracks_title">Медитационные треки</string>
     <string name="guided_meditations_title">Медитации с инструкцией</string>
@@ -445,7 +492,7 @@
     <string name="guidance_prompt_return_attention">Если отвлеклись — спокойно вернитесь к дыханию.</string>
     <string name="meditation_about_text">Медитация — это практика осознанности и расслабления. Она помогает снизить стресс, улучшить концентрацию и сон. Начните с 5–10 минут, дышите ровно, наблюдайте за ощущениями.</string>
     <string name="meditation_how_to_text">Сядьте удобно, выпрямите спину. Закройте глаза. Дышите спокойно. Не пытайтесь «выключить мысли» — просто наблюдайте. Если отвлеклись — мягко возвращайтесь к дыханию.</string>
-    <string name="breathing_why_text">Дыхательные практики регулируют нервную систему, помогают быстрее сбрасывать напряжение и восстанавливать энергию.</string>
+    
     <string name="breathing_how_help_text">Повышает вариабельность сердечного ритма, улучшает концентрацию, ускоряет расслабление. Рекомендуем 2–3 раза в день по 3–5 минут.</string>
 
     <!-- Personal Greeting -->

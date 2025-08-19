@@ -11,6 +11,7 @@ import dagger.hilt.components.SingletonComponent
 interface AppEntryPoints {
     fun playerService(): IPlayerService
     fun voiceAssistantService(): VoiceAssistantService
+    fun settingsDataStore(): com.example.spybrain.data.datastore.SettingsDataStore
 }
 
 

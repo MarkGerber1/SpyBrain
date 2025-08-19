@@ -286,7 +286,54 @@ fun SettingsScreen(
 
         item {
             Text(text = stringResource(R.string.settings_voice_tts), style = MaterialTheme.typography.titleLarge)
-            VoiceSelection(state, viewModel)
+            var open by remember { mutableStateOf(false) }
+            Button(onClick = { open = true }) { Text(stringResource(id = R.string.settings_voice_tts)) }
+            if (open) {
+                androidx.compose.material3.AlertDialog(
+                    onDismissRequest = { open = false },
+                    confirmButton = {
+                        Button(onClick = { open = false }) { Text(stringResource(id = R.string.common_ok)) }
+                    },
+                    title = { Text(stringResource(id = R.string.settings_voice_tts)) },
+                    text = {
+                        val ctx = LocalContext.current
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            VoiceSelection(state, viewModel)
+                            val style = when {
+                                state.voiceRate <= 0.8f && state.voicePitch <= 0.95f -> "Мягкий"
+                                state.voiceRate >= 1.1f || state.voicePitch >= 1.1f -> "Энергичный"
+                                else -> "Нейтральный"
+                            }
+                            Text(text = "Стиль голоса: $style")
+                            Spacer(Modifier.height(8.dp))
+                            Text("Скорость речи")
+                            androidx.compose.material3.Slider(
+                                value = state.voiceRate,
+                                onValueChange = { viewModel.setEvent(SettingsContract.Event.VoiceRateChanged(it)) },
+                                valueRange = 0.5f..1.5f
+                            )
+                            Text("Тональность")
+                            androidx.compose.material3.Slider(
+                                value = state.voicePitch,
+                                onValueChange = { viewModel.setEvent(SettingsContract.Event.VoicePitchChanged(it)) },
+                                valueRange = 0.75f..1.5f
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Button(onClick = {
+                                try {
+                                    val intent = android.content.Intent("com.android.settings.TTS_SETTINGS").apply { addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK) }
+                                    ctx.startActivity(intent)
+                                } catch (_: Exception) {
+                                    try {
+                                        val fallback = android.content.Intent(android.provider.Settings.ACTION_SETTINGS).apply { addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK) }
+                                        ctx.startActivity(fallback)
+                                    } catch (_: Exception) { }
+                                }
+                            }) { Text("Открыть настройки TTS") }
+                        }
+                    }
+                )
+            }
         }
 
         item {
@@ -338,6 +385,40 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+            }
+        }
+
+        item {
+            Text(text = "Профиль", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(8.dp))
+            androidx.compose.material3.OutlinedTextField(
+                value = state.userName,
+                onValueChange = { viewModel.setEvent(Event.UserNameChanged(it)) },
+                label = { Text("Имя") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            androidx.compose.material3.OutlinedTextField(
+                value = if (state.userAge == 0) "" else state.userAge.toString(),
+                onValueChange = { value ->
+                    val digits = value.filter { it.isDigit() }
+                    digits.toIntOrNull()?.let { viewModel.setEvent(Event.UserAgeChanged(it)) }
+                },
+                label = { Text("Возраст") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                val genders = listOf("male" to "Мужской", "female" to "Женский", "other" to "Другое")
+                genders.forEach { (key, label) ->
+                    androidx.compose.material3.FilterChip(
+                        selected = state.userGender == key,
+                        onClick = { viewModel.setEvent(Event.UserGenderChanged(key)) },
+                        label = { Text(label) }
+                    )
+                }
             }
         }
     }
@@ -452,14 +533,38 @@ fun VoiceSelection(
 ) {
     val context = LocalContext.current
     val voiceService = remember {
-        // РЎРѕР·РґР°РµРј РїСЂРѕСЃС‚СѓСЋ РІРµСЂСЃРёСЋ Р±РµР· settingsDataStore РґР»СЏ UI
-        VoiceAssistantService(context, null)
+        // Use DI-provided VoiceAssistantService via AppEntryPoints
+        dagger.hilt.android.EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            com.example.spybrain.di.AppEntryPoints::class.java
+        ).voiceAssistantService()
     }
     var voices by remember { mutableStateOf<List<Voice>>(emptyList()) }
     LaunchedEffect(Unit) {
-        voices = voiceService.getAvailableVoices()
+        // Пробуем несколько раз, пока TTS инициализируется и отдаёт список
+        repeat(5) {
+            val list = voiceService.getAvailableVoices()
+            if (list.isNotEmpty()) {
+                val sorted = list.sortedWith(compareByDescending<Voice> {
+                    val feat = it.features ?: emptySet()
+                    feat.any { f -> f.contains("female", true) } || it.name.contains("female", true)
+                }.thenByDescending { it.quality })
+                voices = sorted
+                return@LaunchedEffect
+            }
+            kotlinx.coroutines.delay(400)
+        }
+        val fallback = voiceService.getAvailableVoices()
+        voices = fallback.sortedByDescending { it.quality }
     }
     Column {
+        if (voices.isEmpty()) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                CircularProgressIndicator(modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Загрузка голосов…")
+            }
+        }
         voices.forEach { voice: Voice ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(

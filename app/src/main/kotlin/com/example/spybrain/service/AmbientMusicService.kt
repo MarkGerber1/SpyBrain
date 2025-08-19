@@ -37,6 +37,7 @@ class AmbientMusicService : Service() {
     private var exoPlayer: ExoPlayer? = null
     private var audioSink: AudioSink? = null
     private var presetReverb: PresetReverb? = null
+    private var currentTrackId: String? = null
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var fadeJob: Job? = null
@@ -60,8 +61,11 @@ class AmbientMusicService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        // Стартуем foreground немедленно (<=5с от запуска)
+        val notif = createNotification()
+        startForeground(NOTIFICATION_ID, notif)
         initializePlayer()
-        Timber.d("AmbientMusicService created")
+        Timber.i("AmbientMusicService onCreate: startForeground done")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -69,6 +73,12 @@ class AmbientMusicService : Service() {
             ACTION_PLAY -> {
                 val trackId = intent.getStringExtra(EXTRA_TRACK_ID) ?: ""
                 if (trackId.isNotEmpty()) {
+                    // Idempotent play: если уже играет тот же трек — ничего не делаем
+                    val isSameTrack = currentTrackId == trackId
+                    if (isSameTrack && (exoPlayer?.isPlaying == true)) {
+                        Timber.d("AmbientMusicService: same track '$trackId' already playing, skip restart")
+                        return START_STICKY
+                    }
                     playAmbientMusic(trackId)
                 }
             }
@@ -145,6 +155,14 @@ class AmbientMusicService : Service() {
 
     fun playAmbientMusic(trackId: String) {
         try {
+            // Если уже подготовлен нужный трек и не играет — просто запускаем
+            if (currentTrackId == trackId && (exoPlayer?.isPlaying == false) && (exoPlayer?.mediaItemCount ?: 0) > 0) {
+                exoPlayer?.playWhenReady = true
+                exoPlayer?.play()
+                startForeground(NOTIFICATION_ID, createNotification())
+                Timber.i("AmbientMusicService: Resumed ambient music: $trackId")
+                return
+            }
             // Используем реальные ресурсы из res/raw (см. список mixkit_*.mp3)
             val pkg = packageName
             val androidRes = { name: String -> "android.resource://$pkg/raw/$name" }
@@ -158,13 +176,18 @@ class AmbientMusicService : Service() {
             }
 
             exoPlayer?.apply {
+                stop()
+                clearMediaItems()
                 setMediaItem(mediaItem)
                 prepare()
+                playWhenReady = true
                 play()
             }
 
+            // Обновим уведомление (если надо) и залогируем старт
             startForeground(NOTIFICATION_ID, createNotification())
-            Timber.d("Started playing ambient music: $trackId")
+            Timber.i("AmbientMusicService: Started playing ambient music: $trackId")
+            currentTrackId = trackId
 
         } catch (e: Exception) {
             Timber.e(e, "Failed to play ambient music")

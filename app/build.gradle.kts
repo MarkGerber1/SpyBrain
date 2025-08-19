@@ -14,6 +14,8 @@ plugins {
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
+    arg("room.expandProjection", "true")
 }
 
 android {
@@ -117,20 +119,15 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 
-    // Media
+    // Media (unified via libs.versions.toml: media3)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
     implementation(libs.media3.session)
-    implementation("androidx.media3:media3-common:1.2.0")
-    implementation("androidx.media3:media3-datasource:1.2.0")
-    implementation("androidx.media3:media3-exoplayer-dash:1.2.0")
-    implementation("androidx.media3:media3-exoplayer-hls:1.2.0")
 
     // TTS
     implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")
 
-    // Audio Effects
-    implementation("androidx.media:media:1.7.0")
+    // Audio Effects: removed legacy androidx.media to avoid conflicts with Media3
 
     // DataStore
     implementation(libs.datastore.preferences)
@@ -175,7 +172,7 @@ dependencies {
     ksp(libs.room.compiler)
     androidTestImplementation("androidx.room:room-testing:2.6.1")
 
-    implementation("androidx.navigation:navigation-compose:2.7.3")
+    // Navigation version unified via TOML
     // Lottie for animated backgrounds
     implementation("com.airbnb.android:lottie-compose:6.3.0")
 }

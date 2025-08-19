@@ -28,7 +28,7 @@ import com.example.spybrain.data.storage.dao.HeartRateDao
         HeartRateMeasurement::class
     ],
     version = 4,
-    exportSchema = false // FIXME: Установить в true и указать exportSchema = true для экспорта схемы и корректной работы миграций. Необходимо исправить.
+    exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
