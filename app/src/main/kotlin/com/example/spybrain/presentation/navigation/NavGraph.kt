@@ -20,6 +20,7 @@ import com.example.spybrain.presentation.stats.StatsScreen
 import com.example.spybrain.presentation.splash.SplashScreen
 import com.example.spybrain.presentation.achievements.achievementsScreen
 import com.example.spybrain.presentation.MainScreen
+import com.example.spybrain.presentation.onboarding.OnboardingScreen
 
 // Alias functions for navigation
 @Composable
@@ -58,6 +59,15 @@ fun NavGraph(navController: NavHostController) {
 
         composable(Screen.Main.route) {
             MainScreen(navController)
+        }
+
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(onFinished = {
+                navController.navigate(Screen.Main.route) {
+                    popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            })
         }
 
         composable(Screen.Meditation.route) {

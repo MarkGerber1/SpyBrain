@@ -420,6 +420,11 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = { navController.navigate(com.example.spybrain.presentation.navigation.Screen.Main.route) }) {
+                Text("На главный экран")
+            }
         }
     }
 }

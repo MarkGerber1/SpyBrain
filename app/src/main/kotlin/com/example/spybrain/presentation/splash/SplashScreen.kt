@@ -62,9 +62,14 @@ fun SplashScreen(navController: NavHostController) {
         runCatching { VibrationUtil.shortVibration(context) }
         // Больше не озвучиваем интро на сплэше, только музыка и вибрация
 
-        // Короткая задержка и переход на главный экран с нижней навигацией
+        // Короткая задержка и переход: если имя не задано — на онбординг
         delay(1200)
-        navController.navigate(Screen.Main.route) {
+        val hasName = try {
+            val entryPoints = dagger.hilt.android.EntryPointAccessors.fromApplication(context.applicationContext, com.example.spybrain.di.AppEntryPoints::class.java)
+            entryPoints.settingsDataStore().getUserName().isNotBlank()
+        } catch (_: Exception) { false }
+        val target = if (hasName) Screen.Main.route else Screen.Onboarding.route
+        navController.navigate(target) {
             popUpTo(Screen.Splash.route) { inclusive = true }
             launchSingleTop = true
         }

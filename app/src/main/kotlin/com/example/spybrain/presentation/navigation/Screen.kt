@@ -31,6 +31,8 @@ sealed class Screen(
 ) {
     /** Р­РєСЂР°РЅ РїСЂРёРІРµС‚СЃС‚РІРёСЏ. */
     object Splash : Screen("splash")
+    /** Онбординг. */
+    object Onboarding : Screen("onboarding")
     /** Р­РєСЂР°РЅ РіР»Р°РІРЅС‹Р№. */
     object Main : Screen("main")
     /** Р­РєСЂР°РЅ РјРµРґРёС‚Р°С†РёРё. */
