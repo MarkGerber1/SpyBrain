@@ -8,6 +8,10 @@
 - [ ] Replace random() quote with deterministic rotation per session
 # 📋 TODO - Список задач по аудиту SpyBrain
 
+## ✅ НЕДАВНО ЗАВЕРШЕНО
+- [x] Исправлены ошибки компиляции в MainScreen.kt - добавлен импорт offset и исправлен импорт ThemePacks
+- [x] Устранено предупреждение о дублировании имени переменной greeting
+
 ## 🔴 Критические проблемы (Высокий приоритет)
 
 ### ✅ Исправлено

@@ -63,6 +63,8 @@
 - [x] Интеграция Media3 библиотек
  - [x] Удаление legacy BackgroundMusicService и переход на AmbientMusicService
  - [x] Интеграция DynamicBackground в MainScreen
+- [x] Исправление ошибок компиляции в MainScreen.kt (импорт offset, ThemePacks)
+- [x] Устранение предупреждений о дублировании переменных
 
 ### Этап 3: Расширенная функциональность (Ноябрь 2024)
 - [x] Система достижений
