@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -101,7 +102,7 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(paddingValues)) {
                 // Приветствие по времени суток (без имени пока)
-                val greeting = when (java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)) {
+                val timeGreeting = when (java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)) {
                     in 5..11 -> "Доброе утро"
                     in 12..16 -> "Добрый день"
                     in 17..21 -> "Добрый вечер"
@@ -122,7 +123,7 @@ fun MainScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = greeting,
+                        text = timeGreeting,
                         style = MaterialTheme.typography.headlineSmall,
                         color = Color.White,
                         textAlign = TextAlign.Center
@@ -185,7 +186,7 @@ private fun HomeNode(icon: ImageVector, label: String, onClick: () -> Unit, size
             .size(sizeDp.dp)
             .clip(CircleShape)
             .clickable { onClick() }
-            .padding(top = offsetYDp.dp),
+            .offset(y = offsetYDp.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

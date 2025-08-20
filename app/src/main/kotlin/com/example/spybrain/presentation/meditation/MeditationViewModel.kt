@@ -210,7 +210,13 @@ class MeditationViewModel @Inject constructor(
         adviceJob?.cancel()
 
         try {
-            val audioUrl = "asset:///${track.assetPath}"
+            val audioUrl = when {
+                track.assetPath.startsWith("android.resource://") -> track.assetPath
+                track.assetPath.startsWith("asset:///") -> track.assetPath
+                track.assetPath.startsWith("http://") || track.assetPath.startsWith("https://") -> track.assetPath
+                track.assetPath.startsWith("audio/") -> "asset:///${track.assetPath}"
+                else -> track.assetPath
+            }
 
             // РћР±РЅРѕРІР»СЏРµРј UI
             setState { copy(currentPlayingTrack = track, isTrackPlaying = true) }
