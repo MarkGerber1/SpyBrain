@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.service
+package com.example.spybrain.service
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
@@ -67,7 +67,7 @@ class VoiceAssistantService @Inject constructor(
 
             // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ РіРѕР»РѕСЃ
             scope.launch {
-                val voiceId = settingsDataStore?.getVoiceId() ?: ""
+                val voiceId = settingsDataStore?.voiceIdFlow?.first() ?: ""
                 setVoice(voiceId)
             }
 
