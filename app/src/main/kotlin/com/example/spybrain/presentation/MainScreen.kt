@@ -101,13 +101,6 @@ fun MainScreen(
             Box(modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)) {
-                // Приветствие по времени суток (без имени пока)
-                val timeGreeting = when (java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)) {
-                    in 5..11 -> "Доброе утро"
-                    in 12..16 -> "Добрый день"
-                    in 17..21 -> "Добрый вечер"
-                    else -> "Доброй ночи"
-                }
                 // Приветствие и мотивация
                 val quotes = listOf(
                     "Познай себя — через медитацию.",
@@ -123,12 +116,12 @@ fun MainScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = timeGreeting,
+                        text = greeting,
                         style = MaterialTheme.typography.headlineSmall,
                         color = Color.White,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         text = quotes.random(),
                         style = MaterialTheme.typography.titleSmall,
@@ -137,38 +130,44 @@ fun MainScreen(
                     )
                 }
 
-                // Узлы вкладок
-                Row(
+                // Узлы вкладок в виде неправильного треугольника
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.Center),
-                    verticalAlignment = Alignment.CenterVertically
+                        .align(Alignment.Center)
                 ) {
-                    Spacer(Modifier.size(24.dp))
+                    // Верхний левый узел
                     HomeNode(
                         icon = Icons.Filled.Star,
                         label = context.getString(com.example.spybrain.R.string.meditations),
                         onClick = { navController.navigate(Screen.Meditation.route) },
-                        sizeDp = 120,
-                        offsetYDp = 12
+                        sizeDp = 110,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .offset(x = 32.dp, y = 40.dp)
                     )
-                    Spacer(Modifier.weight(1f))
+                    
+                    // Верхний правый узел
                     HomeNode(
                         icon = Icons.Filled.Headphones,
                         label = context.getString(com.example.spybrain.R.string.meditation_guided_tab_title),
                         onClick = { navController.navigate(Screen.Meditation.route) },
-                        sizeDp = 136,
-                        offsetYDp = -8
+                        sizeDp = 130,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = (-32).dp, y = 60.dp)
                     )
-                    Spacer(Modifier.weight(1f))
+                    
+                    // Нижний центральный узел
                     HomeNode(
                         icon = Icons.Filled.Air,
                         label = context.getString(com.example.spybrain.R.string.breathing_title),
                         onClick = { navController.navigate(Screen.Breathing.route) },
                         sizeDp = 120,
-                        offsetYDp = 16
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .offset(y = (-80).dp)
                     )
-                    Spacer(Modifier.size(24.dp))
                 }
 
                 // Анимированные «синапсы» между узлами
@@ -180,13 +179,18 @@ fun MainScreen(
 }
 
 @Composable
-private fun HomeNode(icon: ImageVector, label: String, onClick: () -> Unit, sizeDp: Int = 100, offsetYDp: Int = 0) {
+private fun HomeNode(
+    icon: ImageVector, 
+    label: String, 
+    onClick: () -> Unit, 
+    sizeDp: Int = 100, 
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .size(sizeDp.dp)
             .clip(CircleShape)
-            .clickable { onClick() }
-            .offset(y = offsetYDp.dp),
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -207,39 +211,89 @@ private fun HomeNode(icon: ImageVector, label: String, onClick: () -> Unit, size
 @Composable
 private fun SynapsesOverlay() {
     val infinite = rememberInfiniteTransition(label = "synapses")
-    val phase by infinite.animateFloat(
+    val phase1 by infinite.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
-        animationSpec = infiniteRepeatable(animation = tween(2000), repeatMode = RepeatMode.Restart),
-        label = "phase"
+        animationSpec = infiniteRepeatable(animation = tween(3000), repeatMode = RepeatMode.Restart),
+        label = "phase1"
     )
+    val phase2 by infinite.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(animation = tween(2500, delayMillis = 500), repeatMode = RepeatMode.Restart),
+        label = "phase2"
+    )
+    val phase3 by infinite.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(animation = tween(2800, delayMillis = 1000), repeatMode = RepeatMode.Restart),
+        label = "phase3"
+    )
+    
     Canvas(modifier = Modifier.fillMaxSize()) {
-        val y = size.height * 0.48f
-        val x1 = size.width * 0.22f
-        val x2 = size.width * 0.5f
-        val x3 = size.width * 0.78f
+        // Позиции узлов в треугольнике
+        val topLeft = androidx.compose.ui.geometry.Offset(size.width * 0.25f, size.height * 0.35f)
+        val topRight = androidx.compose.ui.geometry.Offset(size.width * 0.75f, size.height * 0.35f)
+        val bottomCenter = androidx.compose.ui.geometry.Offset(size.width * 0.5f, size.height * 0.65f)
 
+        // Пути между узлами с разными траекториями
         val path1 = Path().apply {
-            moveTo(x1, y)
-            cubicTo(x1 + 120f, y - 80f, x2 - 120f, y + 80f, x2, y)
+            moveTo(topLeft.x, topLeft.y)
+            cubicTo(
+                topLeft.x + 100f, topLeft.y - 50f,
+                topRight.x - 100f, topRight.y - 50f,
+                topRight.x, topRight.y
+            )
         }
+        
         val path2 = Path().apply {
-            moveTo(x2, y)
-            cubicTo(x2 + 120f, y - 80f, x3 - 120f, y + 80f, x3, y)
+            moveTo(topRight.x, topRight.y)
+            cubicTo(
+                topRight.x - 80f, topRight.y + 80f,
+                bottomCenter.x + 80f, bottomCenter.y - 80f,
+                bottomCenter.x, bottomCenter.y
+            )
+        }
+        
+        val path3 = Path().apply {
+            moveTo(bottomCenter.x, bottomCenter.y)
+            cubicTo(
+                bottomCenter.x - 80f, bottomCenter.y - 80f,
+                topLeft.x + 80f, topLeft.y + 80f,
+                topLeft.x, topLeft.y
+            )
         }
 
-        drawPath(path1, color = Color.White.copy(alpha = 0.22f), style = Stroke(width = 4f, cap = StrokeCap.Round))
-        drawPath(path2, color = Color.White.copy(alpha = 0.22f), style = Stroke(width = 4f, cap = StrokeCap.Round))
+        // Рисуем пути
+        drawPath(path1, color = Color.White.copy(alpha = 0.3f), style = Stroke(width = 3f, cap = StrokeCap.Round))
+        drawPath(path2, color = Color.White.copy(alpha = 0.3f), style = Stroke(width = 3f, cap = StrokeCap.Round))
+        drawPath(path3, color = Color.White.copy(alpha = 0.3f), style = Stroke(width = 3f, cap = StrokeCap.Round))
 
-        // «Импульсы» — движущиеся точки по кривым
-        fun drawPulse(xStart: Float, xEnd: Float) {
+        // Импульсы по разным траекториям
+        fun drawPulse(path: Path, phase: Float, color: Color) {
             val t = phase
-            val x = xStart + (xEnd - xStart) * t
-            val yDot = y + kotlin.math.sin(t * 3.14159f) * 14f
-            drawCircle(Color.Cyan.copy(alpha = 0.9f), radius = 7f, center = androidx.compose.ui.geometry.Offset(x, yDot))
+            // Простая интерполяция для демонстрации
+            val pulseSize = 8f + kotlin.math.sin(phase * 6.28f) * 3f
+            
+            // Рисуем импульс в разных точках пути
+            val points = listOf(
+                androidx.compose.ui.geometry.Offset(topLeft.x + (topRight.x - topLeft.x) * t, topLeft.y + (topRight.y - topLeft.y) * t),
+                androidx.compose.ui.geometry.Offset(topRight.x + (bottomCenter.x - topRight.x) * t, topRight.y + (bottomCenter.y - topRight.y) * t),
+                androidx.compose.ui.geometry.Offset(bottomCenter.x + (topLeft.x - bottomCenter.x) * t, bottomCenter.y + (topLeft.y - bottomCenter.y) * t)
+            )
+            
+            val point = when {
+                path == path1 -> points[0]
+                path == path2 -> points[1]
+                else -> points[2]
+            }
+            
+            drawCircle(color, radius = pulseSize, center = point)
         }
-        drawPulse(x1, x2)
-        drawPulse(x2, x3)
+        
+        drawPulse(path1, phase1, Color.Cyan.copy(alpha = 0.9f))
+        drawPulse(path2, phase2, Color.Magenta.copy(alpha = 0.8f))
+        drawPulse(path3, phase3, Color.Yellow.copy(alpha = 0.7f))
     }
 }
 

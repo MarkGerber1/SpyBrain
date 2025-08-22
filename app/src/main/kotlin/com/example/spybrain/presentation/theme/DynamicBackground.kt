@@ -267,25 +267,33 @@ fun DynamicBackground(
                 else -> context.resources.getIdentifier(lottieKey, "raw", context.packageName)
             }
         } else packResId
+        // Всегда пытаемся загрузить Lottie анимацию
         val comp by rememberLottieComposition(
-            if (resolvedResId != 0) LottieCompositionSpec.RawRes(resolvedResId) else LottieCompositionSpec.RawRes(R.raw.lottie_meditation)
+            LottieCompositionSpec.RawRes(resolvedResId)
         )
+        
+        // Показываем Lottie анимацию, если она загрузилась
         if (comp != null) {
             LottieAnimation(
                 composition = comp,
                 iterations = LottieConstants.IterateForever,
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(0.95f)
+                    .alpha(0.9f)
             )
         } else {
-            Image(
-                painter = painterResource(id = backgroundData.backgroundResId),
-                contentDescription = null,
+            // Fallback на градиент, если Lottie не загрузился
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(0.8f),
-                contentScale = ContentScale.Crop
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                backgroundData.gradientStart,
+                                backgroundData.gradientEnd
+                            )
+                        )
+                    )
             )
         }
 
