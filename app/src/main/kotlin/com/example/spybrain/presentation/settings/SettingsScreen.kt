@@ -85,6 +85,7 @@ import android.os.Vibrator
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import android.speech.tts.Voice
+import androidx.compose.material3.OutlinedTextField
 
 object LocaleManager {
     fun setLocale(activity: Activity, language: String) {
@@ -112,8 +113,8 @@ fun SettingsScreen(
                 is SettingsContract.Effect.NavigateTo -> navController.navigate(effect.screen.route)
                 is SettingsContract.Effect.ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                 is SettingsContract.Effect.RefreshUI -> {
-                    // РћР±РЅРѕРІР»РµРЅРёРµ UI РїСЂРё СЃРјРµРЅРµ СЏР·С‹РєР°
-                    // Р’ СЂРµР°Р»СЊРЅРѕРј РїСЂРёР»РѕР¶РµРЅРёРё Р·РґРµСЃСЊ РјРѕР¶РµС‚ Р±С‹С‚СЊ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ Р»РѕРіРёРєР°
+                    // Обновление UI при смене языка
+                    // В реальном приложении здесь может быть дополнительная логика
                 }
             }
         }
@@ -298,7 +299,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val languages = listOf("ru" to "Р СўСЃРєРёР№", "en" to "English")
+                val languages = listOf("ru" to "Русский", "en" to "English")
                 val currentLanguage = Locale.getDefault().language
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -312,7 +313,7 @@ fun SettingsScreen(
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     LocaleManager.setLocale(activity, lang)
-                                    // РћР±РЅРѕРІР»СЏРµРј UI Р±РµР· РїРµСЂРµР·Р°РїСѓСЃРєР°
+                                    // Обновляем UI без перезапуска
                                     viewModel.setEvent(Event.LanguageChanged(lang))
                                 }
                             },
@@ -338,6 +339,39 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+            }
+        }
+
+        // Profile section
+        item {
+            Text(text = stringResource(R.string.profile), style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = state.userName,
+                onValueChange = { viewModel.setEvent(Event.UserNameChanged(it)) },
+                label = { Text(stringResource(R.string.name)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = state.userAge,
+                onValueChange = { viewModel.setEvent(Event.UserAgeChanged(it)) },
+                label = { Text(stringResource(R.string.age)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = state.userGender,
+                onValueChange = { viewModel.setEvent(Event.UserGenderChanged(it)) },
+                label = { Text(stringResource(R.string.gender)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { viewModel.setEvent(Event.SaveProfile) }) {
+                Text(text = stringResource(R.string.common_save))
             }
         }
     }
@@ -390,7 +424,7 @@ fun ThemePreviewCard(
             if (isSelected) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_check),
-                    contentDescription = "Р С‹Р±СЂРЅРѕ",
+                    contentDescription = "Выбрано",
                     tint = Color.White,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -419,28 +453,22 @@ fun ThemeIcon(
     val bgColor = when (theme) {
         "water" -> Color(0xFFB3E5FC)
         "space" -> Color(0xFFB39DDB)
-        "nature" -> Color(0xFFC8E6C9)
-        "air" -> Color(0xFFE1F5FE)
-        else -> Color(0xFFE0E0E0)
+        "nature" -> Color(0xFFA5D6A7)
+        "air" -> Color(0xFFFFCC80)
+        else -> Color(0xFFA5D6A7)
     }
     Box(
         modifier = modifier
             .size(size)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(CircleShape)
             .background(bgColor)
-            .border(
-                width = if (selected) 3.dp else 1.dp,
-                color = if (selected) MaterialTheme.colorScheme.primary else Color.LightGray,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .shadow(if (selected) 6.dp else 0.dp, RoundedCornerShape(16.dp)),
-        contentAlignment = Alignment.Center
     ) {
-        Icon(
+        Image(
             painter = painterResource(id = iconRes),
-            contentDescription = theme,
-            modifier = Modifier.size(size * 0.6f),
-            tint = Color.Unspecified
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(size * 0.6f)
         )
     }
 }
@@ -452,7 +480,7 @@ fun VoiceSelection(
 ) {
     val context = LocalContext.current
     val voiceService = remember {
-        // РЎРѕР·РґР°РµРј РїСЂРѕСЃС‚СѓСЋ РІРµСЂСЃРёСЋ Р±РµР· settingsDataStore РґР»СЏ UI
+        // Создаем простую версию VoiceAssistantService для UI
         VoiceAssistantService(context, null)
     }
     var voices by remember { mutableStateOf<List<Voice>>(emptyList()) }

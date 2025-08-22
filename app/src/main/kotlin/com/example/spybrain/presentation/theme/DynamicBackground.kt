@@ -48,9 +48,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloat
+import com.example.spybrain.data.datastore.SettingsDataStore
 
 /**
- * @property id РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РІСЂРµРјРµРЅРё СЃСўРѕРє.
+ * @property id Идентификатор времени суток.
  */
 enum class TimeOfDay(val id: String) {
     MORNING("morning"),
@@ -69,12 +70,12 @@ enum class TimeOfDay(val id: String) {
 }
 
 /**
- * @property backgroundResId Р РµСЅСўСЃ С„РѕРЅР°.
- * @property gradientStart РќР°С‡Р°Р»СЊРЅС‹Р№ С†РІРµС‚ РіСЂР°РґРёРµРЅС‚Р°.
- * @property gradientEnd РљРѕРЅРµС‡РЅС‹Р№ С†РІРµС‚ РіСЂР°РґРёРµРЅС‚Р°.
- * @property overlayStart РќР°С‡Р°Р»СЊРЅС‹Р№ С†РІРµС‚ РЅР°Р»РѕР¶РµРЅРёСЏ.
- * @property overlayEnd РљРѕРЅРµС‡РЅС‹Р№ С†РІРµС‚ РЅР°Р»РѕР¶РµРЅРёСЏ.
- * @property isDark РџСЂРёР·РЅР°Рє С‚С‘РјРЅРѕРіРѕ С„РѕРЅР°.
+ * @property backgroundResId Ресурс фона.
+ * @property gradientStart Начальный цвет градиента.
+ * @property gradientEnd Конечный цвет градиента.
+ * @property overlayStart Начальный цвет наложения.
+ * @property overlayEnd Конечный цвет наложения.
+ * @property isDark Признак тёмного фона.
  */
 data class TimeBasedBackground(
     val backgroundResId: Int,
@@ -86,11 +87,11 @@ data class TimeBasedBackground(
 )
 
 /**
- * @property backgroundMap РљР°СЂС‚Р° С„РѕРЅРѕРІ РїРѕ РІСЂРµРјРµРЅРё СЃСўРѕРє.
+ * @property backgroundMap Карта фонов по времени суток.
  */
 object DynamicBackgroundManager {
 
-    // РћС‚РѕР±СЂР°Р¶РµРЅРёРµ РІСЂРµРјРµРЅРё СЃСўРѕРє Рє РґР°РЅРЅС‹Рј Рѕ С„РѕРЅРµ
+    // Отображение времени суток к данным о фоне
     val backgroundMap = mapOf(
         TimeOfDay.MORNING to TimeBasedBackground(
             R.drawable.bg_water,
@@ -126,9 +127,6 @@ object DynamicBackgroundManager {
         )
     )
 
-    /**
-     * РџРѕР»СѓС‡Р°РµС‚ РґР°РЅРЅС‹Рµ Рѕ С„РѕРЅРµ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РІСЂРµРјРµРЅРё СЃСўРѕРє
-     */
     fun getCurrentBackground(): TimeBasedBackground {
         val calendar = Calendar.getInstance()
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
@@ -136,23 +134,17 @@ object DynamicBackgroundManager {
         return backgroundMap[timeOfDay] ?: backgroundMap[TimeOfDay.DAY]!!
     }
 
-    /**
-     * РџРѕР»СѓС‡Р°РµС‚ РїСЂРёРІРµС‚СЃС‚РІРµРЅРЅРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РІСЂРµРјРµРЅРё СЃСўРѕРє
-     */
     fun getWelcomeMessage(): String {
         val calendar = Calendar.getInstance()
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         return when (TimeOfDay.fromHour(hour)) {
-            TimeOfDay.MORNING -> "Р”РѕР±СЂРѕРµ СѓС‚СЂРѕ!"
-            TimeOfDay.DAY -> "Р”РѕР±СЂС‹Р№ РґРµРЅСЊ!"
-            TimeOfDay.EVENING -> "Р”РѕР±СЂС‹Р№ РІРµС‡РµСЂ!"
-            TimeOfDay.NIGHT -> "Р”РѕР±СЂРѕР№ РЅРѕС‡Рё!"
+            TimeOfDay.MORNING -> "Доброе утро!"
+            TimeOfDay.DAY -> "Добрый день!"
+            TimeOfDay.EVENING -> "Добрый вечер!"
+            TimeOfDay.NIGHT -> "Доброй ночи!"
         }
     }
 
-    /**
-     * Р Р°СЃСЃС‡РёС‚С‹РІР°РµС‚ РІСЂРµРјСЏ РґРѕ СЃР»РµРґСѓСЋС‰РµР№ СЃРјРµРЅС‹ С„РѕРЅР° РІ РјРёР»Р»РёСЃРµРєСўРґР°С…
-     */
     fun getMillisToNextChange(): Long {
         val calendar = Calendar.getInstance()
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
@@ -160,11 +152,11 @@ object DynamicBackgroundManager {
         val second = calendar.get(Calendar.SECOND)
 
         val nextChangeHour = when (hour) {
-            in 0..4 -> 5  // РЎР»РµРґСѓСЋС‰Р°СЏ СЃРјРµРЅР° РІ 5:00 (СѓС‚СЂРѕ)
-            in 5..11 -> 12 // РЎР»РµРґСѓСЋС‰Р°СЏ СЃРјРµРЅР° РІ 12:00 (РґРµРЅСЊ)
-            in 12..16 -> 17 // РЎР»РµРґСѓСЋС‰Р°СЏ СЃРјРµРЅР° РІ 17:00 (РІРµС‡РµСЂ)
-            in 17..21 -> 22 // РЎР»РµРґСѓСЋС‰Р°СЏ СЃРјРµРЅР° РІ 22:00 (РЅРѕС‡СЊ)
-            else -> 5 + 24 // РЎР»РµРґСѓСЋС‰Р°СЏ СЃРјРµРЅР° РІ 5:00 СЃР»РµРґСѓСЋС‰РµРіРѕ РґРЅСЏ
+            in 0..4 -> 5
+            in 5..11 -> 12
+            in 12..16 -> 17
+            in 17..21 -> 22
+            else -> 5 + 24
         }
 
         val currentTimeSeconds = hour * 3600 + minute * 60 + second
@@ -180,10 +172,6 @@ object DynamicBackgroundManager {
     }
 }
 
-/**
- * @param modifier РњРѕРґРёС„РёРєР°С‚РѕСЂ Compose.
- * @param content РљРѕРЅС‚РµРЅС‚ Compose.
- */
 @Composable
 fun DynamicBackground(
     modifier: Modifier = Modifier,
@@ -194,7 +182,16 @@ fun DynamicBackground(
     val backgroundData = remember(timeOfDay) { getBackgroundForTimeOfDay(timeOfDay) }
     val greeting = remember(timeOfDay) { getGreetingForTimeOfDay(context, timeOfDay) }
 
-    // РђРЅРёРјР°С†РёСЏ РґР»СЏ РїР»Р°РІРЅРѕРіРѕ РїРµСЂРµС…РѕРґР°
+    // Respect selected theme for background image
+    val settings = remember { SettingsDataStore(context) }
+    val theme by settings.themeFlow.collectAsState(initial = "nature")
+    val themedBackgroundRes = when (theme) {
+        "water" -> R.drawable.bg_water
+        "space" -> R.drawable.bg_space
+        "air" -> R.drawable.bg_air
+        else -> R.drawable.bg_nature
+    }
+
     val infiniteTransition = rememberInfiniteTransition()
     val backgroundAlpha by infiniteTransition.animateFloat(
         initialValue = 0.7f,
@@ -217,9 +214,9 @@ fun DynamicBackground(
                 )
             )
     ) {
-        // Р¤РѕРЅРѕРІРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ
+        // Background image overridden by theme
         Image(
-            painter = painterResource(id = backgroundData.backgroundResId),
+            painter = painterResource(id = themedBackgroundRes),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
@@ -227,7 +224,6 @@ fun DynamicBackground(
             contentScale = ContentScale.Crop
         )
 
-        // РџСЂРёРІРµС‚СЃС‚РІРёРµ СЃ Р°РЅРёРјР°С†РёРµР№
         AnimatedVisibility(
             visible = true,
             enter = fadeIn() + slideInVertically(),
@@ -247,44 +243,31 @@ fun DynamicBackground(
             )
         }
 
-        // РћСЃРЅРѕРІРЅРѕР№ РєРѕРЅС‚РµРЅС‚
         content()
     }
 }
 
-/**
- * РџРѕР»СѓС‡Р°РµС‚ С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ СЃСўРѕРє
- */
 private fun getCurrentTimeOfDay(): TimeOfDay {
     val calendar = Calendar.getInstance()
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     return TimeOfDay.fromHour(hour)
 }
 
-/**
- * РџРѕР»СѓС‡Р°РµС‚ РґР°РЅРЅС‹Рµ Рѕ С„РѕРЅРµ РґР»СЏ РІСЂРµРјРµРЅРё СЃСўРѕРє
- */
 private fun getBackgroundForTimeOfDay(timeOfDay: TimeOfDay): TimeBasedBackground {
     return DynamicBackgroundManager.backgroundMap[timeOfDay]
         ?: DynamicBackgroundManager.backgroundMap[TimeOfDay.DAY]!!
 }
 
-/**
- * РџРѕР»СѓС‡Р°РµС‚ РіСЂР°РґРёРµРЅС‚РЅС‹Рµ С†РІРµС‚Р° РґР»СЏ РІСЂРµРјРµРЅРё СЃСўРѕРє
- */
 private fun getGradientColorsForTimeOfDay(timeOfDay: TimeOfDay): List<Color> {
     val background = getBackgroundForTimeOfDay(timeOfDay)
     return listOf(background.gradientStart, background.gradientEnd)
 }
 
-/**
- * РџРѕР»СѓС‡Р°РµС‚ РїСЂРёРІРµС‚СЃС‚РІРёРµ РґР»СЏ РІСЂРµРјРµРЅРё СЃСўРѕРє
- */
 private fun getGreetingForTimeOfDay(context: Context, timeOfDay: TimeOfDay): String {
     return when (timeOfDay) {
-        TimeOfDay.MORNING -> "Р”РѕР±СЂРѕРµ СѓС‚СЂРѕ! вЂпёЏ"
-        TimeOfDay.DAY -> "Р”РѕР±СЂС‹Р№ РґРµРЅСЊ! рџЊ¤пёЏ"
-        TimeOfDay.EVENING -> "Р”РѕР±СЂС‹Р№ РІРµС‡РµСЂ! рџЊ…"
-        TimeOfDay.NIGHT -> "Р”РѕР±СЂРѕР№ РЅРѕС‡Рё! рџЊ™"
+        TimeOfDay.MORNING -> "Доброе утро! ☀️"
+        TimeOfDay.DAY -> "Добрый день! 🌤️"
+        TimeOfDay.EVENING -> "Добрый вечер! 🌇"
+        TimeOfDay.NIGHT -> "Доброй ночи! 🌙"
     }
 }

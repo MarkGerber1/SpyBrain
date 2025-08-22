@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.navigation
+package com.example.spybrain.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -19,16 +19,26 @@ import com.example.spybrain.presentation.settings.SettingsScreen
 import com.example.spybrain.presentation.stats.StatsScreen
 import com.example.spybrain.presentation.splash.SplashScreen
 import com.example.spybrain.presentation.achievements.AchievementsScreen
+import com.example.spybrain.presentation.home.HomeScreen
+import com.example.spybrain.presentation.components.SmartWelcomeScreen
 
 /**
- * @param navController РљРѕРЅС‚СЂРѕР»Р»РµСЂ РЅР°РІРёРіР°С†РёРё.
+ * @param navController Контроллер навигации.
  */
 @Composable
 fun NavGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = Screen.Meditation.route) {
+    NavHost(navController, startDestination = Screen.Splash.route) {
 
         composable(Screen.Splash.route) {
             SplashScreen(navController)
+        }
+
+        composable(Screen.Onboarding.route) {
+            SmartWelcomeScreen(navController = navController)
+        }
+
+        composable(Screen.Home.route) {
+            HomeScreen(navController)
         }
 
         composable(Screen.Meditation.route) {
@@ -78,7 +88,7 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Screen.Achievements.route) {
-            // TODO: Р”РѕР±Р°РІРёС‚СЊ СЌРєСЂР°РЅ РґРѕСЃС‚РёР¶РµРЅРёР№
+            // TODO: Добавить экран достижений
             AchievementsScreen()
         }
     }

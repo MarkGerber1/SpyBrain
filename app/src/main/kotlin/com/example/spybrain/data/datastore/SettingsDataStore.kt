@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.data.datastore
+package com.example.spybrain.data.datastore
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -35,6 +35,11 @@ class SettingsDataStore @Inject constructor(
         val VOICE_ID = stringPreferencesKey("voice_id")
         val MOTIVATIONAL_POINTS = intPreferencesKey("motivational_points")
         val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
+        // New onboarding and identity keys
+        val ONBOARDED = booleanPreferencesKey("onboarded")
+        val USER_NAME = stringPreferencesKey("user_name")
+        val USER_AGE = intPreferencesKey("user_age")
+        val USER_GENDER = stringPreferencesKey("user_gender")
     }
 
     /**
@@ -100,100 +105,99 @@ class SettingsDataStore @Inject constructor(
         preferences[PreferencesKey.VIBRATION_ENABLED] ?: true
     }
 
-    /**
-     * Установить тему приложения.
-     * @param theme Тема.
-     */
+    // Onboarding and identity flows
+    val onboardedFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.ONBOARDED] ?: false
+    }
+    val userNameFlow: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.USER_NAME] ?: ""
+    }
+    val userAgeFlow: Flow<Int?> = dataStore.data.map { preferences ->
+        if (preferences.contains(PreferencesKey.USER_AGE)) preferences[PreferencesKey.USER_AGE] else null
+    }
+    val userGenderFlow: Flow<String?> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.USER_GENDER]
+    }
+
     suspend fun setTheme(theme: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.THEME] = theme
         }
     }
 
-    /**
-     * Включить/выключить ambient-режим.
-     * @param enabled Включенно.
-     */
     suspend fun setAmbientEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.AMBIENT_ENABLED] = enabled
         }
     }
 
-    /**
-     * Установить трек ambient-музыки.
-     * @param track Трек.
-     */
     suspend fun setAmbientTrack(trackId: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.AMBIENT_TRACK] = trackId
         }
     }
 
-    /**
-     * Включить/выключить heartbeat.
-     * @param enabled Включенно.
-     */
     suspend fun setHeartbeatEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.HEARTBEAT_ENABLED] = enabled
         }
     }
 
-    /**
-     * Включить/выключить голосовой помощник.
-     * @param enabled Включенно.
-     */
     suspend fun setVoiceEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.VOICE_ENABLED] = enabled
         }
     }
 
-    /**
-     * Включить/выключить голосовые подсказки.
-     * @param enabled Включенно.
-     */
     suspend fun setVoiceHintsEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.VOICE_HINTS_ENABLED] = enabled
         }
     }
 
-    /**
-     * Установить ID голоса.
-     * @param voiceId ID голоса.
-     */
     suspend fun setVoiceId(voiceId: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.VOICE_ID] = voiceId
         }
     }
 
-    /**
-     * Установить мотивационные очки.
-     * @param points Количество очков.
-     */
     suspend fun setMotivationalPoints(points: Int) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.MOTIVATIONAL_POINTS] = points
         }
     }
 
-    /**
-     * Включить/выключить вибратор.
-     * @param enabled Включенно.
-     */
     suspend fun setVibrationEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.VIBRATION_ENABLED] = enabled
         }
     }
 
-    /**
-     * Получить трек ambient-музыки.
-     * @return Flow с треком.
-     */
+    // Onboarding and identity setters
+    suspend fun setOnboarded(onboarded: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.ONBOARDED] = onboarded
+        }
+    }
+
+    suspend fun setUserName(name: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.USER_NAME] = name
+        }
+    }
+
+    suspend fun setUserAge(age: Int?) {
+        dataStore.edit { preferences ->
+            if (age != null) preferences[PreferencesKey.USER_AGE] = age else preferences.remove(PreferencesKey.USER_AGE)
+        }
+    }
+
+    suspend fun setUserGender(gender: String?) {
+        dataStore.edit { preferences ->
+            if (gender != null) preferences[PreferencesKey.USER_GENDER] = gender else preferences.remove(PreferencesKey.USER_GENDER)
+        }
+    }
+
     fun getAmbientTrack(): String = runBlocking {
         var trackValue = ""
         dataStore.data.map { preferences ->
@@ -204,10 +208,6 @@ class SettingsDataStore @Inject constructor(
         return@runBlocking trackValue
     }
 
-    /**
-     * Получить состояние ambient-режима.
-     * @return Flow с состоянием.
-     */
     fun getAmbientEnabled(): Boolean = runBlocking {
         var enabledValue = false
         dataStore.data.map { preferences ->
@@ -218,10 +218,6 @@ class SettingsDataStore @Inject constructor(
         return@runBlocking enabledValue
     }
 
-    /**
-     * Получить мотивационные очки.
-     * @return Flow с очками.
-     */
     fun getMotivationalPoints(): Int = runBlocking {
         var pointsValue = 0
         dataStore.data.map { preferences ->
@@ -232,10 +228,6 @@ class SettingsDataStore @Inject constructor(
         return@runBlocking pointsValue
     }
 
-    /**
-     * Получить состояние вибратора.
-     * @return Flow с состоянием.
-     */
     fun getVibrationEnabled(): Boolean = runBlocking {
         var vibrationValue = true
         dataStore.data.map { preferences ->
@@ -244,19 +236,5 @@ class SettingsDataStore @Inject constructor(
             vibrationValue = it
         }
         return@runBlocking vibrationValue
-    }
-
-    /**
-     * Получить ID голоса.
-     * @return Flow с ID.
-     */
-    fun getVoiceId(): String = runBlocking {
-        var voiceIdValue = ""
-        dataStore.data.map { preferences ->
-            preferences[PreferencesKey.VOICE_ID] ?: ""
-        }.collect {
-            voiceIdValue = it
-        }
-        return@runBlocking voiceIdValue
     }
 }

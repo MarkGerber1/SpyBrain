@@ -47,9 +47,9 @@ import androidx.compose.material3.CardDefaults
 import java.util.Calendar
 
 /**
- * РџРµСЂСЃРѕРЅР°Р»СЊРЅРѕРµ РїСЂРёРІРµС‚СЃС‚РІРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
- * @param userName РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
- * @param modifier РњРѕРґРёС„РёРєР°С‚РѕСЂ Compose.
+ * Персональное приветствие пользователя.
+ * @param userName Имя пользователя.
+ * @param modifier Модификатор Compose.
  */
 @Composable
 fun personalGreeting(
@@ -59,7 +59,7 @@ fun personalGreeting(
     var currentSlogan by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-    // Р“РµРЅРµСЂРёСЂСўРЅРі РїСЂРё РїРµСЂРІРѕРј СЂРµРЅРґРµСЂРµ
+    // Генеринг при первом рендере
     LaunchedEffect(Unit) {
         currentSlogan = motivationalQuote(context)
     }
@@ -70,7 +70,7 @@ fun personalGreeting(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // РџСЂРёРІРµС‚СЃС‚РІРёРµ РїРѕ РІСЂРµРјРµРЅРё СЃСўРѕРє
+        // Приветствие по времени суток
         val greeting = getTimeBasedGreeting(LocalContext.current)
         val displayName = if (userName.isNotEmpty()) userName else stringResource(R.string.default_user_name)
 
@@ -86,7 +86,7 @@ fun personalGreeting(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // AI-Р»РѕР·СўРЅРі
+        // AI-лозунг
         AnimatedVisibility(
             visible = currentSlogan.isNotEmpty(),
             enter = fadeIn(),
@@ -115,9 +115,9 @@ fun personalGreeting(
 }
 
 /**
- * РџРѕР»СўС‡РёС‚СЊ РїСЂРёРІРµС‚СЃС‚РІРёРµ РїРѕ РІСЂРµРјРµРЅРё СЃСўРѕРє.
- * @param context РљРѕРЅС‚РµРєСЃС‚.
- * @return РџСЂРёРІРµС‚СЃС‚РІРёРµ.
+ * Получить приветствие по времени суток.
+ * @param context Контекст.
+ * @return Приветствие.
  */
 private fun getTimeBasedGreeting(context: Context): String {
     val calendar = Calendar.getInstance()
@@ -133,9 +133,9 @@ private fun getTimeBasedGreeting(context: Context): String {
 }
 
 /**
- * РЎРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РјРѕС‚РёРІР°С†РёРѕРЅРЅС‹Р№ СЃР»РѕРіР°РЅ.
- * @param context РљРѕРЅС‚РµРєСЃС‚.
- * @return РЎР»СўС‡Р°Р№РЅС‹Р№ СЃР»РѕРіР°РЅ.
+ * Сгенерировать мотивационный слоган.
+ * @param context Контекст.
+ * @return Случайный слоган.
  */
 private fun motivationalQuote(context: Context): String {
     val slogans = listOf(
@@ -165,7 +165,7 @@ private fun motivationalQuote(context: Context): String {
 }
 
 /**
- * РџСЂРёРІРµС‚СЃС‚РІРёРµ РїРѕ РІСЂРµРјРµРЅРё СЃСўРѕРє.
+ * Приветствие по времени суток.
  */
 @Composable
 fun timeBasedGreeting() {

@@ -161,6 +161,7 @@
     <string name="bottom_nav_stats">Статистика</string>
     <string name="bottom_nav_settings">Настройки</string>
     <string name="bottom_nav_heart_rate">Пульс</string>
+    <string name="bottom_nav_home">Домой</string>
 
     <!-- Meditation Screen -->
     <string name="meditation_error_loading">Ошибка загрузки медитаций</string>
@@ -506,9 +507,13 @@
     <string name="toast_voice_off">Голос выключен</string>
     <string name="toast_track_not_selected">Трек не выбран</string>
     <string name="toast_ambient_on">Фоновая музыка включена</string>
-    <string name="toast_ambient_error">Ошибка запуска музыки: %1$s</string>
+    <string name="toast_ambient_error">Ошибка фоновой музыки: %1$s</string>
+    <string name="toast_profile_saved">Профиль сохранен</string>
 
     <string name="meditation">Медитация</string>
     <string name="profile">Профиль</string>
+    <string name="name">Имя</string>
+    <string name="age">Возраст</string>
+    <string name="gender">Пол</string>
 
 </resources> 

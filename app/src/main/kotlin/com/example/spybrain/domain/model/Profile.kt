@@ -1,15 +1,17 @@
-﻿package com.example.spybrain.domain.model
+package com.example.spybrain.domain.model
 
 import java.util.Date
 
 /**
- * РџСЂРѕС„РёР»СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
- * @property userId РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
- * @property name РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
- * @property email Email РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
- * @property joinDate Р”Р°С‚Р° СЂРµРіРёСЃС‚СЂР°С†РёРё.
- * @property streakDays РљРѕР»РёС‡РµСЃС‚РІРѕ РґРЅРµР№ РІ СЃРµСЂРёРё.
- * @property avatarUrl URL Р°РІР°С‚Р°СЂР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+ * Профиль пользователя.
+ * @property userId Идентификатор пользователя.
+ * @property name Имя пользователя.
+ * @property email Email пользователя.
+ * @property joinDate Дата регистрации.
+ * @property streakDays Количество дней в серии.
+ * @property avatarUrl URL аватара пользователя.
+ * @property age Возраст пользователя (необязательно).
+ * @property gender Пол пользователя (необязательно): "male", "female", "other".
  */
 data class Profile(
     val userId: String,
@@ -17,5 +19,7 @@ data class Profile(
     val email: String, // Consider if email is needed/handled elsewhere
     val joinDate: Date,
     val streakDays: Int = 0,
-    val avatarUrl: String? = null
+    val avatarUrl: String? = null,
+    val age: Int? = null,
+    val gender: String? = null
 )

@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.di
+package com.example.spybrain.di
 
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -36,7 +36,7 @@ object StorageModule {
             AppDatabase::class.java,
             "spybrain.db"
         )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, com.example.spybrain.data.storage.MIGRATION_4_5)
         .build()
 
     /**

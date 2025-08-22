@@ -52,36 +52,68 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.size
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.example.spybrain.data.datastore.SettingsDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.TextFieldDefaults
 
 /**
- * Р­РЅСЂР°РЅ СўРјРЅРѕРіРѕ РїСЂРёРІРµС‚СЃС‚РІРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
- * @param isOffline РџСЂРёР·РЅР°Рє РѕС„С„Р»Р°Р№РЅ-СЂРµР¶РёРјР°.
- * @param onQuickAction Callback РґР»СЏ Р±С‹СЃС‚СЂС‹С… РґРµР№СЃС‚РІРёР№.
+ * Экран умного приветствия пользователя.
+ * @param isOffline Признак оффлайн-режима.
+ * @param onQuickAction Callback для быстрых действий.
  */
 @Composable
 fun SmartWelcomeScreen(
     isOffline: Boolean = false,
-    onQuickAction: (String) -> Unit = {}
+    onQuickAction: (String) -> Unit = {},
+    navController: NavHostController? = null
 ) {
-    // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє РёРЅС‚РµСЂРЅРµС‚Сў
     val context = LocalContext.current
+    val settings = remember { SettingsDataStore(context) }
+    val onboarded by settings.onboardedFlow.collectAsState(initial = false)
+
+    if (!onboarded) {
+        OnboardingForm(
+            onSubmit = { name, age, gender ->
+                // Save and mark onboarded
+                LaunchedEffect(name, age, gender) {
+                    settings.setUserName(name)
+                    settings.setUserAge(age)
+                    settings.setUserGender(gender)
+                    settings.setOnboarded(true)
+                    // Navigate to home
+                    navController?.navigate(com.example.spybrain.presentation.navigation.Screen.Home.route) {
+                        popUpTo(0)
+                    }
+                }
+            }
+        )
+        return
+    }
+
     var isNetworkAvailable by remember { mutableStateOf(!isOffline) }
 
-    // РџРµСЂРёРѕРґРёС‡РµСЃРєРё РїСЂРѕРІРµСЂСЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ СЃРµС‚Рё
     LaunchedEffect(Unit) {
         while (true) {
             isNetworkAvailable = isNetworkConnected(context)
-            delay(5000) // РџСЂРѕРІРµСЂРєР° РєР°Р¶РґС‹Рµ 5 СЃРµРєСўРґ
+            delay(5000)
         }
     }
 
-    // РћРїСЂРµРґРµР»СЏРµРј РІСЂРµРјСЏ СЃСўС‚РѕРє
     val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
     val (greeting, bgRes) = when (hour) {
-        in 5..11 -> "Р”РѕР±СЂРѕРµ СўС‚СЂРѕ!" to com.example.spybrain.R.drawable.bg_water
-        in 12..17 -> "Р”РѕР±С‹Р№ РґРµРЅСЊ!" to com.example.spybrain.R.drawable.bg_nature
-        in 18..22 -> "Р”РѕР±С‹Р№ РІРµС‡РµСЂ!" to com.example.spybrain.R.drawable.bg_space
-        else -> "Р”РѕР±СЂРѕР№ РЅРѕС‡Рё!" to com.example.spybrain.R.drawable.bg_air
+        in 5..11 -> "Доброе утро!" to com.example.spybrain.R.drawable.bg_water
+        in 12..17 -> "Добрый день!" to com.example.spybrain.R.drawable.bg_nature
+        in 18..22 -> "Добрый вечер!" to com.example.spybrain.R.drawable.bg_space
+        else -> "Доброй ночи!" to com.example.spybrain.R.drawable.bg_air
     }
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -100,27 +132,24 @@ fun SmartWelcomeScreen(
             Text(greeting, style = MaterialTheme.typography.headlineLarge, color = Color.White)
             Spacer(modifier = Modifier.height(24.dp))
             if (!isNetworkAvailable) {
-                Text("РќРµС‚ СЃРѕРµРґРёРЅРёСЏ СЃ СЃРµС‚СЊСЋ", color = Color.Red)
+                Text("Нет соединения с сетью", color = Color.Red)
             } else {
-                // Р‘С‹СЃС‚СЂС‹Рµ РґРµР№СЃС‚РІРёСЏ
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Button(onClick = { onQuickAction("breathing") }) { Text("Р‘С‹СЃС‚СЂРѕРµ РґС‹С…РЅРёРµ") }
-                    Button(onClick = { onQuickAction("meditation") }) { Text("Р‘С‹СЃС‚СЂР°СЏ РјРµРґРёС‚РёСЏ") }
+                    Button(onClick = { onQuickAction("breathing") }) { Text("Быстрое дыхание") }
+                    Button(onClick = { onQuickAction("meditation") }) { Text("Быстрая медитация") }
                 }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
-            // РђРЅРёРјРёСЂРѕРІР°РЅРЅС‹Р№ РєСЂСўРіРѕРІРѕР№ РёРЅРґРёРєР°С‚РѕСЂ (РЅР°РїСЂРёРјРµСЂ, TTS)
             var progress by remember { mutableStateOf(0f) }
 
-            // РђРЅРёРјРёСЂСўРµРј РїСЂРѕРіСЂРµСЃСЃ
             LaunchedEffect(Unit) {
                 while(true) {
                     for (i in 0..100) {
                         progress = i / 100f
                         delay(50)
                     }
-                    delay(1000) // Р—Р°РґРµСЂР¶РєР° РїРµСЂРµРґ РїРµСЂРµР·Р°РїСўСЃРѕРј Р°РЅРёРјР°С‚РёСЏ
+                    delay(1000)
                 }
             }
 
@@ -134,10 +163,66 @@ fun SmartWelcomeScreen(
     }
 }
 
+@Composable
+private fun OnboardingForm(
+    onSubmit: (name: String, age: Int?, gender: String?) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var ageText by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+    var gender by remember { mutableStateOf<String?>(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Добро пожаловать!", style = MaterialTheme.typography.headlineMedium)
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Имя") },
+            singleLine = true
+        )
+        OutlinedTextField(
+            value = ageText,
+            onValueChange = { ageText = it.filter { ch -> ch.isDigit() }.take(3) },
+            label = { Text("Возраст") },
+            singleLine = true
+        )
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = gender ?: "Пол",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Пол") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(text = { Text("Мужской") }, onClick = { gender = "male"; expanded = false })
+                DropdownMenuItem(text = { Text("Женский") }, onClick = { gender = "female"; expanded = false })
+                DropdownMenuItem(text = { Text("Другое") }, onClick = { gender = "other"; expanded = false })
+            }
+        }
+        Button(
+            onClick = { onSubmit(name.trim(), ageText.toIntOrNull(), gender) },
+            enabled = name.trim().isNotEmpty()
+        ) { Text("Продолжить") }
+    }
+}
+
 /**
- * РџСЂРѕРІРµСЂСЏРµС‚ РЅР°Р»РёС‡РёРµ РёРЅС‚РµСЂРЅРµС‚-СЃРѕРµРґРёРЅРёСЏ.
- * @param context РљРѕРЅС‚РµРєСЃС‚.
- * @return true, РµСЃР»Рё РµСЃС‚СЊ РёРЅС‚РµСЂРЅРµС‚.
+ * Проверяет наличие интернет-соединения.
+ * @param context Контекст.
+ * @return true, если есть интернет.
  */
 fun isNetworkConnected(context: Context): Boolean {
     val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

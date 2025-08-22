@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.navigation
+package com.example.spybrain.presentation.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timeline
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -24,12 +25,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.spybrain.R
 
 /**
- * @param navController РљРѕРЅС‚СЂРѕР»Р»РµСЂ РЅР°РІРёРіР°С†РёРё.
+ * @param navController Контроллер навигации.
  */
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     // Создаём фиксированный список элементов навигации для гарантированного отображения
     val items = listOf(
+        Triple(Screen.Home.route, Icons.Default.Home, R.string.bottom_nav_home),
         Triple(Screen.Meditation.route, Icons.Default.SelfImprovement, R.string.bottom_nav_meditation),
         Triple(Screen.Breathing.route, Icons.Default.Air, R.string.bottom_nav_breathing),
         Triple(Screen.Stats.route, Icons.Default.Timeline, R.string.bottom_nav_stats),

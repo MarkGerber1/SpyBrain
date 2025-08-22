@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.settings
+package com.example.spybrain.presentation.settings
 
 import com.example.spybrain.presentation.base.UiState
 import com.example.spybrain.presentation.base.UiEvent
@@ -23,7 +23,11 @@ object SettingsContract {
         val voiceId: String = "",
         val currentLanguage: String = "ru",
         val isLoading: Boolean = false,
-        val error: String? = null
+        val error: String? = null,
+        // Profile fields
+        val userName: String = "",
+        val userAge: String = "",
+        val userGender: String = ""
     ) : UiState
 
     /**
@@ -56,6 +60,11 @@ object SettingsContract {
         /**
          */
         data class LanguageChanged(val language: String) : Event()
+        // Profile edits
+        data class UserNameChanged(val name: String) : Event()
+        data class UserAgeChanged(val age: String) : Event()
+        data class UserGenderChanged(val gender: String) : Event()
+        object SaveProfile : Event()
     }
 
     /**

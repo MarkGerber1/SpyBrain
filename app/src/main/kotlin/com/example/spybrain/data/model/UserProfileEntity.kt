@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.data.model
+package com.example.spybrain.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -6,36 +6,42 @@ import com.example.spybrain.domain.model.Profile
 import java.util.Date
 
 /**
- * РЎСѓС‰РЅРѕСЃС‚СЊ РїСЂРѕС„РёР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С….
- * @property id РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃСѓС‰РЅРѕСЃС‚Рё.
- * @property userId РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
- * @property name РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
- * @property email Email РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
- * @property joinDate Р”Р°С‚Р° РїСЂРёСЃРѕРµРґРёРЅРµРЅРёСЏ.
- * @property streakDays РљРѕР»РёС‡РµСЃС‚РІРѕ РґРЅРµР№ РїРѕРґСЂСЏРґ.
- * @property avatarUrl URL Р°РІР°С‚Р°СЂР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+ * Сущность профиля пользователя для хранения в базе данных.
+ * @property id Идентификатор сущности.
+ * @property userId Идентификатор пользователя.
+ * @property name Имя пользователя.
+ * @property email Email пользователя.
+ * @property joinDate Дата присоединения.
+ * @property streakDays Количество дней подряд.
+ * @property avatarUrl URL аватара пользователя.
+ * @property age Возраст пользователя (nullable).
+ * @property gender Пол пользователя (nullable): "male", "female", "other".
  */
 @Entity(tableName = "user_profile")
 data class UserProfileEntity(
-    /** РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃСѓС‰РЅРѕСЃС‚Рё. */
+    /** Идентификатор сущности. */
     @PrimaryKey val id: Int = 0,
-    /** РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ. */
+    /** Идентификатор пользователя. */
     val userId: String,
-    /** РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ. */
+    /** Имя пользователя. */
     val name: String,
-    /** Email РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ. */
+    /** Email пользователя. */
     val email: String,
-    /** Р”Р°С‚Р° РїСЂРёСЃРѕРµРґРёРЅРµРЅРёСЏ. */
+    /** Дата присоединения. */
     val joinDate: Long,
-    /** РљРѕР»РёС‡РµСЃС‚РІРѕ РґРЅРµР№ РїРѕРґСЂСЏРґ. */
+    /** Количество дней подряд. */
     val streakDays: Int,
-    /** URL Р°РІР°С‚Р°СЂР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ. */
-    val avatarUrl: String?
+    /** URL аватара пользователя. */
+    val avatarUrl: String?,
+    /** Возраст пользователя. */
+    val age: Int?,
+    /** Пол пользователя. */
+    val gender: String?
 )
 
 /**
- * РџСЂРµРѕР±СЂР°Р·СѓРµС‚ UserProfileEntity РІ РґРѕРјРµРЅРЅСѓСЋ РјРѕРґРµР»СЊ Profile.
- * @return Р”РѕРјРµРЅРЅР°СЏ РјРѕРґРµР»СЊ Profile.
+ * Преобразует UserProfileEntity в доменную модель Profile.
+ * @return Доменная модель Profile.
  */
 fun UserProfileEntity.toDomain(): Profile = Profile(
     userId = userId,
@@ -43,12 +49,14 @@ fun UserProfileEntity.toDomain(): Profile = Profile(
     email = email,
     joinDate = Date(joinDate),
     streakDays = streakDays,
-    avatarUrl = avatarUrl
+    avatarUrl = avatarUrl,
+    age = age,
+    gender = gender
 )
 
 /**
- * РџСЂРµРѕР±СЂР°Р·СѓРµС‚ Profile РІ UserProfileEntity.
- * @return РЎСѓС‰РЅРѕСЃС‚СЊ Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+ * Преобразует Profile в UserProfileEntity.
+ * @return Сущность базы данных.
  */
 fun Profile.toEntity(): UserProfileEntity = UserProfileEntity(
     id = 0,
@@ -57,5 +65,7 @@ fun Profile.toEntity(): UserProfileEntity = UserProfileEntity(
     email = email,
     joinDate = joinDate.time,
     streakDays = streakDays,
-    avatarUrl = avatarUrl
+    avatarUrl = avatarUrl,
+    age = age,
+    gender = gender
 )

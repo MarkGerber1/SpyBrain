@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation
+package com.example.spybrain.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -12,8 +12,8 @@ import com.example.spybrain.presentation.navigation.BottomNavigationBar
 import com.example.spybrain.presentation.navigation.NavGraph
 
 /**
- * Р“Р»Р°РІРЅС‹Р№ СЌРєСЂР°РЅ РїСЂРёР»РѕР¶РµРЅРёСЏ СЃ РЅР°РІРёРіР°С†РёРµР№.
- * @param navController РљРѕРЅС‚СЂРѕР»Р»РµСЂ РЅР°РІРёРіР°С†РёРё.
+ * Главный экран приложения с навигацией.
+ * @param navController Контроллер навигации.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,7 +26,7 @@ fun mainScreen(
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            // РџРѕРєР°Р·С‹РІР°РµРј NavGraph РЅР°РїСЂСЏРјСѓСЋ, Р±РµР· welcome screen
+            // Показываем NavGraph напрямую, без welcome screen
             NavGraph(navController = navController)
         }
     }
@@ -34,7 +34,7 @@ fun mainScreen(
 
 @Composable
 fun MainScreen() {
-    // TODO: Реализовать основной экран
+    mainScreen()
 }
 
 // Если компонента нет, добавить:

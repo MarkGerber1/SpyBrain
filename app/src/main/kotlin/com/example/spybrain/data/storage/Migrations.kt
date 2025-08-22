@@ -1,10 +1,10 @@
-﻿package com.example.spybrain.data.storage
+package com.example.spybrain.data.storage
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
- * РњРёРіСЂР°С†РёСЏ Р±Р°Р·С‹ РґР°РЅРЅС‹С… СЃ РІРµСЂСЃРёРё 1 РЅР° 2. Р”РѕР±Р°РІР»СЏРµС‚ С‚Р°Р±Р»РёС†С‹ custom_breathing_patterns Рё user_profile.
+ * Миграция базы данных с версии 1 на 2. Добавляет таблицы custom_breathing_patterns и user_profile.
  */
 val MIGRATION_1_2 = object : Migration(1, 2) {
     /**
@@ -41,12 +41,12 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 }
 
 /**
- * РњРёРіСЂР°С†РёСЏ Р±Р°Р·С‹ РґР°РЅРЅС‹С… СЃ РІРµСЂСЃРёРё 2 РЅР° 3. Р”РѕР±Р°РІР»СЏРµС‚ С‚Р°Р±Р»РёС†Сѓ achievements.
+ * Миграция базы данных с версии 2 на 3. Добавляет таблицу achievements.
  */
 val MIGRATION_2_3 = object : Migration(2, 3) {
     /**
-     * Р’С‹РїРѕР»РЅСЏРµС‚ РјРёРіСЂР°С†РёСЋ СЃ РІРµСЂСЃРёРё 2 РЅР° 3, СЃРѕР·РґР°РІР°СЏ С‚Р°Р±Р»РёС†Сѓ РґРѕСЃС‚РёР¶РµРЅРёР№.
-     * @param database Р­РєР·РµРјРїР»СЏСЂ Р±Р°Р·С‹ РґР°РЅРЅС‹С… РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ SQL-РєРѕРјР°РЅРґ.
+     * Выполняет миграцию с версии 2 на 3, создавая таблицу достижений.
+     * @param database Экземпляр базы данных для выполнения SQL-команд.
      */
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL("""
@@ -62,12 +62,12 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 }
 
 /**
- * РњРёРіСЂР°С†РёСЏ Р±Р°Р·С‹ РґР°РЅРЅС‹С… СЃ РІРµСЂСЃРёРё 3 РЅР° 4. Р”РѕР±Р°РІР»СЏРµС‚ С‚Р°Р±Р»РёС†Сѓ heart_rate_measurements.
+ * Миграция базы данных с версии 3 на 4. Добавляет таблицу heart_rate_measurements.
  */
 val MIGRATION_3_4 = object : Migration(3, 4) {
     /**
-     * Р’С‹РїРѕР»РЅСЏРµС‚ РјРёРіСЂР°С†РёСЋ СЃ РІРµСЂСЃРёРё 3 РЅР° 4, СЃРѕР·РґР°РІР°СЏ С‚Р°Р±Р»РёС†Сѓ РёР·РјРµСЂРµРЅРёР№ РїСѓР»СЊСЃР°.
-     * @param database Р­РєР·РµРјРїР»СЏСЂ Р±Р°Р·С‹ РґР°РЅРЅС‹С… РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ SQL-РєРѕРјР°РЅРґ.
+     * Выполняет миграцию с версии 3 на 4, создавая таблицу измерений пульса.
+     * @param database Экземпляр базы данных для выполнения SQL-команд.
      */
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL("""
@@ -77,5 +77,16 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
                 `timestamp` TEXT NOT NULL
             )
         """.trimIndent())
+    }
+}
+
+/**
+ * Миграция базы данных с версии 4 на 5. Добавляет поля age и gender в user_profile.
+ */
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Добавляем новые nullable-столбцы, чтобы не нарушить существующие данные
+        database.execSQL("ALTER TABLE `user_profile` ADD COLUMN `age` INTEGER")
+        database.execSQL("ALTER TABLE `user_profile` ADD COLUMN `gender` TEXT")
     }
 }

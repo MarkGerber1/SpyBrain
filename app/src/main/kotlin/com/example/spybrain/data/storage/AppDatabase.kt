@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.data.storage
+package com.example.spybrain.data.storage
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -27,7 +27,7 @@ import com.example.spybrain.data.storage.dao.HeartRateDao
         AchievementEntity::class,
         HeartRateMeasurement::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false // FIXME: Установить в true и указать exportSchema = true для экспорта схемы и корректной работы миграций. Необходимо исправить.
 )
 @TypeConverters(Converters::class)

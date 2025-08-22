@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.settings
+package com.example.spybrain.presentation.settings
 
 import android.content.Context
 import android.content.Intent
@@ -43,17 +43,28 @@ class SettingsViewModel @Inject constructor(
     override fun createInitialState(): SettingsContract.State = SettingsContract.State()
 
     init {
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РїРѕС‚РѕРє С‚РµРјС‹
+        // Подписываемся на поток темы
         settingsDataStore.themeFlow
             .onEach { setState { copy(theme = it) } }
             .launchIn(viewModelScope)
 
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РІРєР»СЋС‡РµРЅРёРµ С„РѕРЅРѕРІРѕР№ РјСѓР·С‹РєРё
+        // Имя/возраст/пол
+        settingsDataStore.userNameFlow
+            .onEach { setState { copy(userName = it) } }
+            .launchIn(viewModelScope)
+        settingsDataStore.userAgeFlow
+            .onEach { setState { copy(userAge = it?.toString() ?: "") } }
+            .launchIn(viewModelScope)
+        settingsDataStore.userGenderFlow
+            .onEach { setState { copy(userGender = it ?: "") } }
+            .launchIn(viewModelScope)
+
+        // Подписываемся на включение фоновой музыки
         settingsDataStore.ambientEnabledFlow
             .onEach { enabled ->
                 setState { copy(ambientEnabled = enabled) }
 
-                // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё Р·Р°РїСѓСЃРєР°РµРј РјСѓР·С‹РєСѓ РїСЂРё РІРєР»СЋС‡РµРЅРёРё
+                // Автоматически запускаем музыку при включении
                 if (enabled) {
                     settingsDataStore.ambientTrackFlow.map { track ->
                         handleAmbientMusicChange(true, track)
@@ -64,12 +75,12 @@ class SettingsViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
 
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РІС‹Р±РѕСЂ С‚СЂРµРєР°
+        // Подписываемся на выбор трека
         settingsDataStore.ambientTrackFlow
             .onEach { track ->
                 setState { copy(ambientTrack = track) }
 
-                // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё РїРµСЂРµРєР»СЋС‡Р°РµРј С‚СЂРµРє РµСЃР»Рё РјСѓР·С‹РєР° РІРєР»СЋС‡РµРЅР°
+                // Автоматически переключаем трек если музыка включена
                 settingsDataStore.ambientEnabledFlow.map { enabled ->
                     if (enabled) {
                         handleAmbientMusicChange(true, track)
@@ -78,27 +89,26 @@ class SettingsViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
 
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РІРёР·СѓР°Р»РёР·Р°С†РёСЋ СЃРµСЂРґС†Р°
+        // Подписка на визуализацию сердца
         settingsDataStore.heartbeatEnabledFlow
             .onEach { setState { copy(heartbeatEnabled = it) } }
             .launchIn(viewModelScope)
 
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РіРѕР»РѕСЃРѕРІС‹Рµ РїРѕРґСЃРєР°Р·РєРё
+        // Подписка на голосовые подсказки
         settingsDataStore.voiceEnabledFlow
             .onEach { setState { copy(voiceEnabled = it) } }
             .launchIn(viewModelScope)
 
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РіРѕР»РѕСЃРѕРІС‹Рµ РїРѕРґСЃРєР°Р·РєРё (РЅРѕРІРѕРµ РїРѕР»Рµ)
         settingsDataStore.voiceHintsEnabledFlow
             .onEach { setState { copy(voiceHintsEnabled = it) } }
             .launchIn(viewModelScope)
 
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РІРёР±СЂР°С†РёСЋ
+        // Подписка на вибрацию
         settingsDataStore.vibrationEnabledFlow
             .onEach { setState { copy(vibrationEnabled = it) } }
             .launchIn(viewModelScope)
 
-        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РґРѕСЃС‚СѓРїРЅС‹Рµ С‚СЂРµРєРё РјРµРґРёС‚Р°С†РёРё
+        // Подписка на доступные треки медитации
         getMeditationsUseCase()
             .map { meditations -> meditations.map { it.id to it.title } }
             .onEach { setState { copy(availableTracks = it) } }
@@ -108,7 +118,7 @@ class SettingsViewModel @Inject constructor(
             .onEach { setState { copy(voiceId = it) } }
             .launchIn(viewModelScope)
 
-        // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё Р·Р°РїСѓСЃРєР°РµРј С„РѕРЅРѕРІСѓСЋ РјСѓР·С‹РєСѓ РїСЂРё СЃС‚Р°СЂС‚Рµ РїСЂРёР»РѕР¶РµРЅРёСЏ (РµСЃР»Рё РІРєР»СЋС‡РµРЅР°)
+        // Автоматически запускаем фоновую музыку при старте приложения (если включена)
         viewModelScope.launch {
             val isEnabled = settingsDataStore.getAmbientEnabled()
             val track = settingsDataStore.getAmbientTrack()
@@ -191,7 +201,7 @@ class SettingsViewModel @Inject constructor(
                 viewModelScope.launch {
                     settingsDataStore.setVibrationEnabled(event.enabled)
                     if (event.enabled) {
-                        // РўРµСЃС‚РёСЂСѓРµРј РІРёР±СЂР°С†РёСЋ
+                        // Тестируем вибрацию
                         testVibration()
                     }
                     setEffect {
@@ -218,10 +228,23 @@ class SettingsViewModel @Inject constructor(
                     }
                 }
             }
+            is SettingsContract.Event.UserNameChanged -> setState { copy(userName = event.name) }
+            is SettingsContract.Event.UserAgeChanged -> setState { copy(userAge = event.age.filter { it.isDigit() }.take(3)) }
+            is SettingsContract.Event.UserGenderChanged -> setState { copy(userGender = event.gender) }
+            SettingsContract.Event.SaveProfile -> {
+                viewModelScope.launch {
+                    val name = uiState.value.userName.trim()
+                    val age = uiState.value.userAge.trim().toIntOrNull()
+                    val gender = uiState.value.userGender.trim().ifEmpty { null }
+                    if (name.isNotEmpty()) settingsDataStore.setUserName(name)
+                    settingsDataStore.setUserAge(age)
+                    settingsDataStore.setUserGender(gender)
+                    setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_profile_saved)) }
+                }
+            }
         }
     }
 
-    // РћР±СЂР°Р±РѕС‚РєР° РёР·РјРµРЅРµРЅРёР№ РЅР°СЃС‚СЂРѕРµРє С„РѕРЅРѕРІРѕР№ РјСѓР·С‹РєРё
     private fun handleAmbientMusicChange(enabled: Boolean, trackId: String) {
         if (enabled && trackId.isNotEmpty()) {
             playAmbientMusic(trackId)
@@ -230,23 +253,19 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    // Р—Р°РїСѓСЃРє СЃРµСЂРІРёСЃР° РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ С„РѕРЅРѕРІРѕР№ РјСѓР·С‹РєРё
     private fun playAmbientMusic(trackId: String) {
         try {
-            // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ trackId РЅРµ РїСѓСЃС‚РѕР№
             if (trackId.isEmpty()) {
                 setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_track_not_selected)) }
                 return
             }
 
-            // РСЃРїРѕР»СЊР·СѓРµРј СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ Р°СѓРґРёРѕС„Р°Р№Р»С‹ РёР· РїР°РїРєРё raw
             val audioUrl = when (trackId) {
                 "nature" -> "android.resource://${context.packageName}/raw/mixkit_spirit_in_the_woods_139"
                 "water" -> "android.resource://${context.packageName}/raw/mixkit_chillax_655"
                 "space" -> "android.resource://${context.packageName}/raw/mixkit_staring_at_the_night_sky_168"
                 "air" -> "android.resource://${context.packageName}/raw/mixkit_valley_sunset_127"
                 else -> {
-                    // Р•СЃР»Рё С‚СЂРµРє РЅРµ РЅР°Р№РґРµРЅ, РёСЃРїРѕР»СЊР·СѓРµРј РґРµС„РѕР»С‚РЅС‹Р№
                     "android.resource://${context.packageName}/raw/mixkit_relaxation_05_749"
                 }
             }
@@ -263,7 +282,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    // РћСЃС‚Р°РЅРѕРІРєР° РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ С„РѕРЅРѕРІРѕР№ РјСѓР·С‹РєРё
     private fun stopAmbientMusic() {
         val intent = Intent(context, BackgroundMusicService::class.java).apply {
             action = BackgroundMusicService.ACTION_STOP
@@ -271,7 +289,6 @@ class SettingsViewModel @Inject constructor(
         context.startService(intent)
     }
 
-    // РўРµСЃС‚РёСЂРѕРІР°РЅРёРµ РІРёР±СЂР°С†РёРё
     private fun testVibration() {
         vibrator?.let { v ->
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
