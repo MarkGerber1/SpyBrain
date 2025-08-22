@@ -1,3 +1,5 @@
+package com.example.spybrain.presentation.breathing
+
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.runtime.Composable
@@ -16,6 +18,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,7 +63,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import com.example.spybrain.util.VibrationUtil
 import androidx.compose.ui.res.stringResource
 import com.example.spybrain.R
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.animation.animateContentSize
 
 /**
