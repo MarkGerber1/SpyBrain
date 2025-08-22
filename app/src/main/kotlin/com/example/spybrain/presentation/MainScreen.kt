@@ -68,20 +68,12 @@ import androidx.compose.material3.MaterialTheme
 fun MainScreen(
     navController: NavHostController = rememberNavController()
 ) {
-    // Автозапуск фоновой музыки при входе
+    // Убираем автозапуск фоновой музыки
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val settings by settingsViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(settings.ambientEnabled, settings.ambientTrack) {
-        // Больше не автозапускаем музыку. Только гарантируем стоп, если выключено.
-        if (!settings.ambientEnabled || settings.ambientTrack.isEmpty()) {
-            runCatching {
-                val intent = Intent(context, AmbientMusicService::class.java).apply { action = AmbientMusicService.ACTION_STOP }
-                context.startService(intent)
-            }
-        }
-    }
+    // Фоновая музыка теперь запускается только по явному действию пользователя
 
     val themePack = ThemePacks.themePackFor(settings.theme)
     val name = settings.userName.ifBlank { "друг" }

@@ -216,14 +216,6 @@ fun DynamicBackground(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        backgroundData.gradientStart.copy(alpha = backgroundAlpha),
-                        backgroundData.gradientEnd.copy(alpha = backgroundAlpha)
-                    )
-                )
-            )
     ) {
         // Lottie-анимация (если есть подходящий JSON в raw), иначе fallback на изображение
         val context = LocalContext.current
@@ -297,25 +289,7 @@ fun DynamicBackground(
             )
         }
 
-        // РџСЂРёРІРµС‚СЃС‚РІРёРµ СЃ Р°РЅРёРјР°С†РёРµР№
-        AnimatedVisibility(
-            visible = true,
-            enter = fadeIn() + slideInVertically(),
-            modifier = Modifier.animateContentSize()
-        ) {
-            Text(
-                text = greeting,
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp
-                ),
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 64.dp)
-            )
-        }
+        // Приветствие убрано - теперь отображается только в MainScreen
 
         // РћСЃРЅРѕРІРЅРѕР№ РєРѕРЅС‚РµРЅС‚
         content()
