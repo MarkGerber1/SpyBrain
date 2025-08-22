@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Alignment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.ui.Alignment
@@ -64,6 +63,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Экран умного приветствия пользователя.
@@ -78,18 +79,17 @@ fun SmartWelcomeScreen(
 ) {
     val context = LocalContext.current
     val settings = remember { SettingsDataStore(context) }
+    val scope = rememberCoroutineScope()
     val onboarded by settings.onboardedFlow.collectAsState(initial = false)
 
     if (!onboarded) {
         OnboardingForm(
             onSubmit = { name, age, gender ->
-                // Save and mark onboarded
-                LaunchedEffect(name, age, gender) {
+                scope.launch {
                     settings.setUserName(name)
                     settings.setUserAge(age)
                     settings.setUserGender(gender)
                     settings.setOnboarded(true)
-                    // Navigate to home
                     navController?.navigate(com.example.spybrain.presentation.navigation.Screen.Home.route) {
                         popUpTo(0)
                     }

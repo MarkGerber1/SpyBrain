@@ -58,19 +58,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import com.example.spybrain.util.VibrationUtil
 import androidx.compose.ui.res.stringResource
 import com.example.spybrain.R
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.spybrain.presentation.breathing.BreathingContract
-import com.example.spybrain.presentation.breathing.BreathingViewModel
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.animation.animateContentSize
 
 /**
@@ -271,10 +259,12 @@ fun breathingItem(
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = pattern.description,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            pattern.description?.let { desc ->
+                Text(
+                    text = desc,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
 
             // Р’РёР·СѓР°Р»РёР·Р°С†РёСЏ СЃС…РµРјС‹ РґС‹С…Р°РЅРёСЏ

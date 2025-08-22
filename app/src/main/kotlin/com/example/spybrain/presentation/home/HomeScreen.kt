@@ -30,13 +30,14 @@ import com.example.spybrain.presentation.components.personalGreeting
 import com.example.spybrain.presentation.navigation.Screen
 import kotlinx.coroutines.delay
 import kotlin.random.Random
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun HomeScreen(
     navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val uiState = viewModel.uiState
+    val state by viewModel.uiState.collectAsState()
 
     DynamicBackground(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -46,7 +47,7 @@ fun HomeScreen(
                     .padding(horizontal = 16.dp, vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                personalGreeting(userName = uiState.userName)
+                personalGreeting(userName = state.userName)
 
                 // Neural tabs area
                 NeuralTabs(
@@ -62,7 +63,7 @@ fun HomeScreen(
                     )
                 ) {
                     Text(
-                        text = uiState.welcomeText,
+                        text = state.welcomeText,
                         modifier = Modifier.padding(16.dp),
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
                     )

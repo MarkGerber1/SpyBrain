@@ -6,8 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.spybrain.R
-import com.example.spybrain.presentation.breathing.BreathingScreen
+import com.example.spybrain.presentation.breathing.breathingScreen
 import com.example.spybrain.presentation.breathing.patternbuilder.BreathingPatternBuilderScreen
 import com.example.spybrain.presentation.breathing.patternbuilder.EditCustomBreathingPatternScreen
 import com.example.spybrain.presentation.biosync.BioSyncScreen
@@ -46,7 +45,7 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Screen.Breathing.route) {
-            BreathingScreen(navController)
+            breathingScreen(navController)
         }
 
         composable(Screen.Stats.route) {
@@ -88,7 +87,6 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Screen.Achievements.route) {
-            // TODO: Добавить экран достижений
             AchievementsScreen()
         }
     }
