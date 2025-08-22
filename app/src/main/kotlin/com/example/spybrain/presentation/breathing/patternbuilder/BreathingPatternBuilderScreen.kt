@@ -176,7 +176,7 @@ fun breathingPatternBuilderScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Build,
+                                imageVector = Icons.Default.Add,
                                 contentDescription = null,
                                 modifier = Modifier.size(48.dp),
                                 tint = MaterialTheme.colorScheme.primary

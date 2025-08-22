@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.meditation
+package com.example.spybrain.presentation.meditation
 
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.domain.model.Meditation
@@ -320,22 +320,22 @@ class MeditationViewModel @Inject constructor(
 
         try {
             // РџСЂРѕРІРµСЂСЏРµРј URL РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ
-            if (meditation.audioUrl.isBlank()) {
+            if (meditation.audioUrl?.isBlank() == true) {
                 setEffect { MeditationContract.Effect.ShowError(UiError.Custom("URL Р°СѓРґРёРѕ РѕС‚СЃСўСЃС‚РІСўРµС‚")) }
                 return
             }
 
             // РќРѕСЂРјР°Р»РёР·СѓРµРј URL РґР»СЏ РјРµРґРёС‚Р°С†РёР№
             val audioUrl = when {
-                meditation.audioUrl.contains("example.com") -> "asset:///audio/mixkit-valley-sunset-127.mp3"
-                meditation.audioUrl.startsWith("http://") ||
-                meditation.audioUrl.startsWith("https://") -> meditation.audioUrl
-                meditation.audioUrl.startsWith("asset:///") -> meditation.audioUrl
+                meditation.audioUrl?.contains("example.com") == true -> "asset:///audio/mixkit-valley-sunset-127.mp3"
+                meditation.audioUrl?.startsWith("http://") == true ||
+                meditation.audioUrl?.startsWith("https://") == true -> meditation.audioUrl ?: ""
+                meditation.audioUrl?.startsWith("asset:///") == true -> meditation.audioUrl ?: ""
                 else -> {
-                    val assetPath = if (meditation.audioUrl.startsWith("audio/")) {
-                        meditation.audioUrl
+                    val assetPath = if (meditation.audioUrl?.startsWith("audio/") == true) {
+                        meditation.audioUrl ?: ""
                     } else {
-                        "audio/${meditation.audioUrl}"
+                        "audio/${meditation.audioUrl ?: ""}"
                     }
                     "asset:///$assetPath"
                 }
@@ -352,7 +352,7 @@ class MeditationViewModel @Inject constructor(
 
                     // AI РЅР°СЃС‚Р°РІРЅРёРє: РІСЃС‚СѓРїРёС‚РµР»СЊРЅС‹Р№ СЃРѕРІРµС‚
                     try {
-                        aiMentor.giveMeditationAdvice()
+                        aiMentor.giveMeditationAdvice("guest")
                     } catch (e: Exception) {
                         Timber.w(e, "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЃРѕРІРµС‚Р° РѕС‚ AI РЅР°СЃС‚Р°РІРЅРёРєР°")
                         // РќРµ РїСЂРµСЂС‹РІР°РµРј РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ РёР·-Р·Р° РѕС€РёР±РєРё AI
@@ -372,7 +372,7 @@ class MeditationViewModel @Inject constructor(
                                 delay(60000L)
                                 if (isActive) {
                                     try {
-                                        aiMentor.giveMeditationAdvice()
+                                        aiMentor.giveMeditationAdvice("guest")
                                     } catch (e: Exception) {
                                         Timber.w(e, "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё РїРµСЂРёРѕРґРёС‡РµСЃРєРѕРіРѕ СЃРѕРІРµС‚Р°")
                                         // РџСЂРѕРґРѕР»Р¶Р°РµРј С†РёРєР»

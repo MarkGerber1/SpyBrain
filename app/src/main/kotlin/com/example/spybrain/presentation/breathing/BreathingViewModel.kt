@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.breathing
+package com.example.spybrain.presentation.breathing
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
@@ -151,7 +151,7 @@ class BreathingViewModel @Inject constructor(
             // Р“РѕР»РѕСЃРѕРІРѕРµ СЃРѕРїСЂРѕРІРѕР¶РґРµРЅРёРµ СЃС‚Р°СЂС‚Р°
             if (voiceAssistant.isReady()) {
                 voiceAssistant.speakStart()
-                voiceAssistant.speakBreathingPrompt(pattern.voicePrompt)
+                voiceAssistant.speakBreathingPrompt(pattern.voicePrompt ?: "")
             } else {
                 setEffect { BreathingContract.Effect.Speak(context.getString(R.string.breathing_start_inhale)) }
             }
@@ -213,7 +213,7 @@ class BreathingViewModel @Inject constructor(
 
                 // РњРѕС‚РёРІР°С†РёСЏ РєР°Р¶РґС‹Рµ 3 С†РёРєР»Р°
                 if (currentCycle % 3 == 0 && voiceAssistant.isReady()) {
-                    voiceAssistant.speakMotivation()
+                    voiceAssistant.speakMotivation("Отличная работа! Продолжайте в том же духе.")
                 }
             }
 

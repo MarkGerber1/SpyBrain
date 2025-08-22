@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.navigation
+package com.example.spybrain.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -7,18 +7,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.spybrain.R
-import com.example.spybrain.presentation.breathing.BreathingScreen
-import com.example.spybrain.presentation.breathing.patternbuilder.BreathingPatternBuilderScreen
-import com.example.spybrain.presentation.breathing.patternbuilder.EditCustomBreathingPatternScreen
-import com.example.spybrain.presentation.biosync.BioSyncScreen
-import com.example.spybrain.presentation.meditation.MeditationLibraryScreen
+import com.example.spybrain.presentation.breathing.breathingScreen
+import com.example.spybrain.presentation.breathing.patternbuilder.breathingPatternBuilderScreen
+import com.example.spybrain.presentation.breathing.patternbuilder.editCustomBreathingPatternScreen
+import com.example.spybrain.presentation.biosync.bioSyncScreen
+import com.example.spybrain.presentation.meditation.meditationLibraryScreen
 import com.example.spybrain.presentation.meditation.MeditationScreen
 import com.example.spybrain.presentation.profile.ProfileScreen
 import com.example.spybrain.presentation.reminders.HeartRateScreen
 import com.example.spybrain.presentation.settings.SettingsScreen
 import com.example.spybrain.presentation.stats.StatsScreen
 import com.example.spybrain.presentation.splash.SplashScreen
-import com.example.spybrain.presentation.achievements.AchievementsScreen
+import com.example.spybrain.presentation.achievements.achievementsScreen
 
 /**
  * @param navController РљРѕРЅС‚СЂРѕР»Р»РµСЂ РЅР°РІРёРіР°С†РёРё.
@@ -36,7 +36,7 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Screen.Breathing.route) {
-            BreathingScreen(navController)
+            breathingScreen(navController)
         }
 
         composable(Screen.Stats.route) {
@@ -52,18 +52,18 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Screen.MeditationLibrary.route) {
-            MeditationLibraryScreen()
+            meditationLibraryScreen()
         }
 
         composable(Screen.PatternBuilder.route) {
-            BreathingPatternBuilderScreen(navController)
+            breathingPatternBuilderScreen(navController, onBackPressed = { navController.popBackStack() })
         }
 
         composable(
             route = "${Screen.EditCustomPattern.route}/{patternId}",
             arguments = listOf(navArgument("patternId") { type = NavType.StringType })
         ) { backStackEntry ->
-            EditCustomBreathingPatternScreen(
+            editCustomBreathingPatternScreen(
                 navController = navController,
                 patternId = backStackEntry.arguments?.getString("patternId") ?: ""
             )
@@ -74,12 +74,12 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Screen.BioSync.route) {
-            BioSyncScreen()
+            bioSyncScreen()
         }
 
         composable(Screen.Achievements.route) {
-            // TODO: Р”РѕР±Р°РІРёС‚СЊ СЌРєСЂР°РЅ РґРѕСЃС‚РёР¶РµРЅРёР№
-            AchievementsScreen()
+            // TODO: Р"РѕР±Р°РІРёС‚СЊ СЌРєСЂР°РЅ РґРѕСЃС‚РёР¶РµРЅРёР№
+            achievementsScreen()
         }
     }
 }

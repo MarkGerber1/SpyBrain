@@ -1,39 +1,26 @@
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.collectAsState
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Card
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Slider
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Alignment
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+package com.example.spybrain.presentation.meditation
+
+import android.content.Intent
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.*
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,49 +41,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.spybrain.R
+import com.example.spybrain.data.repository.MeditationRepositoryImpl.MeditationTrack
 import com.example.spybrain.domain.model.Meditation
 import com.example.spybrain.presentation.settings.SettingsViewModel
 import com.example.spybrain.service.BackgroundMusicService
 import com.example.spybrain.service.VoiceAssistantService
 import kotlinx.coroutines.delay
-import android.widget.Toast
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import com.example.spybrain.data.repository.MeditationRepositoryImpl.MeditationTrack
 import timber.log.Timber
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.foundation.layout.heightIn
-import com.example.spybrain.presentation.meditation.MeditationViewModel
-import com.example.spybrain.presentation.meditation.MeditationContract
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.material.icons.filled.*
-import android.content.Intent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -383,7 +334,7 @@ fun MeditationList(
                             Text(text = meditation.title, style = MaterialTheme.typography.titleMedium)
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                text = meditation.description,
+                                text = meditation.description ?: "",
                                 style = MaterialTheme.typography.bodyMedium,
                                 maxLines = 2
                             )
@@ -398,7 +349,7 @@ fun MeditationList(
                                     style = MaterialTheme.typography.bodySmall
                                 )
                                 Text(
-                                    text = meditation.category,
+                                    text = meditation.category ?: "",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -473,7 +424,7 @@ fun MeditationPlayerUI(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = meditation.description,
+                        text = meditation.description ?: "",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.8f),
                         textAlign = TextAlign.Center,
@@ -565,7 +516,7 @@ fun MeditationPlayerUI(
 fun MeditationCircle(isPlaying: Boolean) {
     // РђРЅРёРјР°С†РёСЏ РїСѓР»СЊСЃР°С†РёРё
     val infiniteTransition = rememberInfiniteTransition(label = "pulseTransition")
-    val animationValue by infiniteTransition.animateFloatAsState(
+    val animationValue by infiniteTransition.animateFloat(
         initialValue = 0.7f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
@@ -801,7 +752,7 @@ fun MeditationTrackItem(
                 if (isPlaying) {
                     // РђРЅРёРјРёСЂРѕРІР°РЅРЅР°СЏ РёРєРѕРЅРєР° РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ
                     val infiniteTransition = rememberInfiniteTransition(label = "playing_animation")
-                    val scale by infiniteTransition.animateFloatAsState(
+                    val scale by infiniteTransition.animateFloat(
                         initialValue = 0.8f,
                         targetValue = 1.2f,
                         animationSpec = infiniteRepeatable(
