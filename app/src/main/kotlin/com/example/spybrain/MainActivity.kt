@@ -28,11 +28,25 @@ import com.example.spybrain.presentation.navigation.Screen
 class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
-        // Не глушим ambient на уход в фон, чтобы музыка могла играть в фоне.
+        // Останавливаем музыку при уходе из приложения
         try {
             val appCtx = applicationContext
             val entryPoints = dagger.hilt.android.EntryPointAccessors.fromApplication(appCtx, com.example.spybrain.di.AppEntryPoints::class.java)
-            runCatching { entryPoints.playerService().pause() }
+            runCatching { 
+                entryPoints.playerService().stop()
+            }
+        } catch (_: Exception) { }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        // Гарантированно останавливаем все сервисы при закрытии приложения
+        try {
+            val appCtx = applicationContext
+            val entryPoints = dagger.hilt.android.EntryPointAccessors.fromApplication(appCtx, com.example.spybrain.di.AppEntryPoints::class.java)
+            runCatching { 
+                entryPoints.playerService().stop()
+            }
         } catch (_: Exception) { }
     }
     override fun onCreate(savedInstanceState: Bundle?) {

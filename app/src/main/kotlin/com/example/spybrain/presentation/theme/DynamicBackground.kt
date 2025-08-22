@@ -264,14 +264,30 @@ fun DynamicBackground(
             LottieCompositionSpec.RawRes(R.raw.lottie_ocean)
         )
         
-        // Всегда показываем Lottie анимацию
-        LottieAnimation(
-            composition = comp,
-            iterations = LottieConstants.IterateForever,
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(0.8f)
-        )
+        // Показываем Lottie анимацию с fallback
+        if (comp != null) {
+            LottieAnimation(
+                composition = comp,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.7f)
+            )
+        } else {
+            // Fallback на градиент, если Lottie не загрузился
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFF87CEEB), // Светло-голубой
+                                Color(0xFF4682B4)  // Стальной синий
+                            )
+                        )
+                    )
+            )
+        }
 
         // Приветствие убрано - теперь отображается только в MainScreen
 

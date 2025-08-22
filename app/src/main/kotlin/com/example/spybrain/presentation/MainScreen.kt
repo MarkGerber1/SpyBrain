@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.background
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -109,16 +110,30 @@ fun MainScreen(
                 ) {
                     Text(
                         text = greeting,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = Color.White,
-                        textAlign = TextAlign.Center
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                        ),
+                        color = Color.Black,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .background(
+                                Color.White.copy(alpha = 0.8f),
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = quotes.random(),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = Color.White.copy(alpha = 0.9f),
-                        textAlign = TextAlign.Center
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .background(
+                                Color.White.copy(alpha = 0.8f),
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
 
