@@ -36,28 +36,14 @@ fun SplashScreen(navController: NavHostController) {
         }
 
         // Стартуем приветственную анимацию/звук/вибрацию
-        // Проверяем настройки пользователя: запускать музыку только если включено в настройках
+        // Убираем автозапуск музыки - музыка теперь запускается только по действию пользователя
         runCatching {
             val entryPoints = dagger.hilt.android.EntryPointAccessors.fromApplication(context.applicationContext, com.example.spybrain.di.AppEntryPoints::class.java)
-            val settings = entryPoints.settingsDataStore()
-            if (settings.getAmbientEnabled() && settings.getAmbientTrack().isNotEmpty()) {
-                val playIntent = Intent(context, AmbientMusicService::class.java).apply {
-                    action = AmbientMusicService.ACTION_PLAY
-                    putExtra(AmbientMusicService.EXTRA_TRACK_ID, settings.getAmbientTrack())
-                }
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    context.startForegroundService(playIntent)
-                } else {
-                    context.startService(playIntent)
-                }
+            // Всегда останавливаем музыку при запуске приложения
+            val stopIntent = Intent(context, AmbientMusicService::class.java).apply {
+                action = AmbientMusicService.ACTION_STOP
             }
-            // Если ambient выключен — убедимся, что сервис остановлен
-            if (!settings.getAmbientEnabled()) {
-                val stopIntent = Intent(context, AmbientMusicService::class.java).apply {
-                    action = AmbientMusicService.ACTION_STOP
-                }
-                context.startService(stopIntent)
-            }
+            context.startService(stopIntent)
         }
         runCatching { VibrationUtil.shortVibration(context) }
         // Больше не озвучиваем интро на сплэше, только музыка и вибрация
