@@ -133,10 +133,10 @@ fun MainScreen(
                         icon = Icons.Filled.Star,
                         label = context.getString(com.example.spybrain.R.string.meditations),
                         onClick = { navController.navigate(Screen.Meditation.route) },
-                        sizeDp = 110,
+                        sizeDp = 140,
                         modifier = Modifier
                             .align(Alignment.TopStart)
-                            .offset(x = 32.dp, y = 40.dp)
+                            .offset(x = 40.dp, y = 60.dp)
                     )
                     
                     // Верхний правый узел
@@ -144,10 +144,10 @@ fun MainScreen(
                         icon = Icons.Filled.Headphones,
                         label = context.getString(com.example.spybrain.R.string.meditation_guided_tab_title),
                         onClick = { navController.navigate(Screen.Meditation.route) },
-                        sizeDp = 130,
+                        sizeDp = 160,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .offset(x = (-32).dp, y = 60.dp)
+                            .offset(x = (-40).dp, y = 80.dp)
                     )
                     
                     // Нижний центральный узел
@@ -155,10 +155,10 @@ fun MainScreen(
                         icon = Icons.Filled.Air,
                         label = context.getString(com.example.spybrain.R.string.breathing_title),
                         onClick = { navController.navigate(Screen.Breathing.route) },
-                        sizeDp = 120,
+                        sizeDp = 150,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
-                            .offset(y = (-80).dp)
+                            .offset(y = (-100).dp)
                     )
                 }
 
@@ -183,18 +183,24 @@ private fun HomeNode(
             .size(sizeDp.dp)
             .clip(CircleShape)
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 androidx.compose.material3.Icon(
                     imageVector = icon,
                     contentDescription = label,
-                    tint = Color.White,
-                    modifier = Modifier.size((sizeDp * 0.4f).dp)
+                    tint = Color.Black,
+                    modifier = Modifier.size((sizeDp * 0.35f).dp)
                 )
-                Spacer(Modifier.height(6.dp))
-                Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.White, textAlign = TextAlign.Center)
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = label, 
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), 
+                    color = Color.Black, 
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
@@ -257,15 +263,15 @@ private fun SynapsesOverlay() {
         }
 
         // Рисуем пути
-        drawPath(path1, color = Color.White.copy(alpha = 0.3f), style = Stroke(width = 3f, cap = StrokeCap.Round))
-        drawPath(path2, color = Color.White.copy(alpha = 0.3f), style = Stroke(width = 3f, cap = StrokeCap.Round))
-        drawPath(path3, color = Color.White.copy(alpha = 0.3f), style = Stroke(width = 3f, cap = StrokeCap.Round))
+        drawPath(path1, color = Color.White.copy(alpha = 0.6f), style = Stroke(width = 4f, cap = StrokeCap.Round))
+        drawPath(path2, color = Color.White.copy(alpha = 0.6f), style = Stroke(width = 4f, cap = StrokeCap.Round))
+        drawPath(path3, color = Color.White.copy(alpha = 0.6f), style = Stroke(width = 4f, cap = StrokeCap.Round))
 
         // Импульсы по разным траекториям
         fun drawPulse(path: Path, phase: Float, color: Color) {
             val t = phase
             // Простая интерполяция для демонстрации
-            val pulseSize = 8f + kotlin.math.sin(phase * 6.28f) * 3f
+            val pulseSize = 12f + kotlin.math.sin(phase * 6.28f) * 5f
             
             // Рисуем импульс в разных точках пути
             val points = listOf(
@@ -283,9 +289,9 @@ private fun SynapsesOverlay() {
             drawCircle(color, radius = pulseSize, center = point)
         }
         
-        drawPulse(path1, phase1, Color.Cyan.copy(alpha = 0.9f))
-        drawPulse(path2, phase2, Color.Magenta.copy(alpha = 0.8f))
-        drawPulse(path3, phase3, Color.Yellow.copy(alpha = 0.7f))
+        drawPulse(path1, phase1, Color.Cyan.copy(alpha = 1.0f))
+        drawPulse(path2, phase2, Color.Magenta.copy(alpha = 1.0f))
+        drawPulse(path3, phase3, Color.Yellow.copy(alpha = 1.0f))
     }
 }
 

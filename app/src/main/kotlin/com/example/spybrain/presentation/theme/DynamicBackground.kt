@@ -259,35 +259,19 @@ fun DynamicBackground(
                 else -> context.resources.getIdentifier(lottieKey, "raw", context.packageName)
             }
         } else packResId
-        // Всегда пытаемся загрузить Lottie анимацию
+        // Принудительно загружаем Lottie анимацию
         val comp by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(resolvedResId)
+            LottieCompositionSpec.RawRes(R.raw.lottie_ocean)
         )
         
-        // Показываем Lottie анимацию, если она загрузилась
-        if (comp != null) {
-            LottieAnimation(
-                composition = comp,
-                iterations = LottieConstants.IterateForever,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.9f)
-            )
-        } else {
-            // Fallback на градиент, если Lottie не загрузился
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                backgroundData.gradientStart,
-                                backgroundData.gradientEnd
-                            )
-                        )
-                    )
-            )
-        }
+        // Всегда показываем Lottie анимацию
+        LottieAnimation(
+            composition = comp,
+            iterations = LottieConstants.IterateForever,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.8f)
+        )
 
         // Приветствие убрано - теперь отображается только в MainScreen
 
