@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.meditation
+package com.example.spybrain.presentation.meditation
 
 import androidx.lifecycle.viewModelScope
 import com.example.spybrain.domain.model.MeditationProgram
@@ -61,8 +61,9 @@ class MeditationLibraryViewModel @Inject constructor(
 
     fun playProgram(program: MeditationProgram) {
         playerService.stop()
-        playerService.play(program.audioUrl)
-        aiMentor.giveMeditationAdvice()
+        val url = program.audioUrl ?: "asset:///audio/meditation_music/meditation_angelic.mp3"
+        playerService.play(url)
+        aiMentor.giveMeditationAdvice("guest")
     }
 
     override fun onCleared() {

@@ -63,7 +63,7 @@ class StatsViewModel @Inject constructor(
         when (event) {
             StatsContract.Event.LoadStatsAndHistory -> loadStatsAndHistory()
             StatsContract.Event.RefreshStats -> loadStatsAndHistory()
-            StatsContract.Event.ShowMotivationalMessage -> showMotivationalMessage()
+            is StatsContract.Event.ShowMotivationalMessage -> setState { copy(motivationalMessage = event.message) }
         }
     }
 

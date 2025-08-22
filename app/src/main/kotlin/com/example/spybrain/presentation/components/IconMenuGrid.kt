@@ -34,11 +34,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedButton
 
 /**
  * @param icons РЎРїРёСЃРѕРє РёРєРѕРЅРѕРє.
@@ -48,7 +46,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
  * @param onSubClick Callback РїРѕРґРјРµРЅСЋ.
  * @param modifier РњРѕРґРёС„РёРєР°С‚РѕСЂ Compose.
  */
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun iconMenuGrid(
     icons: List<ImageVector>,
@@ -117,7 +115,6 @@ fun animatedMenuIcon(icon: ImageVector, label: String, onClick: () -> Unit) {
  * @param onSubClick Callback РЅР°Р¶Р°С‚РёСЏ РЅР° РїРѕРґРјРµРЅСЋ.
  * @param icon РРєРѕРЅРєР°.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun expandableMenu(
     title: String,
@@ -126,37 +123,36 @@ fun expandableMenu(
     icon: ImageVector
 ) {
     var expanded by remember { mutableStateOf(false) }
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+    OutlinedButton(
+        onClick = { expanded = !expanded }
     ) {
-        OutlinedButton(
-            onClick = { expanded = !expanded },
-            modifier = Modifier.menuAnchor()
-        ) {
-            Icon(icon, contentDescription = title, modifier = Modifier.size(24.dp))
-            Text(title, modifier = Modifier.padding(start = 8.dp))
-        }
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            subIcons.forEachIndexed { idx, (subIcon, subLabel) ->
-                DropdownMenuItem(
-                    text = { Text(subLabel) },
-                    leadingIcon = { Icon(subIcon, contentDescription = subLabel) },
-                    onClick = { onSubClick(idx); expanded = false }
-                )
-            }
+        Icon(icon, contentDescription = title, modifier = Modifier.size(24.dp))
+        Text(title, modifier = Modifier.padding(start = 8.dp))
+    }
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false }
+    ) {
+        subIcons.forEachIndexed { idx, (subIcon, subLabel) ->
+            DropdownMenuItem(
+                text = { Text(subLabel) },
+                leadingIcon = { Icon(subIcon, contentDescription = subLabel) },
+                onClick = { onSubClick(idx); expanded = false }
+            )
         }
     }
 }
 
 @Composable
 fun IconMenuGrid(
-    icons: List<Any> = emptyList(),
+    icons: List<ImageVector> = emptyList(),
     labels: List<String> = emptyList(),
     onClick: (Int) -> Unit = {}
 ) {
-    // TODO: Реализовать компонент меню
+    iconMenuGrid(
+        icons = icons,
+        labels = labels,
+        subMenus = null,
+        onClick = onClick
+    )
 }

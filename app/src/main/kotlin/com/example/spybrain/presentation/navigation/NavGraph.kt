@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.navigation
+package com.example.spybrain.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -7,9 +7,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.spybrain.R
-import com.example.spybrain.presentation.breathing.BreathingScreen
-import com.example.spybrain.presentation.breathing.patternbuilder.BreathingPatternBuilderScreen
-import com.example.spybrain.presentation.breathing.patternbuilder.EditCustomBreathingPatternScreen
+import com.example.spybrain.presentation.breathing.breathingScreen
+import com.example.spybrain.presentation.breathing.patternbuilder.breathingPatternBuilderScreen
+import com.example.spybrain.presentation.breathing.patternbuilder.editCustomBreathingPatternScreen
 import com.example.spybrain.presentation.biosync.BioSyncScreen
 import com.example.spybrain.presentation.meditation.MeditationLibraryScreen
 import com.example.spybrain.presentation.meditation.MeditationScreen
@@ -36,7 +36,7 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Screen.Breathing.route) {
-            BreathingScreen(navController)
+            breathingScreen(navController)
         }
 
         composable(Screen.Stats.route) {
@@ -56,14 +56,14 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Screen.PatternBuilder.route) {
-            BreathingPatternBuilderScreen(navController)
+            breathingPatternBuilderScreen(navController)
         }
 
         composable(
             route = "${Screen.EditCustomPattern.route}/{patternId}",
             arguments = listOf(navArgument("patternId") { type = NavType.StringType })
         ) { backStackEntry ->
-            EditCustomBreathingPatternScreen(
+            editCustomBreathingPatternScreen(
                 navController = navController,
                 patternId = backStackEntry.arguments?.getString("patternId") ?: ""
             )
