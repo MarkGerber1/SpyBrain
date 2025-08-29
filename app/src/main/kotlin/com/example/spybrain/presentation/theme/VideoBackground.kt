@@ -55,34 +55,39 @@ private fun RealVideoBackground(
 ) {
     val context = LocalContext.current
     
-    val exoPlayer = remember(videoResId) {
+    var exoPlayer by remember { mutableStateOf<ExoPlayer?>(null) }
+    
+    LaunchedEffect(videoResId) {
         try {
             Log.d("VideoBackground", "Creating ExoPlayer for videoResId: $videoResId")
-            ExoPlayer.Builder(context)
-                .build()
-                .apply {
-                    val uri = Uri.parse("android.resource://${context.packageName}/$videoResId")
-                    Log.d("VideoBackground", "Video URI: $uri")
-                    val mediaItem = MediaItem.fromUri(uri)
-                    setMediaItem(mediaItem)
-                    prepare()
-                    playWhenReady = true
-                    repeatMode = Player.REPEAT_MODE_ONE
-                    volume = 0f // Без звука
+            val player = ExoPlayer.Builder(context).build()
+            
+            val uri = Uri.parse("android.resource://${context.packageName}/$videoResId")
+            Log.d("VideoBackground", "Video URI: $uri")
+            val mediaItem = MediaItem.fromUri(uri)
+            
+            player.apply {
+                setMediaItem(mediaItem)
+                prepare()
+                playWhenReady = true
+                repeatMode = Player.REPEAT_MODE_ONE
+                volume = 0f // Без звука
+                
+                addListener(object : Player.Listener {
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        Log.d("VideoBackground", "Playback state: $playbackState")
+                    }
                     
-                    addListener(object : Player.Listener {
-                        override fun onPlaybackStateChanged(playbackState: Int) {
-                            Log.d("VideoBackground", "Playback state: $playbackState")
-                        }
-                        
-                        override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
-                            Log.e("VideoBackground", "Player error: ${error.message}", error)
-                        }
-                    })
-                }
+                    override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                        Log.e("VideoBackground", "Player error: ${error.message}", error)
+                    }
+                })
+            }
+            
+            exoPlayer = player
         } catch (e: Exception) {
             Log.e("VideoBackground", "Failed to create ExoPlayer", e)
-            null
+            exoPlayer = null
         }
     }
     
