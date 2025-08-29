@@ -69,6 +69,9 @@ class MainActivity : AppCompatActivity() {
     
     override fun onDestroy() {
         super.onDestroy()
+        // Освобождаем видео плеер для предотвращения утечек памяти
+        com.example.spybrain.presentation.theme.VideoPlayerManager.releasePlayer()
+        
         // Гарантированно останавливаем все сервисы при закрытии приложения
         try {
             val appCtx = applicationContext

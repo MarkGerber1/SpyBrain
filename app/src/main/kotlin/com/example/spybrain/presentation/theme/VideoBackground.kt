@@ -40,7 +40,7 @@ fun VideoBackground(
     if (videoResId != 0) {
         Log.d("VideoBackground", "Using real video for theme: $themeKey")
         // Используем реальное видео
-        RealVideoBackground(videoResId = videoResId, modifier = modifier)
+        RealVideoBackground(themeKey = themeKey, modifier = modifier)
     } else {
         Log.d("VideoBackground", "Using canvas animation for theme: $themeKey (no video resource)")
         // Fallback на улучшенные Canvas анимации
@@ -50,81 +50,59 @@ fun VideoBackground(
 
 @Composable
 private fun RealVideoBackground(
-    videoResId: Int,
+    themeKey: String,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     
-    var exoPlayer by remember { mutableStateOf<ExoPlayer?>(null) }
-    
-    LaunchedEffect(videoResId) {
-        try {
-            Log.d("VideoBackground", "Creating ExoPlayer for videoResId: $videoResId")
-            val player = ExoPlayer.Builder(context).build()
-            
-            val uri = Uri.parse("android.resource://${context.packageName}/$videoResId")
-            Log.d("VideoBackground", "Video URI: $uri")
-            val mediaItem = MediaItem.fromUri(uri)
-            
-            player.apply {
-                setMediaItem(mediaItem)
-                prepare()
-                playWhenReady = true
-                repeatMode = Player.REPEAT_MODE_ONE
-                volume = 0f // Без звука
-                
-                addListener(object : Player.Listener {
-                    override fun onPlaybackStateChanged(playbackState: Int) {
-                        Log.d("VideoBackground", "Playback state: $playbackState")
-                    }
-                    
-                    override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
-                        Log.e("VideoBackground", "Player error: ${error.message}", error)
-                    }
-                })
-            }
-            
-            exoPlayer = player
-        } catch (e: Exception) {
-            Log.e("VideoBackground", "Failed to create ExoPlayer", e)
-            exoPlayer = null
-        }
+    val exoPlayer = remember(themeKey) {
+        VideoPlayerManager.getPlayer(context, themeKey)
     }
     
-    DisposableEffect(exoPlayer) {
-        onDispose {
-            exoPlayer?.release()
-        }
+    val isVideoReady by remember {
+        derivedStateOf { VideoPlayerManager.isReady() }
     }
     
-    if (exoPlayer != null) {
-        AndroidView(
-            factory = { context ->
-                PlayerView(context).apply {
-                    player = exoPlayer
-                    useController = false
-                    hideController()
-                    controllerHideOnTouch = false
-                    controllerShowTimeoutMs = 0
-                    setShowBuffering(PlayerView.SHOW_BUFFERING_NEVER)
-                    // Растягиваем видео на весь экран
-                    resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                }
-            },
-            modifier = modifier.fillMaxSize()
-        )
-    } else {
-        // Fallback на Canvas анимации при ошибке создания плеера
-        Log.d("VideoBackground", "ExoPlayer is null, using Canvas fallback")
-        AnimatedBackground(
-            themeKey = when (videoResId) {
-                R.raw.video_water_loop -> "water"
-                R.raw.video_space_loop -> "space"
-                R.raw.video_nature_loop -> "nature"
-                else -> "water"
-            },
-            modifier = modifier
-        )
+    // Обновляем состояние готовности видео
+    LaunchedEffect(themeKey) {
+        Log.d("VideoBackground", "Initializing video for theme: $themeKey")
+    }
+    
+    when {
+        exoPlayer != null && isVideoReady -> {
+            Log.d("VideoBackground", "Showing video player")
+            AndroidView(
+                factory = { context ->
+                    PlayerView(context).apply {
+                        player = exoPlayer
+                        useController = false
+                        hideController()
+                        controllerHideOnTouch = false
+                        controllerShowTimeoutMs = 0
+                        setShowBuffering(PlayerView.SHOW_BUFFERING_NEVER)
+                        // Растягиваем видео на весь экран
+                        resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                    }
+                },
+                modifier = modifier.fillMaxSize()
+            )
+        }
+        exoPlayer != null -> {
+            // Видео загружается, показываем Canvas как placeholder
+            Log.d("VideoBackground", "Video loading, showing Canvas placeholder")
+            AnimatedBackground(
+                themeKey = themeKey,
+                modifier = modifier
+            )
+        }
+        else -> {
+            // Fallback на Canvas анимации при ошибке создания плеера
+            Log.d("VideoBackground", "ExoPlayer is null, using Canvas fallback")
+            AnimatedBackground(
+                themeKey = themeKey,
+                modifier = modifier
+            )
+        }
     }
 }
 
