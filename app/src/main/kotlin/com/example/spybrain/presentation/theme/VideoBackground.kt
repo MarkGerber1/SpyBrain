@@ -42,7 +42,7 @@ fun VideoBackground(
         // Используем реальное видео
         RealVideoBackground(videoResId = videoResId, modifier = modifier)
     } else {
-        Log.d("VideoBackground", "Using canvas animation for theme: $themeKey")
+        Log.d("VideoBackground", "Using canvas animation for theme: $themeKey (no video resource)")
         // Fallback на улучшенные Canvas анимации
         EnhancedAnimatedBackground(themeKey = themeKey, modifier = modifier)
     }

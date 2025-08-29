@@ -223,40 +223,38 @@ fun DynamicBackground(
         var useVideoBackgrounds by remember { mutableStateOf(false) }
         var useAnimatedBackgrounds by remember { mutableStateOf(true) }
         
-        // Реактивное обновление настроек через collectAsState
-        LaunchedEffect(Unit) {
-            try {
-                val ep = dagger.hilt.android.EntryPointAccessors.fromApplication(
-                    context.applicationContext, 
-                    com.example.spybrain.di.AppEntryPoints::class.java
-                )
-                
-                ep.settingsDataStore().videoBackgroundsEnabledFlow.collect { enabled ->
-                    useVideoBackgrounds = enabled
-                    Log.d("DynamicBackground", "Video backgrounds enabled: $enabled")
-                }
-            } catch (e: Exception) { 
-                Log.e("DynamicBackground", "Error getting video background settings", e)
-                useVideoBackgrounds = false
-            }
-        }
+        Log.d("DynamicBackground", "Initial state - Video: $useVideoBackgrounds, Animated: $useAnimatedBackgrounds")
         
-        LaunchedEffect(Unit) {
+        // Используем collectAsState вместо LaunchedEffect для избежания LeftCompositionCancellationException
+        val videoBackgroundsEnabled by remember {
             try {
                 val ep = dagger.hilt.android.EntryPointAccessors.fromApplication(
                     context.applicationContext, 
                     com.example.spybrain.di.AppEntryPoints::class.java
                 )
-                
-                ep.settingsDataStore().animatedBackgroundsEnabledFlow.collect { enabled ->
-                    useAnimatedBackgrounds = enabled
-                    Log.d("DynamicBackground", "Animated backgrounds enabled: $enabled")
-                }
-            } catch (e: Exception) { 
-                Log.e("DynamicBackground", "Error getting animated background settings", e)
-                useAnimatedBackgrounds = true
+                ep.settingsDataStore().videoBackgroundsEnabledFlow
+            } catch (e: Exception) {
+                Log.e("DynamicBackground", "Error accessing video background settings", e)
+                kotlinx.coroutines.flow.flowOf(false)
             }
-        }
+        }.collectAsState(initial = false)
+        
+        val animatedBackgroundsEnabled by remember {
+            try {
+                val ep = dagger.hilt.android.EntryPointAccessors.fromApplication(
+                    context.applicationContext, 
+                    com.example.spybrain.di.AppEntryPoints::class.java
+                )
+                ep.settingsDataStore().animatedBackgroundsEnabledFlow
+            } catch (e: Exception) {
+                Log.e("DynamicBackground", "Error accessing animated background settings", e)
+                kotlinx.coroutines.flow.flowOf(true)
+            }
+        }.collectAsState(initial = true)
+        
+        // Обновляем локальные состояния
+        useVideoBackgrounds = videoBackgroundsEnabled
+        useAnimatedBackgrounds = animatedBackgroundsEnabled
         
         // Выбираем тип фона с учетом темы
         val currentThemeKey = when (themePack.name.lowercase()) {
@@ -268,13 +266,28 @@ fun DynamicBackground(
         
         Log.d("DynamicBackground", "Theme: ${themePack.name}, Key: $currentThemeKey, Video: $useVideoBackgrounds, Animated: $useAnimatedBackgrounds")
         
-        when {
-            !useAnimatedBackgrounds -> {
-                // Статичный фон (градиент)
-                Log.d("DynamicBackground", "Rendering static gradient background")
+                when {
+            useVideoBackgrounds -> {
+                Log.d("DynamicBackground", "Rendering VideoOrCanvasBackground - Video enabled")
+                VideoOrCanvasBackground(
+                    themeKey = currentThemeKey,
+                    useVideo = true,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            useAnimatedBackgrounds -> {
+                Log.d("DynamicBackground", "Rendering AnimatedBackground - Animated enabled")
+                AnimatedBackground(
+                    themeKey = currentThemeKey,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            else -> {
+                // Статичный фон (градиент) - только если оба типа отключены
+                Log.d("DynamicBackground", "Rendering static gradient background - both disabled")
                 Box(
-                modifier = Modifier
-                    .fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
@@ -283,21 +296,6 @@ fun DynamicBackground(
                                 )
                             )
                         )
-                )
-            }
-            useVideoBackgrounds -> {
-                Log.d("DynamicBackground", "Rendering VideoOrCanvasBackground")
-                VideoOrCanvasBackground(
-                    themeKey = currentThemeKey,
-                    useVideo = true,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-            else -> {
-                Log.d("DynamicBackground", "Rendering AnimatedBackground")
-                AnimatedBackground(
-                    themeKey = currentThemeKey,
-                    modifier = Modifier.fillMaxSize()
                 )
             }
         }

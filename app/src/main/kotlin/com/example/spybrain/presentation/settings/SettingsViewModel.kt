@@ -299,27 +299,39 @@ class SettingsViewModel @Inject constructor(
             }
             is SettingsContract.Event.VideoBackgroundsToggled -> {
                 viewModelScope.launch {
-                    settingsDataStore.setVideoBackgroundsEnabled(event.enabled)
-                    setEffect {
-                        SettingsContract.Effect.ShowToast(
-                            if (event.enabled)
-                                "Включены видео-фоны"
-                            else
-                                "Включены Canvas-анимации"
-                        )
+                    if (event.enabled) {
+                        // Если включаем видео - отключаем живые фоны
+                        settingsDataStore.setVideoBackgroundsEnabled(true)
+                        settingsDataStore.setAnimatedBackgroundsEnabled(false)
+                        setEffect {
+                            SettingsContract.Effect.ShowToast("Включены видео-фоны (живые отключены)")
+                        }
+                    } else {
+                        // Если отключаем видео - включаем живые фоны
+                        settingsDataStore.setVideoBackgroundsEnabled(false) 
+                        settingsDataStore.setAnimatedBackgroundsEnabled(true)
+                        setEffect {
+                            SettingsContract.Effect.ShowToast("Включены живые фоны")
+                        }
                     }
                 }
             }
             is SettingsContract.Event.AnimatedBackgroundsToggled -> {
                 viewModelScope.launch {
-                    settingsDataStore.setAnimatedBackgroundsEnabled(event.enabled)
-                    setEffect {
-                        SettingsContract.Effect.ShowToast(
-                            if (event.enabled)
-                                "Включены живые фоны"
-                            else
-                                "Включены статичные фоны"
-                        )
+                    if (event.enabled) {
+                        // Если включаем живые - отключаем видео фоны
+                        settingsDataStore.setAnimatedBackgroundsEnabled(true)
+                        settingsDataStore.setVideoBackgroundsEnabled(false)
+                        setEffect {
+                            SettingsContract.Effect.ShowToast("Включены живые фоны (видео отключены)")
+                        }
+                    } else {
+                        // Если отключаем живые - используем статичные градиенты
+                        settingsDataStore.setAnimatedBackgroundsEnabled(false)
+                        // Видео остаются отключенными
+                        setEffect {
+                            SettingsContract.Effect.ShowToast("Включены статичные фоны")
+                        }
                     }
                 }
             }

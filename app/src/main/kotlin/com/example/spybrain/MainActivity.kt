@@ -90,12 +90,12 @@ class MainActivity : AppCompatActivity() {
                 com.example.spybrain.presentation.theme.LocalIconPack provides themePack.icons
             ) {
             SpyBrainTheme(themeKey = uiState.value.theme) {
-                // Оборачиваем все приложение в DynamicBackground для живых фонов на всех экранах
-                com.example.spybrain.presentation.theme.DynamicBackground {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = androidx.compose.ui.graphics.Color.Transparent
-                    ) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = androidx.compose.ui.graphics.Color.Transparent
+                ) {
+                    // Оборачиваем все приложение в DynamicBackground для живых фонов на всех экранах
+                    com.example.spybrain.presentation.theme.DynamicBackground {
                         val navController = androidx.navigation.compose.rememberNavController()
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentRoute = navBackStackEntry?.destination?.route
