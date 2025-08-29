@@ -43,6 +43,8 @@ class SettingsDataStore @Inject constructor(
         val USER_AGE = intPreferencesKey("user_age")
         val USER_GENDER = stringPreferencesKey("user_gender")
         val BACKGROUND_STYLE = stringPreferencesKey("background_style")
+        val VIDEO_BACKGROUNDS_ENABLED = booleanPreferencesKey("video_backgrounds_enabled")
+        val ANIMATED_BACKGROUNDS_ENABLED = booleanPreferencesKey("animated_backgrounds_enabled")
     }
 
     /**
@@ -56,14 +58,14 @@ class SettingsDataStore @Inject constructor(
      * Включен ли ambient-режим.
      */
     val ambientEnabledFlow: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[PreferencesKey.AMBIENT_ENABLED] ?: false
+        preferences[PreferencesKey.AMBIENT_ENABLED] ?: true // Включаем по умолчанию
     }
 
     /**
      * Трек ambient-музыки.
      */
     val ambientTrackFlow: Flow<String> = dataStore.data.map { preferences ->
-        preferences[PreferencesKey.AMBIENT_TRACK] ?: ""
+        preferences[PreferencesKey.AMBIENT_TRACK] ?: "mixkit_relaxation_05_749" // Трек по умолчанию
     }
 
     /**
@@ -152,6 +154,13 @@ class SettingsDataStore @Inject constructor(
      */
     val backgroundStyleFlow: Flow<String> = dataStore.data.map { preferences ->
         preferences[PreferencesKey.BACKGROUND_STYLE] ?: "auto"
+    }
+
+    /**
+     * Включены ли видео-фоны (true = видео, false = Canvas анимации).
+     */
+    val videoBackgroundsEnabledFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.VIDEO_BACKGROUNDS_ENABLED] ?: false
     }
 
     /**
@@ -295,7 +304,7 @@ class SettingsDataStore @Inject constructor(
      */
     fun getAmbientTrack(): String = runBlocking {
         val preferences = dataStore.data.first()
-        preferences[PreferencesKey.AMBIENT_TRACK] ?: ""
+        preferences[PreferencesKey.AMBIENT_TRACK] ?: "mixkit_relaxation_05_749" // Трек по умолчанию
     }
 
     /**
@@ -304,7 +313,7 @@ class SettingsDataStore @Inject constructor(
      */
     fun getAmbientEnabled(): Boolean = runBlocking {
         val preferences = dataStore.data.first()
-        preferences[PreferencesKey.AMBIENT_ENABLED] ?: false
+        preferences[PreferencesKey.AMBIENT_ENABLED] ?: true // Включаем по умолчанию
     }
 
     fun getAmbientVolume(): Float = runBlocking {
@@ -370,5 +379,44 @@ class SettingsDataStore @Inject constructor(
     fun getBackgroundStyle(): String = runBlocking {
         val preferences = dataStore.data.first()
         preferences[PreferencesKey.BACKGROUND_STYLE] ?: "auto"
+    }
+
+    /**
+     * Установить использование видео-фонов.
+     * @param enabled Включить видео-фоны (true) или Canvas анимации (false).
+     */
+    suspend fun setVideoBackgroundsEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.VIDEO_BACKGROUNDS_ENABLED] = enabled
+        }
+    }
+
+    fun getVideoBackgroundsEnabled(): Boolean = runBlocking {
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.VIDEO_BACKGROUNDS_ENABLED] ?: false
+    }
+
+    /**
+     * Поток включения анимированных фонов.
+     */
+    val animatedBackgroundsEnabledFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKey.ANIMATED_BACKGROUNDS_ENABLED] ?: true // Включены по умолчанию
+    }
+
+    /**
+     * Установить включение анимированных фонов.
+     */
+    suspend fun setAnimatedBackgroundsEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.ANIMATED_BACKGROUNDS_ENABLED] = enabled
+        }
+    }
+
+    /**
+     * Получить включение анимированных фонов.
+     */
+    fun getAnimatedBackgroundsEnabled(): Boolean = runBlocking {
+        val preferences = dataStore.data.first()
+        preferences[PreferencesKey.ANIMATED_BACKGROUNDS_ENABLED] ?: true // Включены по умолчанию
     }
 }

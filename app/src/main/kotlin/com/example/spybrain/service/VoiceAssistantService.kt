@@ -48,8 +48,20 @@ class VoiceAssistantService @Inject constructor(
     }
 
     private fun setupVoices() {
-        // Получаем доступные голоса из движка
-        val voices = ttsEngine.getVoices().filter { voice ->
+        try {
+            // Проверяем доступную память перед загрузкой голосов
+            val runtime = Runtime.getRuntime()
+            val maxMemory = runtime.maxMemory()
+            val usedMemory = runtime.totalMemory() - runtime.freeMemory()
+            val freeMemory = maxMemory - usedMemory
+            
+            if (freeMemory < 50 * 1024 * 1024) { // Менее 50МБ свободной памяти
+                Timber.w("Low memory ($freeMemory bytes), skipping voice setup")
+                return
+            }
+            
+            // Получаем доступные голоса из движка
+            val voices = ttsEngine.getVoices().filter { voice ->
                 // Р¤РёР»СЊС‚СЂСѓРµРј С‚РѕР»СЊРєРѕ РєР°С‡РµСЃС‚РІРµРЅРЅС‹Рµ РіРѕР»РѕСЃР°
                 voice.quality >= Voice.QUALITY_NORMAL &&
                 (voice.locale == Locale("ru", "RU") ||
@@ -66,7 +78,12 @@ class VoiceAssistantService @Inject constructor(
                 setVoice(voiceId)
             }
 
-        Timber.d("Available voices: ${availableVoices.size}")
+            Timber.d("Available voices: ${availableVoices.size}")
+        } catch (e: Exception) {
+            Timber.e(e, "Error setting up voices - memory issue or TTS failure")
+            // Очищаем голоса при ошибке
+            availableVoices.clear()
+        }
     }
 
     fun getAvailableVoices(): List<Voice> = availableVoices

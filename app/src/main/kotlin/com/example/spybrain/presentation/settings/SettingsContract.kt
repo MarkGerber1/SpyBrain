@@ -24,6 +24,8 @@ object SettingsContract {
         val userAge: Int = 0,
         val userGender: String = "other",
         val backgroundStyle: String = "auto",
+        val videoBackgroundsEnabled: Boolean = false,
+        val animatedBackgroundsEnabled: Boolean = true,
         val availableTracks: List<Pair<String, String>> = emptyList(),
         val voiceId: String = "",
         val voiceRate: Float = 0.85f,
@@ -70,6 +72,11 @@ object SettingsContract {
         data class UserAgeChanged(val age: Int) : Event()
         data class UserGenderChanged(val gender: String) : Event()
         data class BackgroundStyleChanged(val style: String) : Event()
+        /**
+         * Переключение видео-фонов.
+         */
+        data class VideoBackgroundsToggled(val enabled: Boolean) : Event()
+        data class AnimatedBackgroundsToggled(val enabled: Boolean) : Event()
     }
 
     /**

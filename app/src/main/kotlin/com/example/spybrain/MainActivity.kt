@@ -26,6 +26,35 @@ import com.example.spybrain.presentation.navigation.Screen
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    override fun onPause() {
+        super.onPause()
+        // Останавливаем ambient музыку при сворачивании приложения
+        try {
+            val intent = android.content.Intent(this, com.example.spybrain.service.AmbientMusicService::class.java).apply {
+                action = com.example.spybrain.service.AmbientMusicService.ACTION_STOP
+            }
+            startService(intent)
+        } catch (_: Exception) { }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Восстанавливаем ambient музыку при возврате в приложение (если была включена)
+        try {
+            val appCtx = applicationContext
+            val entryPoints = dagger.hilt.android.EntryPointAccessors.fromApplication(appCtx, com.example.spybrain.di.AppEntryPoints::class.java)
+            val dataStore = entryPoints.settingsDataStore()
+            if (dataStore.getAmbientEnabled()) {
+                val trackId = dataStore.getAmbientTrack()
+                val intent = android.content.Intent(this, com.example.spybrain.service.AmbientMusicService::class.java).apply {
+                    action = com.example.spybrain.service.AmbientMusicService.ACTION_PLAY
+                    putExtra(com.example.spybrain.service.AmbientMusicService.EXTRA_TRACK_ID, trackId)
+                }
+                startService(intent)
+            }
+        } catch (_: Exception) { }
+    }
+
     override fun onStop() {
         super.onStop()
         // Останавливаем музыку при уходе из приложения
@@ -61,26 +90,30 @@ class MainActivity : AppCompatActivity() {
                 com.example.spybrain.presentation.theme.LocalIconPack provides themePack.icons
             ) {
             SpyBrainTheme(themeKey = uiState.value.theme) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = androidx.navigation.compose.rememberNavController()
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentRoute = navBackStackEntry?.destination?.route
-                    val showBottomBar = currentRoute != com.example.spybrain.presentation.navigation.Screen.Splash.route
+                // Оборачиваем все приложение в DynamicBackground для живых фонов на всех экранах
+                com.example.spybrain.presentation.theme.DynamicBackground {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = androidx.compose.ui.graphics.Color.Transparent
+                    ) {
+                        val navController = androidx.navigation.compose.rememberNavController()
+                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+                        val currentRoute = navBackStackEntry?.destination?.route
+                        val showBottomBar = currentRoute != com.example.spybrain.presentation.navigation.Screen.Splash.route
 
-                    Scaffold(
-                        bottomBar = {
-                            if (showBottomBar) {
-                                BottomNavigationBar(navController)
+                        Scaffold(
+                            containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                            bottomBar = {
+                                if (showBottomBar) {
+                                    BottomNavigationBar(navController)
+                                }
                             }
-                        }
-                    ) { padding ->
-                        Box(modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)) {
-                            com.example.spybrain.presentation.navigation.NavGraph(navController = navController)
+                        ) { padding ->
+                            Box(modifier = Modifier
+                                .fillMaxSize()
+                                .padding(padding)) {
+                                com.example.spybrain.presentation.navigation.NavGraph(navController = navController)
+                            }
                         }
                     }
                 }

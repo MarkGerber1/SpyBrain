@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.spybrain.R
+import timber.log.Timber
 import com.example.spybrain.presentation.base.UiEvent
 import com.example.spybrain.presentation.base.UiState
 import com.example.spybrain.presentation.base.UiEffect
@@ -48,10 +49,22 @@ class SettingsViewModel @Inject constructor(
             .launchIn(viewModelScope)
 
         // Подписываемся на включение фоновой музыки (без автозапуска при старте)
+        var isFirstAmbientLoad = true
         settingsDataStore.ambientEnabledFlow
             .onEach { enabled ->
-                // Только обновляем состояние. Запуск/останов выполняются в явных событиях.
                 setState { copy(ambientEnabled = enabled) }
+                // Запускаем музыку только при явном изменении настройки, не при загрузке
+                if (!isFirstAmbientLoad) {
+                    val currentTrack = settingsDataStore.getAmbientTrack()
+                    handleAmbientMusicChange(enabled, currentTrack)
+                } else {
+                    isFirstAmbientLoad = false
+                    // При первой загрузке запускаем музыку только если она включена
+                    if (enabled) {
+                        val currentTrack = settingsDataStore.getAmbientTrack()
+                        handleAmbientMusicChange(enabled, currentTrack, showToast = false)
+                    }
+                }
             }
             .launchIn(viewModelScope)
 
@@ -67,11 +80,15 @@ class SettingsViewModel @Inject constructor(
             .onEach { volume ->
                 setState { copy(ambientVolume = volume) }
                 // Пробрасываем громкость в сервис
-                val intent = Intent(context, com.example.spybrain.service.AmbientMusicService::class.java).apply {
-                    action = com.example.spybrain.service.AmbientMusicService.ACTION_SET_VOLUME
-                    putExtra(com.example.spybrain.service.AmbientMusicService.EXTRA_VOLUME, volume)
+                try {
+                    val intent = Intent(context, com.example.spybrain.service.AmbientMusicService::class.java).apply {
+                        action = com.example.spybrain.service.AmbientMusicService.ACTION_SET_VOLUME
+                        putExtra(com.example.spybrain.service.AmbientMusicService.EXTRA_VOLUME, volume)
+                    }
+                    context.startService(intent)
+                } catch (e: Exception) {
+                    Timber.w(e, "Cannot start ambient music service in background")
                 }
-                context.startService(intent)
             }
             .launchIn(viewModelScope)
 
@@ -108,6 +125,16 @@ class SettingsViewModel @Inject constructor(
 
         settingsDataStore.backgroundStyleFlow
             .onEach { setState { copy(backgroundStyle = it) } }
+            .launchIn(viewModelScope)
+
+        // Подписываемся на видео-фоны
+        settingsDataStore.videoBackgroundsEnabledFlow
+            .onEach { setState { copy(videoBackgroundsEnabled = it) } }
+            .launchIn(viewModelScope)
+
+        // Подписываемся на анимированные фоны
+        settingsDataStore.animatedBackgroundsEnabledFlow
+            .onEach { setState { copy(animatedBackgroundsEnabled = it) } }
             .launchIn(viewModelScope)
 
         // Предлагаем список поддерживаемых ambient-треков (а не список медитаций)
@@ -270,20 +297,46 @@ class SettingsViewModel @Inject constructor(
             is SettingsContract.Event.BackgroundStyleChanged -> {
                 viewModelScope.launch { settingsDataStore.setBackgroundStyle(event.style) }
             }
+            is SettingsContract.Event.VideoBackgroundsToggled -> {
+                viewModelScope.launch {
+                    settingsDataStore.setVideoBackgroundsEnabled(event.enabled)
+                    setEffect {
+                        SettingsContract.Effect.ShowToast(
+                            if (event.enabled)
+                                "Включены видео-фоны"
+                            else
+                                "Включены Canvas-анимации"
+                        )
+                    }
+                }
+            }
+            is SettingsContract.Event.AnimatedBackgroundsToggled -> {
+                viewModelScope.launch {
+                    settingsDataStore.setAnimatedBackgroundsEnabled(event.enabled)
+                    setEffect {
+                        SettingsContract.Effect.ShowToast(
+                            if (event.enabled)
+                                "Включены живые фоны"
+                            else
+                                "Включены статичные фоны"
+                        )
+                    }
+                }
+            }
         }
     }
 
     // РћР±СЂР°Р±РѕС‚РєР° РёР·РјРµРЅРµРЅРёР№ РЅР°СЃС‚СЂРѕРµРє С„РѕРЅРѕРІРѕР№ РјСѓР·С‹РєРё
-    private fun handleAmbientMusicChange(enabled: Boolean, trackId: String) {
+    private fun handleAmbientMusicChange(enabled: Boolean, trackId: String, showToast: Boolean = true) {
         if (enabled && trackId.isNotEmpty()) {
-            playAmbientMusic(trackId)
+            playAmbientMusic(trackId, showToast)
         } else {
-            stopAmbientMusic()
+            stopAmbientMusic(showToast)
         }
     }
 
     // Р—Р°РїСѓСЃРє СЃРµСЂРІРёСЃР° РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ С„РѕРЅРѕРІРѕР№ РјСѓР·С‹РєРё
-    private fun playAmbientMusic(trackId: String) {
+    private fun playAmbientMusic(trackId: String, showToast: Boolean = true) {
         try {
             // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ trackId РЅРµ РїСѓСЃС‚РѕР№
             if (trackId.isEmpty()) {
@@ -309,7 +362,9 @@ class SettingsViewModel @Inject constructor(
                 putExtra(com.example.spybrain.service.AmbientMusicService.EXTRA_TRACK_ID, trackId)
             }
             context.startService(intent)
-            setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_ambient_on)) }
+            if (showToast) {
+                setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_ambient_on)) }
+            }
 
         } catch (e: Exception) {
             setEffect { SettingsContract.Effect.ShowToast(context.getString(R.string.toast_ambient_error, e.message ?: "")) }
@@ -317,11 +372,18 @@ class SettingsViewModel @Inject constructor(
     }
 
     // РћСЃС‚Р°РЅРѕРІРєР° РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ С„РѕРЅРѕРІРѕР№ РјСѓР·С‹РєРё
-    private fun stopAmbientMusic() {
-        val intent = Intent(context, com.example.spybrain.service.AmbientMusicService::class.java).apply {
-            action = com.example.spybrain.service.AmbientMusicService.ACTION_STOP
+    private fun stopAmbientMusic(showToast: Boolean = true) {
+        try {
+            val intent = Intent(context, com.example.spybrain.service.AmbientMusicService::class.java).apply {
+                action = com.example.spybrain.service.AmbientMusicService.ACTION_STOP
+            }
+            context.startService(intent)
+            if (showToast) {
+                setEffect { SettingsContract.Effect.ShowToast("Фоновая музыка остановлена") }
+            }
+        } catch (e: Exception) {
+            Timber.w(e, "Cannot stop ambient music service")
         }
-        context.startService(intent)
     }
 
     // РўРµСЃС‚РёСЂРѕРІР°РЅРёРµ РІРёР±СЂР°С†РёРё

@@ -268,6 +268,52 @@ fun SettingsScreen(
         }
 
         item {
+            Text(text = stringResource(R.string.settings_video_backgrounds), style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Star, // Используем Star как иконку видео
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Switch(
+                    checked = state.videoBackgroundsEnabled,
+                    onCheckedChange = { viewModel.setEvent(Event.VideoBackgroundsToggled(it)) }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (state.videoBackgroundsEnabled)
+                        stringResource(R.string.settings_video_backgrounds_enabled)
+                    else
+                        stringResource(R.string.settings_video_backgrounds_disabled)
+                )
+            }
+        }
+
+        item {
+            Text(text = "Живые фоны", style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Star, // Используем Star как иконку живых фонов
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Switch(
+                    checked = state.animatedBackgroundsEnabled,
+                    onCheckedChange = { viewModel.setEvent(Event.AnimatedBackgroundsToggled(it)) }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (state.animatedBackgroundsEnabled)
+                        "Включены"
+                    else
+                        "Выключены"
+                )
+            }
+        }
+
+        item {
             Text(text = stringResource(R.string.settings_voice_hints), style = MaterialTheme.typography.titleLarge)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Switch(

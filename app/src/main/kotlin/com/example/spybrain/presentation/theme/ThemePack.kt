@@ -92,13 +92,13 @@ object ThemePacks {
         "water" -> ThemePack(
             name = "Water",
             colorScheme = colorSchemeForThemeKey("water", dark),
-            backgroundLottie = R.raw.lottie_ocean,
+            backgroundLottie = R.raw.lottie_water_vivid,
             icons = defaultIconPack()
         )
         "space" -> ThemePack(
             name = "Cosmos",
             colorScheme = colorSchemeForThemeKey("space", dark),
-            backgroundLottie = R.raw.lottie_space,
+            backgroundLottie = R.raw.lottie_space_vivid,
             icons = defaultIconPack()
         )
         else -> ThemePack(

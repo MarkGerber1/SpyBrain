@@ -48,12 +48,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloat
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.rememberLottieComposition
-import com.airbnb.lottie.compose.LottieConstants
+
 import androidx.compose.runtime.CompositionLocalProvider
 import com.example.spybrain.presentation.theme.LocalThemePack
+import android.util.Log
 
 /**
  * @property id РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РІСЂРµРјРµРЅРё СЃСўРѕРє.
@@ -217,76 +215,73 @@ fun DynamicBackground(
         modifier = modifier
             .fillMaxSize()
     ) {
-        // Lottie-анимация (если есть подходящий JSON в raw), иначе fallback на изображение
-        val context = LocalContext.current
+        // Получаем тему для анимации
         val themePack = LocalThemePack.current
-        // Базовый ресурс из темы
-        var packResId = themePack.backgroundLottie ?: 0
-        // Опциональный стиль из настроек
-        val style = try {
-            val ep = dagger.hilt.android.EntryPointAccessors.fromApplication(context.applicationContext, com.example.spybrain.di.AppEntryPoints::class.java)
-            ep.settingsDataStore().getBackgroundStyle()
-        } catch (_: Exception) { "auto" }
-        fun styleToRes(key: String?): Int = when (key) {
-            "ocean" -> R.raw.lottie_ocean
-            "clouds" -> R.raw.lottie_clouds
-            "stars" -> R.raw.lottie_space
-            "forest" -> R.raw.lottie_clouds
-            "mountains" -> R.raw.lottie_clouds
-            "rain" -> R.raw.lottie_ocean
-            "sky" -> R.raw.lottie_clouds
-            "waterfall" -> R.raw.lottie_ocean
-            else -> 0
-        }
-        val styleRes = styleToRes(style)
-        packResId = when {
-            style != "auto" && styleRes != 0 -> styleRes
-            else -> when (timeOfDay) {
-                TimeOfDay.NIGHT -> R.raw.lottie_space
-                TimeOfDay.EVENING -> if (packResId != 0) packResId else R.raw.lottie_space
-                TimeOfDay.MORNING, TimeOfDay.DAY -> if (packResId != 0) packResId else R.raw.lottie_clouds
-            }
-        }
-        try { android.util.Log.d("DynamicBackground", "theme=${themePack.name} resId=$packResId time=$timeOfDay") } catch (_: Exception) {}
-        val lottieKey = lottieKeyOverride
-        val resolvedResId = if (lottieKey != null) {
-            when (lottieKey) {
-                "lottie_meditation" -> R.raw.lottie_meditation
-                "lottie_guided" -> R.raw.lottie_guided
-                "lottie_ocean" -> R.raw.lottie_ocean
-                "lottie_space" -> R.raw.lottie_space
-                "lottie_clouds" -> R.raw.lottie_clouds
-                else -> context.resources.getIdentifier(lottieKey, "raw", context.packageName)
-            }
-        } else packResId
-        // Принудительно загружаем Lottie анимацию
-        val comp by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(R.raw.lottie_ocean)
-        )
         
-        // Показываем Lottie анимацию с fallback
-        if (comp != null) {
-            LottieAnimation(
-                composition = comp,
-                iterations = LottieConstants.IterateForever,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.7f)
-            )
-        } else {
-            // Fallback на градиент, если Lottie не загрузился
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFF87CEEB), // Светло-голубой
-                                Color(0xFF4682B4)  // Стальной синий
+        // Проверяем настройки фонов реактивно
+        val context = LocalContext.current
+        var useVideoBackgrounds by remember { mutableStateOf(false) }
+        var useAnimatedBackgrounds by remember { mutableStateOf(true) }
+        
+        // Реактивное обновление настроек при изменении темы
+        LaunchedEffect(themePack.name) {
+            try {
+                val ep = dagger.hilt.android.EntryPointAccessors.fromApplication(
+                    context.applicationContext, 
+                    com.example.spybrain.di.AppEntryPoints::class.java
+                )
+                useVideoBackgrounds = ep.settingsDataStore().getVideoBackgroundsEnabled()
+                useAnimatedBackgrounds = ep.settingsDataStore().getAnimatedBackgroundsEnabled()
+                Log.d("DynamicBackground", "Theme changed to ${themePack.name} - Video: $useVideoBackgrounds, Animated: $useAnimatedBackgrounds")
+            } catch (e: Exception) { 
+                Log.e("DynamicBackground", "Error getting background settings", e)
+                useVideoBackgrounds = false
+                useAnimatedBackgrounds = true
+            }
+        }
+        
+        // Выбираем тип фона с учетом темы
+        val currentThemeKey = when (themePack.name.lowercase()) {
+            "water" -> "water"
+            "space", "cosmos" -> "space"
+            "nature" -> "nature"
+            else -> "water" // дефолт
+        }
+        
+        Log.d("DynamicBackground", "Theme: ${themePack.name}, Key: $currentThemeKey, Video: $useVideoBackgrounds, Animated: $useAnimatedBackgrounds")
+        
+        when {
+            !useAnimatedBackgrounds -> {
+                // Статичный фон (градиент)
+                Log.d("DynamicBackground", "Rendering static gradient background")
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    themePack.colorScheme.primary.copy(alpha = 0.3f),
+                                    themePack.colorScheme.secondary.copy(alpha = 0.1f)
+                                )
                             )
                         )
-                    )
-            )
+                )
+            }
+            useVideoBackgrounds -> {
+                Log.d("DynamicBackground", "Rendering VideoOrCanvasBackground")
+                VideoOrCanvasBackground(
+                    themeKey = currentThemeKey,
+                    useVideo = true,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            else -> {
+                Log.d("DynamicBackground", "Rendering AnimatedBackground")
+                AnimatedBackground(
+                    themeKey = currentThemeKey,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
 
         // Приветствие убрано - теперь отображается только в MainScreen

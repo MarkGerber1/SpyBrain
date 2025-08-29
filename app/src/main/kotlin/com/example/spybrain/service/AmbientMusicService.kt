@@ -131,26 +131,54 @@ class AmbientMusicService : Service() {
     }
 
     private fun setupReverb() {
+        // Temporarily disable reverb effects to prevent crashes
+        Timber.d("Reverb effects disabled for stability")
+        return
+        
+        /*
         try {
             val audioSessionId = exoPlayer?.audioSessionId ?: return
+            
+            // Check if PresetReverb is supported
+            if (!PresetReverb.isAvailable()) {
+                Timber.d("PresetReverb not available on this device")
+                return
+            }
+            
             presetReverb = PresetReverb(1, audioSessionId).apply {
                 preset = PresetReverb.PRESET_LARGEHALL
                 enabled = true
             }
+            Timber.d("PresetReverb setup successful")
         } catch (e: Exception) {
-            Timber.e(e, "Failed to setup reverb")
+            Timber.e(e, "Failed to setup reverb - continuing without reverb")
+            presetReverb = null
         }
+        */
     }
 
     private fun setupAudioEffects() {
+        // Audio effects disabled for stability
+        Timber.d("Audio effects disabled for stability")
+        return
+        
+        /*
         try {
             presetReverb?.let { reverb ->
-                reverb.enabled = true
-                reverb.preset = PresetReverb.PRESET_LARGEHALL
+                if (reverb.hasControl) {
+                    reverb.enabled = true
+                    reverb.preset = PresetReverb.PRESET_LARGEHALL
+                    Timber.d("Audio effects applied successfully")
+                } else {
+                    Timber.d("No control over reverb effect")
+                }
             }
         } catch (e: Exception) {
-            Timber.e(e, "Failed to setup audio effects")
+            Timber.e(e, "Failed to setup audio effects - continuing without effects")
+            presetReverb?.release()
+            presetReverb = null
         }
+        */
     }
 
     fun playAmbientMusic(trackId: String) {

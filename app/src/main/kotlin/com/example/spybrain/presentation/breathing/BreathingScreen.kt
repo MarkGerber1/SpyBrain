@@ -128,8 +128,8 @@ fun breathingScreen(
         }
     }
 
-    DynamicBackground {
     Scaffold(
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(id = R.string.breathing_title)) },
@@ -240,7 +240,6 @@ fun breathingScreen(
                             viewModel.setEvent(BreathingContract.Event.StartPattern(pattern))
                         }
                     )
-                }
                 }
             }
         }

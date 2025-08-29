@@ -111,6 +111,7 @@ fun HeartRateScreen(
     }
 
     Scaffold(
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.heart_rate_title)) },

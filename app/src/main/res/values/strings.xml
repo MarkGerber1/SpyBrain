@@ -75,6 +75,11 @@
     <string name="settings_vibration">Вибрация</string>
     <string name="settings_vibration_enabled">Включена</string>
     <string name="settings_vibration_disabled">Выключена</string>
+    
+    <!-- Видео-фоны -->
+    <string name="settings_video_backgrounds">Видео-фоны</string>
+    <string name="settings_video_backgrounds_enabled">Видео-анимации</string>
+    <string name="settings_video_backgrounds_disabled">Canvas-анимации</string>
     <string name="settings_voice_hints">Голосовые подсказки (TTS)</string>
     <string name="settings_voice_hints_enabled">Включено</string>
     <string name="settings_voice_hints_disabled">Выключено</string>

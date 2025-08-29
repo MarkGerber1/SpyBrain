@@ -86,7 +86,6 @@ fun MainScreen(
     }
     val greeting = "$greetingPrefix, ${name.replaceFirstChar { it.uppercase() }}!"
     CompositionLocalProvider(LocalThemePack provides themePack, LocalIconPack provides themePack.icons) {
-    DynamicBackground(greetingOverride = greeting) {
         Scaffold(
             containerColor = Color.Transparent,
             bottomBar = { /* нижняя панель в MainActivity */ }
@@ -181,7 +180,6 @@ fun MainScreen(
                 SynapsesOverlay()
             }
         }
-    }
     }
 }
 
