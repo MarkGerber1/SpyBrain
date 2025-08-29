@@ -21,7 +21,7 @@ object VideoPlayerManager {
         try {
             // Если тема изменилась или плеер не создан - пересоздаем
             if (exoPlayer == null || currentTheme != themeKey) {
-                Log.d("VideoPlayerManager", "Creating/recreating player for theme: $themeKey")
+                Log.d("VideoPlayerManager", "🎬 Creating/recreating player for theme: $themeKey (was: $currentTheme)")
                 
                 // Освобождаем предыдущий плеер
                 exoPlayer?.release()
@@ -36,9 +36,11 @@ object VideoPlayerManager {
                 }
                 
                 if (videoResId == 0) {
-                    Log.w("VideoPlayerManager", "No video resource for theme: $themeKey")
+                    Log.w("VideoPlayerManager", "❌ No video resource for theme: $themeKey")
                     return null
                 }
+                
+                Log.d("VideoPlayerManager", "📹 Video resource ID for $themeKey: $videoResId")
                 
                 // Создаем новый плеер
                 val player = ExoPlayer.Builder(context).build()
@@ -68,6 +70,8 @@ object VideoPlayerManager {
                 exoPlayer = player
                 currentTheme = themeKey
                 Log.d("VideoPlayerManager", "✅ Player created for $themeKey")
+            } else {
+                Log.d("VideoPlayerManager", "♻️ Reusing existing player for $themeKey")
             }
             
             return exoPlayer
