@@ -55,17 +55,18 @@ private fun RealVideoBackground(
 ) {
     val context = LocalContext.current
     
-    val exoPlayer = remember(themeKey) {
-        VideoPlayerManager.getPlayer(context, themeKey)
+    // Принудительно пересоздаем плеер при смене темы
+    var exoPlayer by remember { mutableStateOf<ExoPlayer?>(null) }
+    
+    // Прямое использование реактивного состояния
+    val isVideoReady by remember { 
+        derivedStateOf { VideoPlayerManager.isPlayerReady }
     }
     
-    val isVideoReady by remember {
-        derivedStateOf { VideoPlayerManager.isReady() }
-    }
-    
-    // Обновляем состояние готовности видео
+    // Пересоздаем плеер при смене темы
     LaunchedEffect(themeKey) {
-        Log.d("VideoBackground", "Initializing video for theme: $themeKey")
+        Log.d("VideoBackground", "🔄 Theme changed to: $themeKey, recreating player")
+        exoPlayer = VideoPlayerManager.getPlayer(context, themeKey)
     }
     
     when {

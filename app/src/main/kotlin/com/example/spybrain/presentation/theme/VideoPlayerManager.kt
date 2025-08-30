@@ -3,6 +3,9 @@ package com.example.spybrain.presentation.theme
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -15,7 +18,10 @@ import com.example.spybrain.R
 object VideoPlayerManager {
     private var exoPlayer: ExoPlayer? = null
     private var currentTheme: String? = null
-    private var isPlayerReady = false
+    
+    // Реактивное состояние готовности плеера
+    var isPlayerReady by mutableStateOf(false)
+        private set
     
     fun getPlayer(context: Context, themeKey: String): ExoPlayer? {
         try {
@@ -82,6 +88,9 @@ object VideoPlayerManager {
     }
     
     fun isReady(): Boolean = isPlayerReady
+    
+    // Для прямого доступа к состоянию в Compose
+    fun getReadyState(): Boolean = isPlayerReady
     
     fun releasePlayer() {
         Log.d("VideoPlayerManager", "Releasing player")
