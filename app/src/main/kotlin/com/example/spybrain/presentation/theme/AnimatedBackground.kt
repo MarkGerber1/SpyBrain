@@ -42,7 +42,8 @@ fun AnimatedBackground(
     Canvas(modifier = modifier.fillMaxSize()) {
         when (themeKey) {
             "water" -> drawWaterAnimation(time, size.width, size.height)
-            "space" -> drawSpaceAnimation(time, size.width, size.height) 
+            "space" -> drawSpaceAnimation(time, size.width, size.height)
+            "air" -> drawAirAnimation(time, size.width, size.height)
             else -> drawNatureAnimation(time, size.width, size.height)
         }
     }
@@ -269,6 +270,88 @@ private fun DrawScope.drawNatureAnimation(time: Float, width: Float, height: Flo
             color = Color(0xFFFFEB3B).copy(alpha = glow),
             radius = 3f,
             center = androidx.compose.ui.geometry.Offset(x, y)
+        )
+    }
+}
+
+private fun DrawScope.drawAirAnimation(time: Float, width: Float, height: Float) {
+    // Фон градиент неба
+    drawRect(
+        brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFF87CEEB), // Небесно-голубой
+                Color(0xFFE6F3FF)  // Очень светло-голубой
+            )
+        ),
+        size = size
+    )
+    
+    // Плавающие облака
+    val cloudCount = 8
+    for (i in 0 until cloudCount) {
+        val cloudTime = time + i * 200f
+        val x = (cloudTime * 0.5f + i * width * 0.3f) % (width + 200f) - 100f
+        val y = height * 0.1f + i * height * 0.1f + sin(cloudTime * 0.003f) * 30f
+        val size = 60f + i * 20f
+        
+        // Рисуем облако как группу кругов
+        for (j in 0 until 5) {
+            val offsetX = (j - 2) * size * 0.3f
+            val offsetY = (Random(i * 100 + j).nextFloat() - 0.5f) * size * 0.4f
+            val circleSize = size * (0.6f + Random(i * 100 + j).nextFloat() * 0.4f)
+            
+            drawCircle(
+                color = Color.White.copy(alpha = 0.7f - i * 0.05f),
+                radius = circleSize,
+                center = androidx.compose.ui.geometry.Offset(x + offsetX, y + offsetY)
+            )
+        }
+    }
+    
+    // Летающие частицы (пыльца, пух)
+    val particleCount = 25
+    for (i in 0 until particleCount) {
+        val particleTime = time + i * 50f
+        val x = (particleTime * 0.3f + i * width * 0.8f / particleCount) % width
+        val y = height * 0.2f + sin(particleTime * 0.01f + i) * height * 0.6f + 
+               cos(particleTime * 0.007f + i * 2f) * 80f
+        val drift = sin(particleTime * 0.005f + i) * 30f
+        
+        // Маленькие белые частицы
+        drawCircle(
+            color = Color.White.copy(alpha = 0.8f),
+            radius = 2f + sin(particleTime * 0.02f + i) * 1f,
+            center = androidx.compose.ui.geometry.Offset(x + drift, y)
+        )
+    }
+    
+    // Ветряные потоки (изогнутые линии)
+    val streamCount = 6
+    for (i in 0 until streamCount) {
+        val streamTime = time + i * 300f
+        val startX = (streamTime * 0.4f + i * width * 0.2f) % (width + 100f) - 50f
+        val startY = height * 0.3f + i * height * 0.1f
+        
+        val path = Path().apply {
+            moveTo(startX, startY)
+            for (segment in 0 until 10) {
+                val segmentX = startX + segment * 30f
+                val segmentY = startY + sin((streamTime + segment * 50f) * 0.008f) * 50f
+                if (segment == 0) {
+                    moveTo(segmentX, segmentY)
+                } else {
+                    lineTo(segmentX, segmentY)
+                }
+            }
+        }
+        
+        drawPath(
+            path = path,
+            color = Color.White.copy(alpha = 0.3f),
+            style = androidx.compose.ui.graphics.drawscope.Stroke(
+                width = 2f,
+                cap = androidx.compose.ui.graphics.StrokeCap.Round
+            )
         )
     }
 }

@@ -169,7 +169,7 @@ class VoiceAssistantService @Inject constructor(
         speakWithEmotion(achievement, Emotion.ENERGETIC)
     }
 
-    fun stop() {
+    override fun stop() {
         ttsEngine.stop()
         audioFocusManager.abandon()
     }
@@ -259,7 +259,7 @@ class VoiceAssistantService @Inject constructor(
     }
 
     override fun speakComplete() {
-        speakBreathingPrompt("Сессия завершена")
+        speakBreathingPrompt(context.getString(com.example.spybrain.R.string.session_completed))
     }
 
     fun speakCycle(cycle: Int, total: Int) {

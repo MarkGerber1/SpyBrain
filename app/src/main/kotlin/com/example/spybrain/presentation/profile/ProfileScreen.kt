@@ -63,7 +63,7 @@ fun ProfileScreen(
             Text(text = stringResource(id = R.string.edit_profile) + ": ${profile.name}", style = MaterialTheme.typography.titleLarge)
             Text(text = stringResource(id = R.string.streak) + ": ${profile.streakDays}", style = MaterialTheme.typography.bodyMedium)
             val sdf = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-            Text(text = "Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ: ${sdf.format(profile.joinDate)}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = stringResource(R.string.registered_date, sdf.format(profile.joinDate)), style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = { viewModel.setEvent(ProfileContract.Event.EditNameClicked) }) {
                 Text(stringResource(id = R.string.edit_profile))

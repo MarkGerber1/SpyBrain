@@ -291,7 +291,7 @@ fun SettingsScreen(
         }
 
         item {
-            Text(text = "Живые фоны", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.settings_live_backgrounds_title), style = MaterialTheme.typography.titleLarge)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.Star, // Используем Star как иконку живых фонов
@@ -306,9 +306,9 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = if (state.animatedBackgroundsEnabled)
-                        "Включены"
+                        stringResource(R.string.settings_enabled)
                     else
-                        "Выключены"
+                        stringResource(R.string.settings_disabled)
                 )
             }
         }
@@ -346,19 +346,19 @@ fun SettingsScreen(
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             VoiceSelection(state, viewModel)
                             val style = when {
-                                state.voiceRate <= 0.8f && state.voicePitch <= 0.95f -> "Мягкий"
-                                state.voiceRate >= 1.1f || state.voicePitch >= 1.1f -> "Энергичный"
-                                else -> "Нейтральный"
+                                state.voiceRate <= 0.8f && state.voicePitch <= 0.95f -> stringResource(R.string.voice_style_soft)
+                                state.voiceRate >= 1.1f || state.voicePitch >= 1.1f -> stringResource(R.string.voice_style_energetic)
+                                else -> stringResource(R.string.voice_style_neutral)
                             }
-                            Text(text = "Стиль голоса: $style")
+                            Text(text = stringResource(R.string.voice_style_label, style))
                             Spacer(Modifier.height(8.dp))
-                            Text("Скорость речи")
+                            Text(stringResource(R.string.voice_speech_rate))
                             androidx.compose.material3.Slider(
                                 value = state.voiceRate,
                                 onValueChange = { viewModel.setEvent(SettingsContract.Event.VoiceRateChanged(it)) },
                                 valueRange = 0.5f..1.5f
                             )
-                            Text("Тональность")
+                            Text(stringResource(R.string.voice_pitch))
                             androidx.compose.material3.Slider(
                                 value = state.voicePitch,
                                 onValueChange = { viewModel.setEvent(SettingsContract.Event.VoicePitchChanged(it)) },
@@ -375,7 +375,7 @@ fun SettingsScreen(
                                         ctx.startActivity(fallback)
                                     } catch (_: Exception) { }
                                 }
-                            }) { Text("Открыть настройки TTS") }
+                            }) { Text(stringResource(R.string.open_tts_settings)) }
                         }
                     }
                 )
@@ -435,18 +435,18 @@ fun SettingsScreen(
         }
 
         item {
-            Text(text = "Живой фон", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.live_background_title), style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(8.dp))
             val styles = listOf(
-                "auto" to "Авто",
-                "ocean" to "Океан",
-                "waterfall" to "Водопад",
-                "clouds" to "Облака",
-                "stars" to "Звёзды",
-                "forest" to "Лес",
-                "mountains" to "Горы",
-                "rain" to "Дождь",
-                "sky" to "Небо"
+                "auto" to stringResource(R.string.background_style_auto),
+                "ocean" to stringResource(R.string.background_style_ocean),
+                "waterfall" to stringResource(R.string.background_style_waterfall),
+                "clouds" to stringResource(R.string.background_style_clouds),
+                "stars" to stringResource(R.string.background_style_stars),
+                "forest" to stringResource(R.string.background_style_forest),
+                "mountains" to stringResource(R.string.background_style_mountains),
+                "rain" to stringResource(R.string.background_style_rain),
+                "sky" to stringResource(R.string.background_style_sky)
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 styles.forEach { (key, label) ->
@@ -460,12 +460,12 @@ fun SettingsScreen(
         }
 
         item {
-            Text(text = "Профиль", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.profile_title), style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(8.dp))
             androidx.compose.material3.OutlinedTextField(
                 value = state.userName,
                 onValueChange = { viewModel.setEvent(Event.UserNameChanged(it)) },
-                label = { Text("Имя") },
+                label = { Text(stringResource(R.string.name_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -476,13 +476,17 @@ fun SettingsScreen(
                     val digits = value.filter { it.isDigit() }
                     digits.toIntOrNull()?.let { viewModel.setEvent(Event.UserAgeChanged(it)) }
                 },
-                label = { Text("Возраст") },
+                label = { Text(stringResource(R.string.age_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                val genders = listOf("male" to "Мужской", "female" to "Женский", "other" to "Другое")
+                val genders = listOf(
+                    "male" to stringResource(R.string.gender_male), 
+                    "female" to stringResource(R.string.gender_female), 
+                    "other" to stringResource(R.string.gender_other)
+                )
                 genders.forEach { (key, label) ->
                     androidx.compose.material3.FilterChip(
                         selected = state.userGender == key,
@@ -494,7 +498,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = { navController.navigate(com.example.spybrain.presentation.navigation.Screen.Main.route) }) {
-                Text("На главный экран")
+                Text(stringResource(R.string.go_to_main))
             }
         }
     }
@@ -638,7 +642,7 @@ fun VoiceSelection(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 CircularProgressIndicator(modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("Загрузка голосов…")
+                Text(stringResource(R.string.loading_voices))
             }
         }
         voices.forEach { voice: Voice ->

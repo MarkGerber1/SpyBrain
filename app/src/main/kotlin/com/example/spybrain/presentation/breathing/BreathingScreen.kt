@@ -258,10 +258,10 @@ fun categoryTabs(
 ) {
     val context = LocalContext.current
     val categories = listOf(
-        "all" to stringResource(id = R.string.categories),
-        "relaxation" to stringResource(id = R.string.breathing_pattern_calm),
-        "energy" to stringResource(id = R.string.meditation_category_energy),
-        "focus" to stringResource(id = R.string.meditation_category_focus)
+        "all" to stringResource(id = R.string.breathing_category_all),
+        "relaxation" to stringResource(id = R.string.breathing_category_relaxation),
+        "energy" to stringResource(id = R.string.breathing_category_energy),
+        "focus" to stringResource(id = R.string.breathing_category_focus)
     )
 
     LazyRow(

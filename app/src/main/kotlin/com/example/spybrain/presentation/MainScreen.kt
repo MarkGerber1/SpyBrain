@@ -1,5 +1,7 @@
 ﻿package com.example.spybrain.presentation
 
+import com.example.spybrain.R
+import com.example.spybrain.utils.QuoteManager
 import androidx.compose.foundation.Canvas
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
@@ -77,12 +79,12 @@ fun MainScreen(
     // Фоновая музыка теперь запускается только по явному действию пользователя
 
     val themePack = ThemePacks.themePackFor(settings.theme)
-    val name = settings.userName.ifBlank { "друг" }
+    val name = settings.userName.ifBlank { context.getString(R.string.default_user_friend) }
     val greetingPrefix = when (java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)) {
-        in 5..11 -> "Доброго утра"
-        in 12..16 -> "Доброго дня"
-        in 17..21 -> "Доброго вечера"
-        else -> "Доброй ночи"
+        in 5..11 -> context.getString(R.string.greeting_good_morning)
+        in 12..16 -> context.getString(R.string.greeting_good_afternoon)
+        in 17..21 -> context.getString(R.string.greeting_good_evening)
+        else -> context.getString(R.string.greeting_good_night)
     }
     val greeting = "$greetingPrefix, ${name.replaceFirstChar { it.uppercase() }}!"
     CompositionLocalProvider(LocalThemePack provides themePack, LocalIconPack provides themePack.icons) {
@@ -93,14 +95,8 @@ fun MainScreen(
             Box(modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)) {
-                // Приветствие и мотивация
-                val quotes = listOf(
-                    "Познай себя — через медитацию.",
-                    "Расслабление — искусство, которому можно научиться.",
-                    "Дыши глубже, думай яснее.",
-                    "Спокойствие — твоя суперсила.",
-                    "Твое внимание — твоя энергия."
-                )
+                // Приветствие и мотивация - получаем случайную цитату при каждом входе
+                val currentQuote = QuoteManager.getRandomQuote(context)
                 Column(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
@@ -112,24 +108,24 @@ fun MainScreen(
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                         ),
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .background(
-                                Color.White.copy(alpha = 0.8f),
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
                                 shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                             )
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = quotes.random(),
+                        text = currentQuote,
                         style = MaterialTheme.typography.titleMedium,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .background(
-                                Color.White.copy(alpha = 0.8f),
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
                                 shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                             )
                             .padding(horizontal = 16.dp, vertical = 8.dp)

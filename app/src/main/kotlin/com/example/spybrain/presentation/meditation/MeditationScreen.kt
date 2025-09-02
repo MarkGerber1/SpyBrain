@@ -66,6 +66,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SliderDefaults
@@ -145,6 +147,10 @@ fun MeditationScreen(
                 is MeditationContract.Effect.TrackCompleted -> {
                     // РњРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ СѓРІРµРґРѕРјР»РµРЅРёРµ Рѕ Р·Р°РІРµСЂС€РµРЅРёРё С‚СЂРµРєР°
                     Timber.d("Track completed: ${effect.track.id}")
+                }
+                is MeditationContract.Effect.NavigateBack -> {
+                    // Навигация назад - уже обработана в ViewModel
+                    Timber.d("Navigate back effect")
                 }
             }
         }
@@ -270,6 +276,31 @@ fun MeditationScreen(
                 else -> MeditationPlayerUI(viewModel, state, player, settings.voiceHintsEnabled)
             }
         }
+    }
+
+
+
+    // Диалог подтверждения выхода
+    if (state.showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.setEvent(MeditationContract.Event.DismissExitDialog) },
+            title = { Text(text = stringResource(id = R.string.meditation_exit_title)) },
+            text = { Text(text = stringResource(id = R.string.meditation_exit_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setEvent(MeditationContract.Event.ConfirmExit)
+                }) { 
+                    Text(text = stringResource(id = R.string.common_ok)) 
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { 
+                    viewModel.setEvent(MeditationContract.Event.DismissExitDialog) 
+                }) { 
+                    Text(text = stringResource(id = R.string.common_cancel)) 
+                }
+            }
+        )
     }
 }
 

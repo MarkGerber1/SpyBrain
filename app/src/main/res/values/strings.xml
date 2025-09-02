@@ -233,6 +233,86 @@
     <string name="heart_rate_new_exercise_unlocked">Открыто новое упражнение!</string>
     <string name="heart_rate_points_for_session">+1 балл за завершённую практику</string>
 
+    <!-- Background Styles -->
+    <string name="background_style_auto">Авто</string>
+    <string name="background_style_ocean">Океан</string>
+    <string name="background_style_waterfall">Водопад</string>
+    <string name="background_style_clouds">Облака</string>
+    <string name="background_style_stars">Звёзды</string>
+    <string name="background_style_forest">Лес</string>
+    <string name="background_style_mountains">Горы</string>
+    <string name="background_style_rain">Дождь</string>
+    <string name="background_style_sky">Небо</string>
+
+    <!-- Gender Options -->
+    <string name="gender_male">Мужской</string>
+    <string name="gender_female">Женский</string>
+    <string name="gender_other">Другое</string>
+
+    <!-- Main Screen Greetings -->
+    <string name="greeting_good_morning">Доброго утра</string>
+    <string name="greeting_good_afternoon">Доброго дня</string>
+    <string name="greeting_good_evening">Доброго вечера</string>
+    <string name="greeting_good_night">Доброй ночи</string>
+    <string name="default_user_friend">друг</string>
+    
+    <!-- Motivational Quotes -->
+    <string name="quote_meditation">Познай себя — через медитацию.</string>
+    <string name="quote_relaxation">Расслабление — искусство, которому можно научиться.</string>
+    <string name="quote_breathing">Дыши глубже, думай яснее.</string>
+    <string name="quote_calmness">Спокойствие — твоя суперсила.</string>
+    <string name="quote_attention">Твое внимание — твоя энергия.</string>
+    <string name="quote_mindfulness">Осознанность — ключ к внутренней гармонии.</string>
+    <string name="quote_peace">Мир внутри тебя сильнее любой бури снаружи.</string>
+    <string name="quote_moment">Живи здесь и сейчас — это единственный момент, который у тебя есть.</string>
+    <string name="quote_breath_life">Дыхание — это мост между телом и разумом.</string>
+    <string name="quote_silence">В тишине ты найдешь ответы на все вопросы.</string>
+    <string name="quote_balance">Баланс не значит совершенство, он значит гармонию.</string>
+    <string name="quote_inner_strength">Твоя внутренняя сила безгранична.</string>
+    <string name="quote_present">Настоящее — это подарок, поэтому его называют настоящим.</string>
+    <string name="quote_thoughts">Ты не твои мысли, ты тот, кто их наблюдает.</string>
+    <string name="quote_journey">Путешествие внутрь себя — самое важное путешествие.</string>
+    <string name="quote_gratitude">Благодарность превращает обычное в волшебное.</string>
+    <string name="quote_flow">Плыви по течению жизни, не сопротивляйся.</string>
+    <string name="quote_heart">Слушай свое сердце — оно знает дорогу.</string>
+    <string name="quote_wisdom">Мудрость приходит не с возрастом, а с принятием.</string>
+    <string name="quote_freedom">Свобода начинается с освобождения от собственных ограничений.</string>
+    <string name="quote_energy">Твоя энергия — это твоя валюта. Трать ее мудро.</string>
+    <string name="quote_change">Изменения начинаются с одного осознанного вдоха.</string>
+    <string name="quote_compassion">Сострадание к себе — основа всего исцеления.</string>
+    <string name="quote_trust">Доверяй процессу, даже когда не видишь весь путь.</string>
+    <string name="quote_growth">Рост происходит за пределами зоны комфорта.</string>
+    <string name="quote_love">Любовь к себе — не эгоизм, а необходимость.</string>
+    <string name="quote_patience">Терпение — это спокойствие в действии.</string>
+    <string name="quote_dreams">Мечты — это семена будущего.</string>
+    <string name="quote_strength">Сила не в том, чтобы никогда не падать, а в том, чтобы всегда вставать.</string>
+    <string name="quote_soul">Душа знает то, что разум ещё не понял.</string>
+    <string name="quote_time">Время лечит, но только если ты позволишь ему.</string>
+    <string name="quote_hope">Надежда — это свет в конце тоннеля.</string>
+    <string name="quote_nature">В природе нет спешки, но всё совершается вовремя.</string>
+    <string name="quote_purpose">Твоя цель не в том, чтобы быть лучше других, а в том, чтобы быть лучше себя вчерашнего.</string>
+    <string name="quote_forgiveness">Прощение — это подарок, который ты даришь себе.</string>
+    <string name="quote_courage">Смелость — это не отсутствие страха, а действие вопреки ему.</string>
+    <string name="quote_mindful_eating">Ешь осознанно — каждый кусочек это благословение.</string>
+    <string name="quote_water">Будь как вода — мягкой и текучей, но способной точить камни.</string>
+    <string name="quote_sunrise">Каждый восход солнца — это новая возможность.</string>
+    <string name="quote_kindness">Доброта — это язык, который понимают все.</string>
+    <string name="quote_meditation_deep">Медитация — это не бегство от реальности, а встреча с ней.</string>
+    <string name="quote_abundance">Изобилие — это состояние ума, а не размер банковского счета.</string>
+    <string name="quote_simplicity">В простоте кроется величайшая мудрость.</string>
+    <string name="quote_connection">Мы все связаны невидимыми нитями.</string>
+    <string name="quote_intuition">Интуиция — это голос твоей души.</string>
+    <string name="quote_surrender">Иногда самое сильное, что ты можешь сделать — это отпустить.</string>
+    <string name="quote_joy">Радость — это не то, что происходит с тобой, а то, что ты выбираешь чувствовать.</string>
+    <string name="quote_waves">Эмоции подобны волнам — позволь им прийти и уйти.</string>
+    <string name="quote_stars">Ты сделан из звёздной пыли — помни об этом.</string>
+    <string name="quote_breath_power">Каждый вдох — это возможность начать заново.</string>
+    <string name="quote_healing">Исцеление происходит изнутри наружу.</string>
+    <string name="quote_miracle">Чудеса случаются каждый день — нужно только уметь их видеть.</string>
+    <string name="quote_faith">Вера — это мост между тем, где ты есть, и тем, где хочешь быть.</string>
+    <string name="quote_wholeness">Ты уже целостен — нужно лишь это вспомнить.</string>
+    <string name="quote_sacred">Каждый момент священен, если ты присутствуешь в нём.</string>
+
     <!-- Breathing Patterns -->
     <string name="breathing_pattern_calm">Спокойное дыхание</string>
     <string name="breathing_pattern_box">Квадратное дыхание</string>
@@ -268,6 +348,11 @@
     <string name="voice_prompt_clarity">Сосредоточьтесь на дыхании. Вдохните ясность, выдохните отвлечения.</string>
     <string name="voice_prompt_morning">Вдохните энергию и жизненную силу, выдохните усталость и слабость.</string>
     <string name="voice_prompt_creative">Вдохните вдохновение, выдохните сомнения. Откройте поток творчества.</string>
+
+    <!-- Превью паттернов -->
+    <string name="pattern_preview_inhale">Вдох %1$dс, пауза %2$dс</string>
+    <string name="pattern_preview_exhale">Выдох %1$dс, пауза %2$dс</string>
+    <string name="pattern_preview_cycles">Циклов: %1$d</string>
 
     <!-- Breathing Phases -->
     <string name="breathing_phase_inhale">Вдох</string>
@@ -314,11 +399,6 @@
     <string name="pattern_builder_enter_name">Введите название шаблона</string>
     <string name="pattern_builder_invalid_values">Неверные значения фаз или циклов</string>
     <string name="pattern_builder_no_patterns">Нет доступных шаблонов</string>
-
-    <!-- Pattern Preview -->
-    <string name="pattern_preview_inhale">Вдох %1$dс, пауза %2$dс</string>
-    <string name="pattern_preview_exhale">Выдох %1$dс, пауза %2$dс</string>
-    <string name="pattern_preview_cycles">Циклов: %1$d</string>
 
     <!-- Time Greetings -->
     <string name="greeting_morning">Доброе утро</string>
@@ -597,5 +677,53 @@
 
     <string name="meditation">Медитация</string>
     <string name="profile">Профиль</string>
+
+    <!-- Exit Confirmation Dialogs -->
+    <string name="meditation_exit_title">Завершить медитацию?</string>
+    <string name="meditation_exit_message">Вы уверены, что хотите завершить медитацию? Весь прогресс будет сохранен.</string>
+    <string name="breathing_exit_title">Прервать дыхательную практику?</string>
+    <string name="breathing_exit_message">Вы уверены, что хотите прервать дыхательную практику? Прогресс будет сохранен.</string>
+
+    <!-- Hardcoded strings that need localization -->
+    <string name="settings_live_backgrounds_title">Живые фоны</string>
+    <string name="settings_enabled">Включены</string>
+    <string name="settings_disabled">Выключены</string>
+    <string name="voice_style_soft">Мягкий</string>
+    <string name="voice_style_energetic">Энергичный</string>
+    <string name="voice_style_neutral">Нейтральный</string>
+    <string name="voice_style_label">Стиль голоса: %1$s</string>
+    <string name="voice_speech_rate">Скорость речи</string>
+    <string name="voice_pitch">Тональность</string>
+    <string name="open_tts_settings">Открыть настройки TTS</string>
+    <string name="live_background_title">Живой фон</string>
+    <string name="profile_title">Профиль</string>
+    <string name="name_label">Имя</string>
+    <string name="age_label">Возраст</string>
+    <string name="go_to_main">На главный экран</string>
+    <string name="loading_voices">Загрузка голосов…</string>
+    <string name="welcome_title">Добро пожаловать в SpyBrain</string>
+    <string name="welcome_subtitle">Пару слов о вас — и начнём</string>
+    <string name="continue_button">Продолжить</string>
+    <string name="pattern_saved">Шаблон сохранён!</string>
+    <string name="registered_date">Зарегистрирован: %1$s</string>
+    <string name="close_button">Закрыть</string>
+    <string name="session_completed">Сессия завершена</string>
+    <string name="motivation_excellent">Отлично! Продолжайте в том же духе</string>
+    
+    <!-- Breathing Categories -->
+    <string name="breathing_category_all">Все</string>
+    <string name="breathing_category_relaxation">Расслабление</string>
+    <string name="breathing_category_energy">Энергия</string>
+    <string name="breathing_category_focus">Концентрация</string>
+    
+    <!-- Pattern Builder Strings -->
+    <string name="saved_patterns_title">Сохранённые шаблоны</string>
+    <string name="delete_pattern">Удалить шаблон</string>
+    <string name="edit_pattern_title">Редактирование шаблона</string>
+    <string name="edit_pattern_subtitle">Настройте параметры дыхательного упражнения</string>
+    <string name="basic_parameters">Основные параметры</string>
+    <string name="breathing_parameters">Параметры дыхания</string>
+    <string name="pattern_deleted">Шаблон удален!</string>
+    <string name="validation_error">Значения слишком большие. Проверьте параметры.</string>
 
 </resources> 

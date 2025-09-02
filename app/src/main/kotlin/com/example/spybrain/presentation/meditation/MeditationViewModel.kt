@@ -109,6 +109,9 @@ class MeditationViewModel @Inject constructor(
             is MeditationContract.Event.SetGuidedMode -> setGuidedMode(event.enabled)
             is MeditationContract.Event.PlayIntro -> playIntro()
             is MeditationContract.Event.BackPressed -> handleBack()
+            is MeditationContract.Event.ShowExitDialog -> setState { copy(showExitDialog = true) }
+            is MeditationContract.Event.DismissExitDialog -> setState { copy(showExitDialog = false) }
+            is MeditationContract.Event.ConfirmExit -> confirmExit()
         }
     }
 
@@ -470,10 +473,22 @@ class MeditationViewModel @Inject constructor(
     }
 
     private fun handleBack() {
+        // Показать диалог подтверждения только если активна медитация
+        if (uiState.value.currentPlaying != null || uiState.value.isGuidedMode) {
+            setState { copy(showExitDialog = true) }
+        } else {
+            // Если медитация не активна, сразу выходим
+            confirmExit()
+        }
+    }
+
+    private fun confirmExit() {
+        setState { copy(showExitDialog = false) }
         stopMeditation()
         // Также гарантируем останов guidance/освобождение фокуса
         runCatching { voiceAssistant.stopGuidance() }
         runCatching { voiceAssistant.release() }
+        setEffect { MeditationContract.Effect.NavigateBack }
     }
 
     private fun trackSessionEnd(meditationId: String?, durationSeconds: Long) {

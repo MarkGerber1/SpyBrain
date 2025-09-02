@@ -101,6 +101,12 @@ object ThemePacks {
             backgroundLottie = R.raw.lottie_space_vivid,
             icons = defaultIconPack()
         )
+        "air" -> ThemePack(
+            name = "Air",
+            colorScheme = colorSchemeForThemeKey("air", dark),
+            backgroundLottie = R.raw.lottie_clouds,
+            icons = defaultIconPack()
+        )
         else -> ThemePack(
             name = "Nature",
             colorScheme = colorSchemeForThemeKey("nature", dark),

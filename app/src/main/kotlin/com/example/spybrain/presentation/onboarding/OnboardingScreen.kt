@@ -9,7 +9,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.spybrain.R
 import com.example.spybrain.presentation.settings.SettingsViewModel
 import com.example.spybrain.presentation.theme.DynamicBackground
 
@@ -32,11 +34,11 @@ fun OnboardingScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Добро пожаловать в SpyBrain", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onPrimary)
-                Text("Пару слов о вас — и начнём", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary)
+                Text(stringResource(R.string.welcome_title), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onPrimary)
+                Text(stringResource(R.string.welcome_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary)
 
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Имя") })
-                OutlinedTextField(value = ageText, onValueChange = { ageText = it.filter { ch -> ch.isDigit() } }, label = { Text("Возраст") })
+                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.name_label)) })
+                OutlinedTextField(value = ageText, onValueChange = { ageText = it.filter { ch -> ch.isDigit() } }, label = { Text(stringResource(R.string.age_label)) })
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     GenderChip(selected = gender == "male", label = "Мужской") { gender = "male" }
@@ -52,7 +54,7 @@ fun OnboardingScreen(
                     settingsViewModel.setEvent(com.example.spybrain.presentation.settings.SettingsContract.Event.UserGenderChanged(gender))
                     onFinished()
                 }, enabled = name.isNotBlank()) {
-                    Text("Продолжить")
+                    Text(stringResource(R.string.continue_button))
                 }
             }
         }

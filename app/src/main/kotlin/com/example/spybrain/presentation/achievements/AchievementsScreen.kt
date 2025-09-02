@@ -603,7 +603,7 @@ fun AchievementDetailsDialog(
                     onClick = onDismiss,
                     modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text(text = "Закрыть")
+                    Text(text = stringResource(R.string.close_button))
                 }
             }
         }

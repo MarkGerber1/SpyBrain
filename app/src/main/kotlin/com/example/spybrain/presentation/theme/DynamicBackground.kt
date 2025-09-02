@@ -261,6 +261,7 @@ fun DynamicBackground(
             "water" -> "water"
             "space", "cosmos" -> "space"
             "nature" -> "nature"
+            "air" -> "air"
             else -> "water" // дефолт
         }
         
@@ -286,8 +287,8 @@ fun DynamicBackground(
                 // Статичный фон (градиент) - только если оба типа отключены
                 Log.d("DynamicBackground", "Rendering static gradient background - both disabled")
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(

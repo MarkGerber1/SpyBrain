@@ -125,15 +125,15 @@ fun breathingPatternBuilderScreen(
                     VibrationUtil.vibrateError(context)
                     Toast.makeText(context, when(val err = effect.error) {
                         is UiError.Custom -> err.message
-                        is UiError.NetworkError -> "РћС€РёР±РєР° СЃРµС‚Рё"
-                        is UiError.ValidationError -> "РћС€РёР±РєР° РІР°Р»РёРґР°С†РёРё"
-                        is UiError.UnknownError -> "РќРµРёР·РІРµСЃС‚РЅР°СЏ РѕС€РёР±РєР°"
-                        else -> "РћС€РёР±РєР°"
+                        is UiError.NetworkError -> context.getString(R.string.error_network)
+                        is UiError.ValidationError -> context.getString(R.string.error_validation)
+                        is UiError.UnknownError -> context.getString(R.string.error_unknown)
+                        else -> context.getString(R.string.error_general)
                     }, Toast.LENGTH_SHORT).show()
                 }
                 is BreathingPatternBuilderContract.Effect.ShowSuccessMessage -> {
                     VibrationUtil.vibrateSuccess(context)
-                    Toast.makeText(context, "РЁР°Р±Р»РѕРЅ СЃРѕС…СЂР°РЅРµРЅ!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.pattern_saved), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -404,7 +404,7 @@ fun breathingPatternBuilderScreen(
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Text(
-                                    text = "РЎРѕС…СЂР°РЅС‘РЅРЅС‹Рµ С€Р°Р±Р»РѕРЅС‹",
+                                    text = stringResource(R.string.saved_patterns_title),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -480,7 +480,7 @@ fun breathingPatternBuilderScreen(
                                                     ) {
                                                         Icon(
                                                             Icons.Default.Delete,
-                                                            contentDescription = "РЈРґР°Р»РёС‚СЊ С€Р°Р±Р»РѕРЅ",
+                                                            contentDescription = stringResource(R.string.delete_pattern),
                                                             tint = Color(0xFFE53935)
                                                         )
                                                     }

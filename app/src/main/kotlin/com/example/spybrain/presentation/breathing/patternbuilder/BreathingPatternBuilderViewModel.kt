@@ -157,7 +157,7 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                 if (inhale > 60 || exhale > 60 || cycles > 100) {
                     setEffect {
                         BreathingPatternBuilderContract.Effect.ShowError(
-                            UiError.Custom(message = "Значения слишком большие. Проверьте параметры.")
+                            UiError.Custom(message = context.getString(R.string.validation_error))
                         )
                     }
                     setState { copy(isLoading = false) }
@@ -175,7 +175,7 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                 )
                 addCustomPatternUseCase(pattern)
                 Timber.d("Паттерн сохранен: ${pattern.name}")
-                setEffect { BreathingPatternBuilderContract.Effect.ShowSuccessMessage("Шаблон сохранен!") }
+                setEffect { BreathingPatternBuilderContract.Effect.ShowSuccessMessage(context.getString(R.string.pattern_saved)) }
                 setState {
                     copy(
                         isLoading = false,
@@ -204,7 +204,7 @@ class BreathingPatternBuilderViewModel @Inject constructor(
                 setState { copy(isLoading = true, error = null) }
                 deleteCustomPatternUseCase(pattern.id)
                 Timber.d("Паттерн удален: ${pattern.name}")
-                setEffect { BreathingPatternBuilderContract.Effect.ShowSuccessMessage("Шаблон удален!") }
+                setEffect { BreathingPatternBuilderContract.Effect.ShowSuccessMessage(context.getString(R.string.pattern_deleted)) }
                 setState { copy(isLoading = false) }
             } catch (e: Exception) {
                 Timber.e(e, "Ошибка при удалении паттерна")

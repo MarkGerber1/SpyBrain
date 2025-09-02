@@ -28,6 +28,7 @@ fun VideoBackground(
             "water" -> R.raw.video_water_loop
             "cosmos", "space" -> R.raw.video_space_loop
             "nature" -> R.raw.video_nature_loop
+            "air" -> R.raw.video_air_loop
             else -> 0
         }
         Log.d("VideoBackground", "Theme: $themeKey, ResId: $resId")

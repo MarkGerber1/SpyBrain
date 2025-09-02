@@ -219,7 +219,7 @@ class BreathingViewModel @Inject constructor(
 
                 // Мотивация каждые 3 цикла
                 if (currentCycle % 3 == 0 && voiceAssistant.isReady()) {
-                    voiceAssistant.speakMotivation("Отлично! Продолжайте в том же духе")
+                    voiceAssistant.speakMotivation(context.getString(R.string.motivation_excellent))
                 }
             }
 
@@ -230,7 +230,7 @@ class BreathingViewModel @Inject constructor(
                 if (voiceAssistant.isReady()) {
                     voiceAssistant.speakComplete()
                 } else {
-                    setEffect { BreathingContract.Effect.Speak("Сессия завершена") }
+                    setEffect { BreathingContract.Effect.Speak(context.getString(R.string.session_completed)) }
                 }
 
                 stopPatternInternal()
@@ -287,6 +287,15 @@ class BreathingViewModel @Inject constructor(
         try {
             breathingJob?.cancel()
             breathingJob = null
+            
+            // Остановка голосового сопровождения
+            try {
+                voiceAssistant.stop()
+                Timber.d("Голосовое сопровождение остановлено")
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при остановке голосового сопровождения")
+            }
+            
             setState {
                 copy(
                     currentPattern = null,
@@ -323,8 +332,10 @@ class BreathingViewModel @Inject constructor(
     override fun onCleared() {
         try {
             breathingJob?.cancel()
+            // Остановка голосового сопровождения при уничтожении ViewModel
+            voiceAssistant.stop()
             voiceAssistant.release()
-            Timber.d("BreathingViewModel cleared")
+            Timber.d("BreathingViewModel cleared, голосовое сопровождение остановлено")
         } catch (e: Exception) {
             Timber.e(e, "Ошибка при очистке BreathingViewModel")
         }
@@ -362,6 +373,6 @@ class BreathingViewModel @Inject constructor(
      * Запускает прослушивание голосовой команды.
      */
     fun startListeningVoice() {
-        setEffect { BreathingContract.Effect.ShowError(UiError.Custom(message = "Голосовой ввод пока не реализован")) }
+        setEffect { BreathingContract.Effect.ShowError(UiError.Custom(message = context.getString(R.string.voice_input_not_implemented))) }
     }
 } 

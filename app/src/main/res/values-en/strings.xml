@@ -41,7 +41,7 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_language">Language</string>
     <string name="settings_language_system">System</string>
-    <string name="settings_language_ru">Русский</string>
+    <string name="settings_language_ru">Russian</string>
     <string name="settings_language_en">English</string>
     <string name="settings_meditation_options">Meditation</string>
     <string name="settings_background_music">Background music</string>
@@ -53,14 +53,14 @@
     <string name="notification_channel_name">Meditation playback</string>
     <string name="notification_channel_description">Notifications for meditation playback</string>
 
-    <!-- Старые строки (возможно, где-то используются) -->
+    <!-- Legacy strings (possibly still used somewhere) -->
     <!-- <string name="home">Home</string> -->
-    <string name="meditation">Meditation</string> <!-- Дублирует bottom_nav? -->
+    <string name="meditation">Meditation</string> <!-- Duplicates bottom_nav? -->
     <string name="categories">Categories</string>
     <string name="achievements">Achievements</string>
-    <string name="settings">Settings</string> <!-- Дублирует bottom_nav? -->
-    <string name="statistics">Statistics</string> <!-- Дублирует bottom_nav? -->
-    <string name="breathing">Breathing</string> <!-- Дублирует bottom_nav? -->
+    <string name="settings">Settings</string> <!-- Duplicates bottom_nav? -->
+    <string name="statistics">Statistics</string> <!-- Duplicates bottom_nav? -->
+    <string name="breathing">Breathing</string> <!-- Duplicates bottom_nav? -->
     <string name="category_mindfulness">Mindfulness</string>
     <string name="category_sleep">Sleep</string>
     <string name="category_anxiety">Anxiety Relief</string>
@@ -68,11 +68,11 @@
     <string name="start">Start</string>
     <string name="resume">Resume</string>
     <string name="back">Back</string>
-    <string name="error_loading">Error loading content</string> <!-- Дублирует meditation_error_loading? -->
+    <string name="error_loading">Error loading content</string> <!-- Duplicates meditation_error_loading? -->
     <string name="error_retry">Retry</string>
-    <string name="play">Play</string> <!-- Дублирует meditation_play? -->
+    <string name="play">Play</string> <!-- Duplicates meditation_play? -->
 
-    <!-- TODO: Провести ревизию строк, удалить дубликаты и устаревшие строки. Синхронизировать ключи между локалями. -->
+    <!-- TODO: Review strings, remove duplicates and obsolete strings. Synchronize keys between locales. -->
     <!-- Added missing translations -->
     <string name="total_meditation_time">Total meditation time</string>
     <string name="completed_sessions">Completed sessions</string>
@@ -129,6 +129,160 @@
     <string name="breathing_pattern_4_4_4_4">4-4-4-4</string>
     <string name="breathing_pattern_4_7_8">4-7-8</string>
     <string name="breathing_pattern_5_5_5_5">5-5-5-5</string>
+    
+    <!-- Breathing Pattern Names -->
+    <string name="breathing_pattern_calm">Calm Breathing</string>
+    <string name="breathing_pattern_box">Box Breathing</string>
+    <string name="breathing_pattern_sleep">Sleep Breathing</string>
+    <string name="breathing_pattern_lion">Lion\'s Strength</string>
+    <string name="breathing_pattern_bee">Bee Buzzing</string>
+    <string name="breathing_pattern_fire">Fire Breathing</string>
+    <string name="breathing_pattern_evening">Evening Breathing</string>
+    <string name="breathing_pattern_clarity">Mental Clarity</string>
+    <string name="breathing_pattern_morning">Morning Energy</string>
+    <string name="breathing_pattern_creative">Creative Flow</string>
+    
+    <!-- Breathing Pattern Descriptions -->
+    <string name="breathing_pattern_calm_desc">Simple and effective technique for beginners</string>
+    <string name="breathing_pattern_box_desc">Technique for stress relief and improved concentration</string>
+    <string name="breathing_pattern_sleep_desc">Technique for quick sleep and relaxation</string>
+    <string name="breathing_pattern_lion_desc">Energizing technique for facial tension relief</string>
+    <string name="breathing_pattern_bee_desc">Calming technique for anxiety relief</string>
+    <string name="breathing_pattern_fire_desc">Energizing technique for awakening and cleansing</string>
+    <string name="breathing_pattern_evening_desc">Special technique for better sleep quality</string>
+    <string name="breathing_pattern_clarity_desc">Technique for improved concentration and mental clarity</string>
+    <string name="breathing_pattern_morning_desc">Technique for boosting energy and vitality</string>
+    <string name="breathing_pattern_creative_desc">Technique for awakening creative potential</string>
+    
+    <!-- Voice Prompts for Breathing Patterns -->
+    <string name="voice_prompt_calm">Breathe calmly and deeply. Inhale through your nose, exhale through your mouth.</string>
+    <string name="voice_prompt_box">Imagine a square. Inhale for 4 counts, hold for 4, exhale for 4, hold for 4.</string>
+    <string name="voice_prompt_sleep">Inhale for 4 counts, hold your breath for 7, exhale for 8 counts.</string>
+    <string name="voice_prompt_lion">Take a deep breath, then exhale with an open mouth and tongue out, making a \'ha\' sound.</string>
+    <string name="voice_prompt_bee">Cover your ears with your fingers, inhale deeply, make a buzzing sound on exhale.</string>
+    <string name="voice_prompt_fire">Quick and rhythmic inhales and exhales through the nose, as if breathing fire.</string>
+    <string name="voice_prompt_evening">Breathe slowly and deeply, imagining tension leaving with each exhale.</string>
+    <string name="voice_prompt_clarity">Focus on your breathing. Inhale clarity, exhale distractions.</string>
+    <string name="voice_prompt_morning">Inhale energy and vitality, exhale fatigue and weakness.</string>
+    <string name="voice_prompt_creative">Inhale inspiration, exhale doubts. Open the flow of creativity.</string>
+    
+    <!-- Pattern Preview Strings -->
+    <string name="pattern_preview_inhale">Inhale %1$ds, pause %2$ds</string>
+    <string name="pattern_preview_exhale">Exhale %1$ds, pause %2$ds</string>
+    <string name="pattern_preview_cycles">Cycles: %1$d</string>
+    
+    <!-- Meditation Categories -->
+    <string name="meditation_category_sleep">Sleep</string>
+    <string name="meditation_category_morning">Morning</string>
+    <string name="meditation_category_stress">Stress</string>
+    <string name="meditation_category_anxiety">Anxiety</string>
+    <string name="meditation_category_focus">Focus</string>
+    <string name="meditation_category_energy">Energy</string>
+    <string name="meditation_category_creativity">Creativity</string>
+    <string name="meditation_category_gratitude">Gratitude</string>
+    <string name="meditation_category_love">Love</string>
+    <string name="meditation_category_healing">Healing</string>
+    
+    <!-- Heart Rate Measurement -->
+    <string name="heart_rate_title">Heart Rate Measurement</string>
+    <string name="heart_rate_measure">Measure Heart Rate</string>
+    <string name="heart_rate_stop">Stop</string>
+    <string name="heart_rate_measuring">Measuring...</string>
+    <string name="heart_rate_bpm">%1$d bpm</string>
+    <string name="heart_rate_no_camera">Camera unavailable</string>
+    <string name="heart_rate_camera_permission">Allow camera access to measure heart rate</string>
+    <string name="heart_rate_place_finger">Place finger on camera</string>
+    <string name="heart_rate_measuring_pulse">Measuring pulse...</string>
+    <string name="heart_rate_measurement_complete">Measurement complete</string>
+    <string name="heart_rate_measurement_failed">Measurement error</string>
+    <string name="heart_rate_history">Measurement History</string>
+    <string name="heart_rate_no_history">No measurement history</string>
+    <string name="heart_rate_motivational_points">Motivation Points: %1$d</string>
+    <string name="heart_rate_new_exercise_unlocked">New exercise unlocked!</string>
+    <string name="heart_rate_points_for_session">+1 point for completed practice</string>
+    
+    <!-- Background Styles -->
+    <string name="background_style_auto">Auto</string>
+    <string name="background_style_ocean">Ocean</string>
+    <string name="background_style_waterfall">Waterfall</string>
+    <string name="background_style_clouds">Clouds</string>
+    <string name="background_style_stars">Stars</string>
+    <string name="background_style_forest">Forest</string>
+    <string name="background_style_mountains">Mountains</string>
+    <string name="background_style_rain">Rain</string>
+    <string name="background_style_sky">Sky</string>
+    
+    <!-- Gender Options -->
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_other">Other</string>
+    
+    <!-- Navigation -->
+    <string name="bottom_nav_heart_rate">Pulse</string>
+    
+    <!-- Main Screen Greetings -->
+    <string name="greeting_good_morning">Good morning</string>
+    <string name="greeting_good_afternoon">Good afternoon</string>
+    <string name="greeting_good_evening">Good evening</string>
+    <string name="greeting_good_night">Good night</string>
+    <string name="default_user_friend">friend</string>
+    
+    <!-- Motivational Quotes -->
+    <string name="quote_meditation">Know yourself — through meditation.</string>
+    <string name="quote_relaxation">Relaxation is an art that can be learned.</string>
+    <string name="quote_breathing">Breathe deeper, think clearer.</string>
+    <string name="quote_calmness">Calmness is your superpower.</string>
+    <string name="quote_attention">Your attention is your energy.</string>
+    <string name="quote_mindfulness">Mindfulness is the key to inner harmony.</string>
+    <string name="quote_peace">The peace within you is stronger than any storm outside.</string>
+    <string name="quote_moment">Live here and now — it\'s the only moment you have.</string>
+    <string name="quote_breath_life">Breathing is the bridge between body and mind.</string>
+    <string name="quote_silence">In silence you will find answers to all questions.</string>
+    <string name="quote_balance">Balance doesn\'t mean perfection, it means harmony.</string>
+    <string name="quote_inner_strength">Your inner strength is limitless.</string>
+    <string name="quote_present">The present is a gift, that\'s why it\'s called the present.</string>
+    <string name="quote_thoughts">You are not your thoughts, you are the one who observes them.</string>
+    <string name="quote_journey">The journey within yourself is the most important journey.</string>
+    <string name="quote_gratitude">Gratitude turns ordinary into magical.</string>
+    <string name="quote_flow">Go with the flow of life, don\'t resist.</string>
+    <string name="quote_heart">Listen to your heart — it knows the way.</string>
+    <string name="quote_wisdom">Wisdom doesn\'t come with age, it comes with acceptance.</string>
+    <string name="quote_freedom">Freedom begins with liberation from your own limitations.</string>
+    <string name="quote_energy">Your energy is your currency. Spend it wisely.</string>
+    <string name="quote_change">Change begins with one conscious breath.</string>
+    <string name="quote_compassion">Self-compassion is the foundation of all healing.</string>
+    <string name="quote_trust">Trust the process, even when you can\'t see the whole path.</string>
+    <string name="quote_growth">Growth happens outside the comfort zone.</string>
+    <string name="quote_love">Self-love is not selfishness, it\'s necessity.</string>
+    <string name="quote_patience">Patience is peace in action.</string>
+    <string name="quote_dreams">Dreams are the seeds of the future.</string>
+    <string name="quote_strength">Strength is not about never falling, but always getting back up.</string>
+    <string name="quote_soul">The soul knows what the mind hasn\'t understood yet.</string>
+    <string name="quote_time">Time heals, but only if you let it.</string>
+    <string name="quote_hope">Hope is the light at the end of the tunnel.</string>
+    <string name="quote_nature">Nature does not hurry, yet everything is accomplished.</string>
+    <string name="quote_purpose">Your goal is not to be better than others, but to be better than yesterday\'s you.</string>
+    <string name="quote_forgiveness">Forgiveness is a gift you give to yourself.</string>
+    <string name="quote_courage">Courage is not the absence of fear, but action in spite of it.</string>
+    <string name="quote_mindful_eating">Eat mindfully — every bite is a blessing.</string>
+    <string name="quote_water">Be like water — soft and flowing, yet capable of wearing down stones.</string>
+    <string name="quote_sunrise">Every sunrise is a new opportunity.</string>
+    <string name="quote_kindness">Kindness is a language everyone understands.</string>
+    <string name="quote_meditation_deep">Meditation is not an escape from reality, but an encounter with it.</string>
+    <string name="quote_abundance">Abundance is a state of mind, not the size of your bank account.</string>
+    <string name="quote_simplicity">In simplicity lies the greatest wisdom.</string>
+    <string name="quote_connection">We are all connected by invisible threads.</string>
+    <string name="quote_intuition">Intuition is the voice of your soul.</string>
+    <string name="quote_surrender">Sometimes the strongest thing you can do is let go.</string>
+    <string name="quote_joy">Joy is not what happens to you, but what you choose to feel.</string>
+    <string name="quote_waves">Emotions are like waves — let them come and go.</string>
+    <string name="quote_stars">You are made of stardust — remember that.</string>
+    <string name="quote_breath_power">Every breath is a chance to start anew.</string>
+    <string name="quote_healing">Healing happens from the inside out.</string>
+    <string name="quote_miracle">Miracles happen every day — you just need to know how to see them.</string>
+    <string name="quote_faith">Faith is the bridge between where you are and where you want to be.</string>
+    <string name="quote_wholeness">You are already whole — you just need to remember it.</string>
+    <string name="quote_sacred">Every moment is sacred if you are present in it.</string>
     
     <!-- Statistics -->
     <string name="stats_total_sessions">Total Sessions</string>
@@ -416,4 +570,59 @@
 
     <!-- Meditation Categories (EN, for curated list) -->
     <string name="meditation_category_evening">Evening</string>
+
+    <!-- Video Backgrounds Settings -->
+    <string name="settings_video_backgrounds">Video Backgrounds</string>
+    <string name="settings_video_backgrounds_enabled">Video Animations</string>
+    <string name="settings_video_backgrounds_disabled">Canvas Animations</string>
+    <string name="settings_animated_backgrounds">Live Backgrounds</string>
+
+    <!-- Exit Confirmation Dialogs -->
+    <string name="meditation_exit_title">End Meditation?</string>
+    <string name="meditation_exit_message">Are you sure you want to end the meditation? All progress will be saved.</string>
+    <string name="breathing_exit_title">Stop Breathing Practice?</string>
+    <string name="breathing_exit_message">Are you sure you want to stop the breathing practice? Progress will be saved.</string>
+
+    <!-- Hardcoded strings that need localization -->
+    <string name="settings_live_backgrounds_title">Live Backgrounds</string>
+    <string name="settings_enabled">Enabled</string>
+    <string name="settings_disabled">Disabled</string>
+    <string name="voice_style_soft">Soft</string>
+    <string name="voice_style_energetic">Energetic</string>
+    <string name="voice_style_neutral">Neutral</string>
+    <string name="voice_style_label">Voice style: %1$s</string>
+    <string name="voice_speech_rate">Speech rate</string>
+    <string name="voice_pitch">Pitch</string>
+    <string name="open_tts_settings">Open TTS Settings</string>
+    <string name="live_background_title">Live Background</string>
+    <string name="profile_title">Profile</string>
+    <string name="name_label">Name</string>
+    <string name="age_label">Age</string>
+    <string name="go_to_main">Go to Main Screen</string>
+    <string name="loading_voices">Loading voices…</string>
+    <string name="welcome_title">Welcome to SpyBrain</string>
+    <string name="welcome_subtitle">Tell us a bit about yourself to get started</string>
+    <string name="continue_button">Continue</string>
+    <string name="pattern_saved">Pattern saved!</string>
+    <string name="registered_date">Registered: %1$s</string>
+    <string name="close_button">Close</string>
+    <string name="session_completed">Session completed</string>
+    <string name="motivation_excellent">Excellent! Keep going like this</string>
+    
+    <!-- Breathing Categories -->
+    <string name="breathing_category_all">All</string>
+    <string name="breathing_category_relaxation">Relaxation</string>
+    <string name="breathing_category_energy">Energy</string>
+    <string name="breathing_category_focus">Focus</string>
+    
+    <!-- Pattern Builder Strings -->
+    <string name="saved_patterns_title">Saved Patterns</string>
+    <string name="delete_pattern">Delete pattern</string>
+    <string name="edit_pattern_title">Edit Pattern</string>
+    <string name="edit_pattern_subtitle">Adjust breathing exercise parameters</string>
+    <string name="basic_parameters">Basic Parameters</string>
+    <string name="breathing_parameters">Breathing Parameters</string>
+    <string name="voice_input_not_implemented">Voice input not yet implemented</string>
+    <string name="pattern_deleted">Pattern deleted!</string>
+    <string name="validation_error">Values too large. Check parameters.</string>
 </resources> 

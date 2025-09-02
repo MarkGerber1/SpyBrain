@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
@@ -179,13 +180,13 @@ fun editCustomBreathingPatternScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ С€Р°Р±Р»РѕРЅР°",
+                                text = stringResource(com.example.spybrain.R.string.edit_pattern_title),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "РќР°СЃС‚СЂРѕР№С‚Рµ РїР°СЂР°РјРµС‚СЂС‹ РґС‹С…Р°С‚РµР»СЊРЅРѕРіРѕ СѓРїСЂР°Р¶РЅРµРЅРёСЏ",
+                                text = stringResource(com.example.spybrain.R.string.edit_pattern_subtitle),
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -214,7 +215,7 @@ fun editCustomBreathingPatternScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
-                                text = "РћСЃРЅРѕРІРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹",
+                                text = stringResource(com.example.spybrain.R.string.basic_parameters),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -272,7 +273,7 @@ fun editCustomBreathingPatternScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
-                                text = "РџР°СЂР°РјРµС‚СЂС‹ РґС‹С…Р°РЅРёСЏ",
+                                text = stringResource(com.example.spybrain.R.string.breathing_parameters),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
