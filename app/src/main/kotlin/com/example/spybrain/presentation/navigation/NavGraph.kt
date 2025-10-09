@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.navigation
+package com.example.spybrain.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -13,6 +13,7 @@ import com.example.spybrain.presentation.breathing.patternbuilder.EditCustomBrea
 import com.example.spybrain.presentation.biosync.BioSyncScreen
 import com.example.spybrain.presentation.meditation.MeditationLibraryScreen
 import com.example.spybrain.presentation.meditation.MeditationScreen
+import com.example.spybrain.presentation.onboarding.OnboardingScreen
 import com.example.spybrain.presentation.profile.ProfileScreen
 import com.example.spybrain.presentation.reminders.HeartRateScreen
 import com.example.spybrain.presentation.settings.SettingsScreen
@@ -25,10 +26,20 @@ import com.example.spybrain.presentation.achievements.AchievementsScreen
  */
 @Composable
 fun NavGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = Screen.Meditation.route) {
+    NavHost(navController, startDestination = Screen.Onboarding.route) {
 
         composable(Screen.Splash.route) {
             SplashScreen(navController)
+        }
+
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                onOnboardingCompleted = {
+                    navController.navigate(Screen.Meditation.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(Screen.Meditation.route) {

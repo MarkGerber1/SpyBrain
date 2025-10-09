@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.presentation.navigation
+package com.example.spybrain.presentation.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -31,6 +31,8 @@ sealed class Screen(
 ) {
     /** Р­РєСЂР°РЅ РїСЂРёРІРµС‚СЃС‚РІРёСЏ. */
     object Splash : Screen("splash")
+    /** Р­РєСЂР°РЅ РѕРЅР±РѕСЂРґРёРЅРіР°. */
+    object Onboarding : Screen("onboarding")
     /** Р­РєСЂР°РЅ РјРµРґРёС‚Р°С†РёРё. */
     object Meditation : Screen("meditation")
     /** Р­РєСЂР°РЅ РґС‹С…Р°РЅРёСЏ. */

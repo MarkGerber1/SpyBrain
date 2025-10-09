@@ -1,4 +1,4 @@
-﻿package com.example.spybrain.data.datastore
+package com.example.spybrain.data.datastore
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -35,6 +35,11 @@ class SettingsDataStore @Inject constructor(
         val VOICE_ID = stringPreferencesKey("voice_id")
         val MOTIVATIONAL_POINTS = intPreferencesKey("motivational_points")
         val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
+        val USER_NAME = stringPreferencesKey("user_name")
+        val USER_BIRTH_DATE = stringPreferencesKey("user_birth_date")
+        val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val SMART_AMBIENT_ENABLED = booleanPreferencesKey("smart_ambient_enabled")
+        val SLEEP_TIMER_MINUTES = intPreferencesKey("sleep_timer_minutes")
     }
 
     /**
@@ -258,5 +263,125 @@ class SettingsDataStore @Inject constructor(
             voiceIdValue = it
         }
         return@runBlocking voiceIdValue
+    }
+
+    /**
+     * Получить имя пользователя.
+     * @return Имя пользователя.
+     */
+    fun getUserName(): String = runBlocking {
+        var userNameValue = ""
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKey.USER_NAME] ?: ""
+        }.collect {
+            userNameValue = it
+        }
+        return@runBlocking userNameValue
+    }
+
+    /**
+     * Установить имя пользователя.
+     * @param name Имя пользователя.
+     */
+    suspend fun setUserName(name: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.USER_NAME] = name
+        }
+    }
+
+    /**
+     * Получить дату рождения пользователя.
+     * @return Дата рождения в формате строки или null.
+     */
+    fun getUserBirthDate(): String? = runBlocking {
+        var birthDateValue: String? = null
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKey.USER_BIRTH_DATE]
+        }.collect {
+            birthDateValue = it
+        }
+        return@runBlocking birthDateValue
+    }
+
+    /**
+     * Установить дату рождения пользователя.
+     * @param birthDate Дата рождения в формате строки.
+     */
+    suspend fun setUserBirthDate(birthDate: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.USER_BIRTH_DATE] = birthDate
+        }
+    }
+
+    /**
+     * Проверить, завершен ли онбординг.
+     * @return true если онбординг завершен.
+     */
+    fun isOnboardingCompleted(): Boolean = runBlocking {
+        var completedValue = false
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKey.ONBOARDING_COMPLETED] ?: false
+        }.collect {
+            completedValue = it
+        }
+        return@runBlocking completedValue
+    }
+
+    /**
+     * Установить статус завершения онбординга.
+     * @param completed true если онбординг завершен.
+     */
+    suspend fun setOnboardingCompleted(completed: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.ONBOARDING_COMPLETED] = completed
+        }
+    }
+
+    /**
+     * Получить статус умного ambient режима.
+     * @return true если умный ambient включен.
+     */
+    fun getSmartAmbientEnabled(): Boolean = runBlocking {
+        var enabledValue = false
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKey.SMART_AMBIENT_ENABLED] ?: false
+        }.collect {
+            enabledValue = it
+        }
+        return@runBlocking enabledValue
+    }
+
+    /**
+     * Установить статус умного ambient режима.
+     * @param enabled true для включения умного ambient.
+     */
+    suspend fun setSmartAmbientEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.SMART_AMBIENT_ENABLED] = enabled
+        }
+    }
+
+    /**
+     * Получить время sleep таймера в минутах.
+     * @return Время в минутах или 0 если таймер отключен.
+     */
+    fun getSleepTimerMinutes(): Int = runBlocking {
+        var minutesValue = 0
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKey.SLEEP_TIMER_MINUTES] ?: 0
+        }.collect {
+            minutesValue = it
+        }
+        return@runBlocking minutesValue
+    }
+
+    /**
+     * Установить время sleep таймера.
+     * @param minutes Время в минутах (0 для отключения таймера).
+     */
+    suspend fun setSleepTimerMinutes(minutes: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.SLEEP_TIMER_MINUTES] = minutes
+        }
     }
 }
