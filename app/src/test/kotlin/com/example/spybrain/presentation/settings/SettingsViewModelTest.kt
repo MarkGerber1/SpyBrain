@@ -1,50 +1,59 @@
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import io.mockk.slot
-import io.mockk.just
-import io.mockk.Runs
-﻿package com.example.spybrain.presentation.settings
+package com.example.spybrain.presentation.settings
 
 import android.content.Context
-import android.content.Intent
+import androidx.test.core.app.ApplicationProvider
 import com.example.spybrain.data.datastore.SettingsDataStore
 import com.example.spybrain.domain.usecase.meditation.GetMeditationsUseCase
 import com.example.spybrain.presentation.settings.SettingsContract
-import io.mockk.impl.annotations.MockK
+import com.example.spybrain.test.utils.MainDispatcherRule
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.Runs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * Тесты для SettingsViewModel.
+ * Проверяют корректность обработки событий и состояний настроек.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
 
-    @MockK
+    /** Правило для установки главного диспетчера в тестах. */
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     private lateinit var context: Context
-
-    @MockK
     private lateinit var settingsDataStore: SettingsDataStore
-
-    @MockK
     private lateinit var getMeditationsUseCase: GetMeditationsUseCase
-
     private lateinit var viewModel: SettingsViewModel
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setup() {
-        MockKAnnotations.init(this)
-        Dispatchers.setMain(testDispatcher)
+        // Используем реальный контекст для тестов
+        context = ApplicationProvider.getApplicationContext()
 
-        // РњРѕРєР°РµРј РїРѕС‚РѕРєРё РґР°РЅРЅС‹С…
+        // Создаем моки зависимостей
+        settingsDataStore = mockk(relaxed = true)
+        getMeditationsUseCase = mockk(relaxed = true)
+
+        // Настраиваем моки для потоков данных
         every { settingsDataStore.themeFlow } returns flowOf("nature")
         every { settingsDataStore.ambientEnabledFlow } returns flowOf(false)
         every { settingsDataStore.ambientTrackFlow } returns flowOf("")
@@ -53,12 +62,14 @@ class SettingsViewModelTest {
         every { settingsDataStore.voiceHintsEnabledFlow } returns flowOf(true)
         every { settingsDataStore.vibrationEnabledFlow } returns flowOf(true)
         every { settingsDataStore.voiceIdFlow } returns flowOf("")
+        every { settingsDataStore.motivationalPointsFlow } returns flowOf(0)
 
         every { getMeditationsUseCase() } returns flowOf(emptyList())
 
-        // РњРѕРєР°РµРј СЃРёРЅС…СЂРѕРЅРЅС‹Рµ РјРµС‚РѕРґС‹
+        // Настраиваем моки для асинхронных методов
         coEvery { settingsDataStore.getAmbientTrack() } returns ""
         coEvery { settingsDataStore.getAmbientEnabled() } returns false
+        coEvery { settingsDataStore.getMotivationalPoints() } returns 0
         coEvery { settingsDataStore.setTheme(any()) } just Runs
         coEvery { settingsDataStore.setAmbientEnabled(any()) } just Runs
         coEvery { settingsDataStore.setAmbientTrack(any()) } just Runs
@@ -68,6 +79,7 @@ class SettingsViewModelTest {
         coEvery { settingsDataStore.setVoiceId(any()) } just Runs
         coEvery { settingsDataStore.setVibrationEnabled(any()) } just Runs
 
+        // Создаем ViewModel с замоканными зависимостями
         viewModel = SettingsViewModel(settingsDataStore, getMeditationsUseCase, context)
     }
 
@@ -176,4 +188,3 @@ class SettingsViewModelTest {
         assertEquals(trackId, viewModel.uiState.value.ambientTrack)
     }
 }
-
