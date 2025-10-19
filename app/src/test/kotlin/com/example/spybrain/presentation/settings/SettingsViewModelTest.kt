@@ -1,22 +1,19 @@
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import io.mockk.MockKAnnotations
+import io.mockk.any
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.slot
 import io.mockk.just
 import io.mockk.Runs
-﻿package com.example.spybrain.presentation.settings
-
-import android.content.Context
-import android.content.Intent
-import com.example.spybrain.data.datastore.SettingsDataStore
-import com.example.spybrain.domain.usecase.meditation.GetMeditationsUseCase
-import com.example.spybrain.presentation.settings.SettingsContract
-import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -39,9 +36,8 @@ class SettingsViewModelTest {
     private lateinit var viewModel: SettingsViewModel
     private val testDispatcher = StandardTestDispatcher()
 
-    MockKAnnotations.init(this)
+    @Before
     fun setup() {
-    MockKAnnotations.init(this)
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
 
