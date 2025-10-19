@@ -95,8 +95,8 @@ class HeartRateViewModelTest {
 
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { heartRateRepository.saveMeasurement(testHeartRate) }
-        coVerify { heartRateRepository.addMotivationalPoint() }
+        expect { heartRateRepository.saveMeasurement(testHeartRate) }
+        expect { heartRateRepository.addMotivationalPoint() }
         assertEquals(testHeartRate, viewModel.uiState.value.currentHeartRate)
         assertEquals(1, viewModel.uiState.value.motivationalPoints)
         assertFalse(viewModel.uiState.value.isMeasuring)

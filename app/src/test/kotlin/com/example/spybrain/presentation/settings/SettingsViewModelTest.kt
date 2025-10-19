@@ -39,8 +39,9 @@ class SettingsViewModelTest {
     private lateinit var viewModel: SettingsViewModel
     private val testDispatcher = StandardTestDispatcher()
 
-    @Before
+    MockKAnnotations.init(this)
     fun setup() {
+    MockKAnnotations.init(this)
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
 
