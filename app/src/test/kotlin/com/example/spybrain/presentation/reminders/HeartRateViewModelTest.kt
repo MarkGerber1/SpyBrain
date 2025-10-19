@@ -1,20 +1,17 @@
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.slot
 import io.mockk.just
 import io.mockk.Runs
-﻿package com.example.spybrain.presentation.reminders
-
-import android.content.Context
-import com.example.spybrain.data.repository.HeartRateRepository
-import com.example.spybrain.presentation.reminders.HeartRateContract
-import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -95,8 +92,8 @@ class HeartRateViewModelTest {
 
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { heartRateRepository.saveMeasurement(testHeartRate) }
-        coVerify { heartRateRepository.addMotivationalPoint() }
+        expect { heartRateRepository.saveMeasurement(testHeartRate) }
+        expect { heartRateRepository.addMotivationalPoint() }
         assertEquals(testHeartRate, viewModel.uiState.value.currentHeartRate)
         assertEquals(1, viewModel.uiState.value.motivationalPoints)
         assertFalse(viewModel.uiState.value.isMeasuring)
